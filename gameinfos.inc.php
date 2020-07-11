@@ -25,7 +25,7 @@ $gameinfos = array(
 'year' => 2015,                 
 
 // Game publisher
-'publisher' => 'Breaking Games, Squirmy Beast',                     
+'publisher' => 'Breaking Games and Squirmy Beast', 
 
 // Url of game publisher website
 'publisher_website' => 'https://breakinggames.com/',   
