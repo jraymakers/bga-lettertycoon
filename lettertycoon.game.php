@@ -234,6 +234,95 @@ class LetterTycoon extends Table
     }    
     */
 
+    function stStartTurn()
+    {
+        $this->gamestate->nextState('noReplaceCardOption');
+    }
+
+    function stReplaceCard()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stPlayWord()
+    {
+        // todo
+        $this->gamestate->nextState('automaticChallengeVariant');
+    }
+
+    function stAutomaticChallenge()
+    {
+        // todo
+        $this->gamestate->nextState('wordAccepted');
+    }
+
+    function stPlayersMayChallenge()
+    {
+        // todo
+        $this->gamestate->nextState('scoreWord');
+    }
+
+    function stResolveChallenge()
+    {
+        // todo
+        $this->gamestate->nextState('wordAccepted');
+    }
+
+    function stChallengeFailed()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stChallengeSucceeded()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stScoreWord()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stPayRoyalties()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stBuyPatent()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stRefillCommunityPool()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stDiscardCards()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stRefillHand()
+    {
+        // todo
+        $this->gamestate->nextState();
+    }
+
+    function stEndTurn()
+    {
+        // todo
+        $this->gamestate->nextState('nextTurn');
+    }
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie
 ////////////
