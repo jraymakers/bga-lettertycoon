@@ -39,6 +39,9 @@ class LetterTycoon extends Table
                 'automatic_challenge_retries' => 101,
             )
         );
+
+        $this->cards = self::getNew( 'module.common.deck' );
+        $this->cards->init( 'card' );
     }
     
     protected function getGameName( )
@@ -71,7 +74,7 @@ class LetterTycoon extends Table
             $color = array_shift( $default_colors );
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        $sql .= implode( $values, ',' );
+        $sql .= implode( ',', $values );
         self::DbQuery( $sql );
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
@@ -87,7 +90,24 @@ class LetterTycoon extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
-       
+
+        // initialize card table
+        $cards = array();
+        foreach( $this->letter_counts as $letter => $count )
+        {
+            $cards[] = array( 'type' => $letter, 'type_arg' => 0, 'nbr' => $count );
+        }
+        $this->cards->createCards( $cards, 'deck' );
+
+        // initialize patent table
+        $sql = 'INSERT INTO patent (patent_id, owning_player_id) VALUES ';
+        $values = array();
+        foreach ( $this->patent_costs as $letter => $cost )
+        {
+            $values[] = "('$letter', NULL)";
+        }
+        $sql .= implode( ',', $values );
+        self::DbQuery( $sql );
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
