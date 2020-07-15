@@ -70,14 +70,16 @@ CREATE TABLE IF NOT EXISTS `patent` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 
--- position: 1 to 12
+-- word_num: 1 or 2
+-- word_pos: 1 to 12
 -- letter: 'A' to 'Z'
 -- vowel: 1 if vowel, 0 if consonant (for setting value of Y)
 -- card_id: id of card or NULL if "generated" letter
 CREATE TABLE IF NOT EXISTS `word` (
-  `position` tinyint(2) unsigned NOT NULL,
+  `word_num` tinyint(1) unsigned NOT NULL,
+  `word_pos` tinyint(2) unsigned NOT NULL,
   `letter` char(1) NOT NULL,
   `vowel` tinyint(1) unsigned NOT NULL,
   `card_id` tinyint(3) unsigned,
-  PRIMARY KEY (`position`)
+  PRIMARY KEY (`word_num`, `word_pos`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
