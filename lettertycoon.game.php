@@ -98,6 +98,7 @@ class LetterTycoon extends Table
             $cards[] = array( 'type' => $letter, 'type_arg' => 0, 'nbr' => $count );
         }
         $this->cards->createCards( $cards, 'deck' );
+        $this->cards->shuffle( 'deck' );
 
         // initialize patent table
         $sql = 'INSERT INTO patent (patent_id, owning_player_id) VALUES ';
@@ -108,6 +109,16 @@ class LetterTycoon extends Table
         }
         $sql .= implode( ',', $values );
         self::DbQuery( $sql );
+
+        // deal 7 cards to each player
+        $players = self::loadPlayersBasicInfos();
+        foreach( $players as $player_id => $player )
+        {
+            $cards = $this->cards->pickCards( 7, 'deck', $player_id );
+        }
+
+        // deal 3 cards to the community pool
+        $this->cards->pickCardsForLocation( 3, 'deck', 'community' );
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -132,10 +143,24 @@ class LetterTycoon extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
+        $sql = 'SELECT player_id as `id`, player_no as `order`,
+                player_score as `score`, player_score_aux as `patents_value`,
+                `money`, `stock` FROM player ';
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+
+        $result['community'] = $this->cards->getCardsInLocation( 'community' );
+
+        $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
+
+        $sql = 'SELECT patent_id, owning_player_id FROM patent ';
+        $result['patent_owners'] = self::getCollectionFromDb( $sql, true );
+
+        // TODO: filter out word if not active player and word not played yet
+        // OR: just don't persist word until played
+        $sql = 'SELECT `word_num` as `num`, `word_pos` as `pos`, `letter`, `vowel`, `card_id` FROM word ';
+        $result['word'] = self::getCollectionFromDb( $sql );
   
         return $result;
     }
@@ -238,19 +263,6 @@ class LetterTycoon extends Table
     /*
         Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
         The action method of state X is called everytime the current game state is set to X.
-    */
-    
-    /*
-    
-    Example for game state "MyGameState":
-
-    function stMyGameState()
-    {
-        // Do some stuff ...
-        
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }    
     */
 
     function stStartTurn()
