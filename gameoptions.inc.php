@@ -26,30 +26,60 @@
 
 $game_options = array(
 
-    /*
-    
-    // note: game variant ID should start at 100 (ie: 100, 101, 102, ...). The maximum is 199.
     100 => array(
-                'name' => totranslate('my game option'),    
-                'values' => array(
+        'name' => totranslate('Challenge mode'),
+        'values' => array(
+            1 => array(
+                'name' => totranslate( 'Players challenge' ),
+                'description' => totranslate('Played words may be challenged by other players. This follows the rules as written. It is suitable for real-time play.'),
+            ),
+            2 => array(
+                'name' => totranslate( 'Automatic challenge' ),
+                'description' => totranslate('Played words are checked and challenged automatically by the system. Retries may be allowed. This is a variant designed to speed up turn-based play.'),
+            ),
+        ),
+    ),
 
-                            // A simple value for this option:
-                            1 => array( 'name' => totranslate('option 1') )
-
-                            // A simple value for this option.
-                            // If this value is chosen, the value of "tmdisplay" is displayed in the game lobby
-                            2 => array( 'name' => totranslate('option 2'), 'tmdisplay' => totranslate('option 2') ),
-
-                            // Another value, with other options:
-                            //  description => this text will be displayed underneath the option when this value is selected to explain what it does
-                            //  beta=true => this option is in beta version right now.
-                            //  nobeginner=true  =>  this option is not recommended for beginners
-                            3 => array( 'name' => totranslate('option 3'), 'description' => totranslate('this option does X'), 'beta' => true, 'nobeginner' => true )
-                        )
-            )
-
-    */
+    101 => array(
+        'name' => totranslate('Automatic challenge retries'),
+        'values' => array(
+            0 => array(
+                'name' => totranslate( 'None' ),
+                'description' => totranslate('If automatically challenged, player gets no retries.'),
+            ),
+            1 => array(
+                'name' => totranslate( '1' ),
+                'description' => totranslate('If automatically challenged, player gets 1 retry.'),
+            ),
+            2 => array(
+                'name' => totranslate( '2' ),
+                'description' => totranslate('If automatically challenged, player gets 2 retries.'),
+            ),
+            3 => array(
+                'name' => totranslate( '3' ),
+                'description' => totranslate('If automatically challenged, player gets 3 retries.'),
+            ),
+            4 => array(
+                'name' => totranslate( '4' ),
+                'description' => totranslate('If automatically challenged, player gets 4 retries.'),
+            ),
+            5 => array(
+                'name' => totranslate( '5' ),
+                'description' => totranslate('If automatically challenged, player gets 5 retries.'),
+            ),
+            99 => array(
+                'name' => totranslate( 'Unlimited' ),
+                'description' => totranslate('If automatically challenged, player gets unlimited retries.'),
+            ),
+        ),
+        'default' => 3,
+        'displaycondition' => array(
+            array(
+                'type' => 'otheroption',
+                'id' => 100,
+                'value' => 2,
+            ),
+        ),
+    ),
 
 );
-
-
