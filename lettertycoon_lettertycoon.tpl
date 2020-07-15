@@ -26,8 +26,38 @@
 -->
 
 
-This is your game interface. You can edit this HTML in your ".tpl" file.
+<div id="whiteblock available_patents">
+</div>
 
+<div id="whiteblock community_pool">
+</div>
+
+<div id="whiteblock played_word">
+</div>
+
+<div class="whiteblock current_player_area">
+    <div class="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">
+        {YOU}
+    </div>
+    <div id="current_player_hand">
+    </div>
+    <div class="player_area_patents" id="player_area_patents_{CURRENT_PLAYER_ID}">
+    </div>
+</div>
+
+<div id="player_areas">
+
+    <!-- BEGIN player -->
+    <div class="whiteblock other_player_area other_player_area_{PLAYER_ID}">
+        <div class="player_area_name" style="color:#{PLAYER_COLOR}">
+            {PLAYER_NAME}
+        </div>
+        <div class="player_area_patents" id="player_area_patents_{PLAYER_ID}">
+        </div>
+    </div>
+    <!-- END player -->
+
+</div>
 
 <script type="text/javascript">
 
