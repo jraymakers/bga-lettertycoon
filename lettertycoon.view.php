@@ -42,6 +42,9 @@ class view_lettertycoon_lettertycoon extends game_view
         global $g_user;
         $current_player_id = $g_user->get_id();
 
+        $this->tpl['AVAILABLE_PATENTS'] = self::_("Available Patents");
+        $this->tpl['COMMUNITY_POOL'] = self::_("Community Pool");
+        $this->tpl['TABLE'] = self::_("Table");
         $this->tpl['YOU'] = self::_("You");
         $this->tpl['CURRENT_PLAYER_ID'] = $current_player_id;
         $this->tpl['CURRENT_PLAYER_COLOR'] = $players[$current_player_id]['player_color'];

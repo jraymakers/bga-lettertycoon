@@ -26,36 +26,34 @@
 -->
 
 
-<div class="whiteblock" id="available_patents">
+<div class="whiteblock">
+    <div class="area_label">{AVAILABLE_PATENTS}</div>
+    <div id="available_patents"></div>
 </div>
 
-<div class="whiteblock" id="community_pool">
+<div class="whiteblock">
+    <div class="area_label">{COMMUNITY_POOL}</div>
+    <div id="community_pool"></div>
 </div>
 
-<div class="whiteblock" id="played_words">
+<div class="whiteblock">
+    <div class="area_label">{TABLE}</div>
     <div id="played_word_1"></div>
     <div id="played_word_2"></div>
 </div>
 
 <div class="whiteblock" id="current_player_area">
-    <div id="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">
-        {YOU}
-    </div>
-    <div id="current_player_hand">
-    </div>
-    <div class="player_area_patents" id="player_area_patents_{CURRENT_PLAYER_ID}">
-    </div>
+    <div class="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOU}</div>
+    <div id="current_player_hand"></div>
+    <div class="player_area_patents" id="player_area_patents_{CURRENT_PLAYER_ID}"></div>
 </div>
 
 <div id="player_areas">
 
     <!-- BEGIN player -->
     <div class="whiteblock other_player_area" id="other_player_area_{PLAYER_ID}">
-        <div class="player_area_name" style="color:#{PLAYER_COLOR}">
-            {PLAYER_NAME}
-        </div>
-        <div class="player_area_patents" id="player_area_patents_{PLAYER_ID}">
-        </div>
+        <div class="player_area_name" style="color:#{PLAYER_COLOR}">{PLAYER_NAME}</div>
+        <div class="player_area_patents" id="player_area_patents_{PLAYER_ID}"></div>
     </div>
     <!-- END player -->
 
