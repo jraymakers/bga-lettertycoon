@@ -26,17 +26,19 @@
 -->
 
 
-<div id="whiteblock available_patents">
+<div class="whiteblock" id="available_patents">
 </div>
 
-<div id="whiteblock community_pool">
+<div class="whiteblock" id="community_pool">
 </div>
 
-<div id="whiteblock played_word">
+<div class="whiteblock" id="played_words">
+    <div id="played_word_1"></div>
+    <div id="played_word_2"></div>
 </div>
 
-<div class="whiteblock current_player_area">
-    <div class="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">
+<div class="whiteblock" id="current_player_area">
+    <div id="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">
         {YOU}
     </div>
     <div id="current_player_hand">
@@ -48,7 +50,7 @@
 <div id="player_areas">
 
     <!-- BEGIN player -->
-    <div class="whiteblock other_player_area other_player_area_{PLAYER_ID}">
+    <div class="whiteblock other_player_area" id="other_player_area_{PLAYER_ID}">
         <div class="player_area_name" style="color:#{PLAYER_COLOR}">
             {PLAYER_NAME}
         </div>

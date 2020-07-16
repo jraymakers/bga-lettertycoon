@@ -18,17 +18,28 @@
 define([
     "dojo","dojo/_base/declare",
     "ebg/core/gamegui",
-    "ebg/counter"
+    "ebg/counter",
+    "ebg/stock"
 ],
 function (dojo, declare) {
     return declare("bgagame.lettertycoon", ebg.core.gamegui, {
         constructor: function(){
             console.log('lettertycoon constructor');
-              
-            // Here, you can init the global variables of your user interface
-            // Example:
-            // this.myGlobalValue = 0;
 
+            // constants
+            this.cardWidth = 60;
+            this.cardHeight = 80;
+            this.patentWidth = 81;
+            this.patentHeight = 41;
+
+            // card stocks
+            this.communityStock = null;
+            this.handStock = null;
+            this.wordStocks = []; // valid index: 1, 2
+
+            // patent stocks
+            this.availablePatents = null;
+            this.patentStocksByPlayer = {}; // key: player_id
         },
         
         /*
@@ -47,18 +58,69 @@ function (dojo, declare) {
         setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
-            
-            // Setting up player boards
-            for( var player_id in gamedatas.players )
-            {
-                var player = gamedatas.players[player_id];
-                         
-                // TODO: Setting up players boards if needed
+
+            this.communityStock = new ebg.stock();
+            this.communityStock.create( this, $('community_pool'), this.cardWidth, this.cardHeight );
+            this.communityStock.image_items_per_row = 13;
+            this.handStock = new ebg.stock();
+            this.handStock.create( this, $('current_player_hand'), this.cardWidth, this.cardHeight );
+            this.handStock.image_items_per_row = 13;
+            this.wordStocks[1] = new ebg.stock();
+            this.wordStocks[1].create( this, $('played_word_1'), this.cardWidth, this.cardHeight );
+            this.wordStocks[1].image_items_per_row = 13;
+            this.wordStocks[2] = new ebg.stock();
+            this.wordStocks[2].create( this, $('played_word_2'), this.cardWidth, this.cardHeight );
+            this.wordStocks[2].image_items_per_row = 13;
+
+            for (var letter = 0, letters = 26; letter < letters; letter++) {
+                this.communityStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
+                this.handStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
+                this.wordStocks[1].addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
+                this.wordStocks[2].addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
             }
             
-            // TODO: Set up your game interface here, according to "gamedatas"
+            this.availablePatents = new ebg.stock();
+            this.availablePatents.create( this, $('available_patents'), this.patentWidth, this.patentHeight );
+            this.availablePatents.image_items_per_row = 2;
+            for (var letter = 0, letters = 26; letter < letters; letter++) {
+                this.availablePatents.addItemType( letter, letter, g_gamethemeurl+'img/patents.jpg', letter );
+            }
+
+            var players = gamedatas.players;
+            for (var player_id in players)
+            {
+                var patentStock = new ebg.stock();
+                patentStock.create( this, $('player_area_patents_'+player_id), this.patentWidth, this.patentHeight );
+                patentStock.image_items_per_row = 2;
+                for (var letter = 0, letters = 26; letter < letters; letter++) {
+                    patentStock.addItemType( letter, letter, g_gamethemeurl+'img/patents.jpg', letter );
+                }
+                this.patentStocksByPlayer[player_id] = patentStock;
+            }
+
+            var patent_owners = gamedatas.patent_owners;
+            for (var letter in patent_owners) {
+                var letter_index = this.getLetterIndex(letter);
+                var owner = patent_owners[letter];
+                if (owner) {
+                    this.patentStocksByPlayer[owner].addToStockWithId(letter_index, letter_index);
+                } else {
+                    this.availablePatents.addToStockWithId(letter_index, letter_index);
+                }
+            }
+
+            var community = gamedatas.community;
+            for (var card_id in community) {
+                var card = community[card_id];
+                this.communityStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
+            }
+
+            var hand = gamedatas.hand;
+            for (var card_id in hand) {
+                var card = hand[card_id];
+                this.handStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
+            }
             
- 
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -157,6 +219,10 @@ function (dojo, declare) {
             script.
         
         */
+
+        getLetterIndex: function (letter) {
+            return letter.charCodeAt(0) - 65; // 'A'
+        },
 
 
         ///////////////////////////////////////////////////
