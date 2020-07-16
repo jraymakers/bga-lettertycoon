@@ -59,43 +59,16 @@ function (dojo, declare) {
         {
             console.log( "Starting game setup" );
 
-            this.communityStock = new ebg.stock();
-            this.communityStock.create( this, $('community_pool'), this.cardWidth, this.cardHeight );
-            this.communityStock.image_items_per_row = 13;
-            this.handStock = new ebg.stock();
-            this.handStock.create( this, $('current_player_hand'), this.cardWidth, this.cardHeight );
-            this.handStock.image_items_per_row = 13;
-            this.wordStocks[1] = new ebg.stock();
-            this.wordStocks[1].create( this, $('played_word_1'), this.cardWidth, this.cardHeight );
-            this.wordStocks[1].image_items_per_row = 13;
-            this.wordStocks[2] = new ebg.stock();
-            this.wordStocks[2].create( this, $('played_word_2'), this.cardWidth, this.cardHeight );
-            this.wordStocks[2].image_items_per_row = 13;
-
-            for (var letter = 0, letters = 26; letter < letters; letter++) {
-                this.communityStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
-                this.handStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
-                this.wordStocks[1].addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
-                this.wordStocks[2].addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
-            }
+            this.communityStock = this.createCardStock('community_pool');
+            this.handStock = this.createCardStock('current_player_hand');
+            this.wordStocks[1] = this.createCardStock('played_word_1');
+            this.wordStocks[2] = this.createCardStock('played_word_2');
             
-            this.availablePatents = new ebg.stock();
-            this.availablePatents.create( this, $('available_patents'), this.patentWidth, this.patentHeight );
-            this.availablePatents.image_items_per_row = 2;
-            for (var letter = 0, letters = 26; letter < letters; letter++) {
-                this.availablePatents.addItemType( letter, letter, g_gamethemeurl+'img/patents.jpg', letter );
-            }
+            this.availablePatents = this.createPatentStock('available_patents');
 
             var players = gamedatas.players;
-            for (var player_id in players)
-            {
-                var patentStock = new ebg.stock();
-                patentStock.create( this, $('player_area_patents_'+player_id), this.patentWidth, this.patentHeight );
-                patentStock.image_items_per_row = 2;
-                for (var letter = 0, letters = 26; letter < letters; letter++) {
-                    patentStock.addItemType( letter, letter, g_gamethemeurl+'img/patents.jpg', letter );
-                }
-                this.patentStocksByPlayer[player_id] = patentStock;
+            for (var player_id in players) {
+                this.patentStocksByPlayer[player_id] = this.createPatentStock('player_area_patents_'+player_id);
             }
 
             var patent_owners = gamedatas.patent_owners;
@@ -103,9 +76,9 @@ function (dojo, declare) {
                 var letter_index = this.getLetterIndex(letter);
                 var owner = patent_owners[letter];
                 if (owner) {
-                    this.patentStocksByPlayer[owner].addToStockWithId(letter_index, letter_index);
+                    this.patentStocksByPlayer[owner].addToStock(letter_index);
                 } else {
-                    this.availablePatents.addToStockWithId(letter_index, letter_index);
+                    this.availablePatents.addToStock(letter_index);
                 }
             }
 
@@ -222,6 +195,26 @@ function (dojo, declare) {
 
         getLetterIndex: function (letter) {
             return letter.charCodeAt(0) - 65; // 'A'
+        },
+
+        createCardStock: function(element_id) {
+            var cardStock = new ebg.stock();
+            cardStock.create( this, $(element_id), this.cardWidth, this.cardHeight );
+            cardStock.image_items_per_row = 13;
+            for (var letter = 0, letters = 26; letter < letters; letter++) {
+                cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
+            }
+            return cardStock;
+        },
+
+        createPatentStock: function(element_id) {
+            var patentStock = new ebg.stock();
+            patentStock.create( this, $(element_id), this.patentWidth, this.patentHeight );
+            patentStock.image_items_per_row = 2;
+            for (var letter = 0, letters = 26; letter < letters; letter++) {
+                patentStock.addItemType( letter, letter, g_gamethemeurl+'img/patents.jpg', letter );
+            }
+            return patentStock;
         },
 
 
