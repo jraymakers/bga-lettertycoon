@@ -74,7 +74,7 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} may replace a card'),
         'descriptionmyturn' => clienttranslate('${you} may replace a card'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'replaceCard', 'skip' ),
+        'possibleactions' => array( 'replaceCard', 'skipReplaceCard' ),
         'transitions' => array( 'replaceCard' => 21, 'skip' => 30 )
     ),
 
@@ -87,12 +87,12 @@ $machinestates = array(
     ),
 
     30 => array(
-        'name' => 'playerMayPlayWordOrDiscardCards',
-        'description' => clienttranslate('${actplayer} may play a word or discard cards'),
-        'descriptionmyturn' => clienttranslate('${you} may play a word or discard cards'),
+        'name' => 'playerMayPlayWord',
+        'description' => clienttranslate('${actplayer} may play a word'),
+        'descriptionmyturn' => clienttranslate('${you} may play a word'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'playWord', 'discardCards' ),
-        'transitions' => array( 'playWord' => 31, 'discardCards' => 75 )
+        'possibleactions' => array( 'playWord', 'skipPlayWord' ),
+        'transitions' => array( 'playWord' => 31, 'skip' => 60 )
     ),
 
     31 => array(
@@ -117,7 +117,7 @@ $machinestates = array(
         'descriptionmyturn' => clienttranslate('${you} may challenge or accept the played word'),
         'type' => 'multipleactiveplayer',
         'action' => 'stPlayersMayChallenge',
-        'possibleactions' => array( 'challenge', 'accept' ),
+        'possibleactions' => array( 'challengeWord', 'acceptWord' ),
         'transitions' => array( 'resolveChallenge' => 41, 'scoreWord' => 45 )
     ),
 
@@ -166,7 +166,7 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} may buy a patent'),
         'descriptionmyturn' => clienttranslate('${you} may buy a patent'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'buyPatent', 'skip' ),
+        'possibleactions' => array( 'buyPatent', 'skipBuyPatent' ),
         'transitions' => array( 'buyPatent' => 51, 'skip' => 52 )
     ),
 
@@ -191,7 +191,7 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} may discard cards'),
         'descriptionmyturn' => clienttranslate('${you} may discard cards'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'discardCards', 'skip' ),
+        'possibleactions' => array( 'discardCards', 'skipDiscardCards' ),
         'transitions' => array( 'discardCards' => 75, 'skip' => 76 )
     ),
 

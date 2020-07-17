@@ -38,8 +38,8 @@
 
 <div class="whiteblock">
     <div class="area_label">{TABLE}</div>
-    <div id="played_word_1"></div>
-    <div id="played_word_2"></div>
+    <div id="main_word"></div>
+    <div id="extra_word"></div>
 </div>
 
 <div class="whiteblock" id="current_player_area">

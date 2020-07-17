@@ -35,7 +35,8 @@ function (dojo, declare) {
             // card stocks
             this.communityStock = null;
             this.handStock = null;
-            this.wordStocks = []; // valid index: 1, 2
+            this.mainWordStock = null;
+            this.extraWordStock = null;
 
             // patent stocks
             this.availablePatents = null;
@@ -61,8 +62,9 @@ function (dojo, declare) {
 
             this.communityStock = this.createCardStock('community_pool');
             this.handStock = this.createCardStock('current_player_hand');
-            this.wordStocks[1] = this.createCardStock('played_word_1');
-            this.wordStocks[2] = this.createCardStock('played_word_2');
+            this.mainWordStock = this.createCardStock('main_word');
+            // TODO: create this when needed?
+            // this.extraWordStock = this.createCardStock('extra_word');
             
             this.availablePatents = this.createPatentStock('available_patents');
 
@@ -93,6 +95,8 @@ function (dojo, declare) {
                 var card = hand[card_id];
                 this.handStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
             }
+
+            dojo.connect( this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged' );
             
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -113,20 +117,13 @@ function (dojo, declare) {
             
             switch( stateName )
             {
-            
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Show some HTML block at this game state
-                dojo.style( 'my_html_block_id', 'display', 'block' );
-                
-                break;
-           */
-           
-           
-            case 'dummmy':
-                break;
+                case 'playerMayPlayWord':
+                    if (this.isCurrentPlayerActive()) {
+                        this.handStock.setSelectionMode(1);
+                        this.communityStock.setSelectionMode(1);
+                    }
+                    break;
+
             }
         },
 
@@ -167,7 +164,10 @@ function (dojo, declare) {
             {            
                 switch( stateName )
                 {
-/*               
+                    case 'playerMayPlayWord':
+                        this.addActionButton( 'skipToDiscard_button', _('Skip to discard'), 'onSkipToDiscard', null, false, 'gray' ); 
+                        break;
+/*                      
                  Example:
  
                  case 'myGameState':
@@ -204,6 +204,7 @@ function (dojo, declare) {
             for (var letter = 0, letters = 26; letter < letters; letter++) {
                 cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
             }
+            cardStock.setSelectionMode(0);
             return cardStock;
         },
 
@@ -214,6 +215,7 @@ function (dojo, declare) {
             for (var letter = 0, letters = 26; letter < letters; letter++) {
                 patentStock.addItemType( letter, letter, g_gamethemeurl+'img/patents.jpg', letter );
             }
+            patentStock.setSelectionMode(0);
             return patentStock;
         },
 
@@ -221,6 +223,9 @@ function (dojo, declare) {
         ///////////////////////////////////////////////////
         //// Player's action
         
+        onSkipToDiscard: function () {
+            console.log('skip to discard');
+        },
         /*
         
             Here, you are defining methods to handle player's action (ex: results of mouse click on 
@@ -231,6 +236,14 @@ function (dojo, declare) {
             _ make a call to the game server
         
         */
+
+        onHandSelectionChanged: function () {
+            console.log('hand selection changed');
+
+            var items = this.handStock.getSelectedItems();
+
+            console.log(items);
+        },
         
         /* Example:
         
