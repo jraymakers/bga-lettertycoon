@@ -202,6 +202,84 @@ class LetterTycoon extends Table
         (note: each method below must match an input method in lettertycoon.action.php)
     */
 
+    // state: playerMayReplaceCard
+
+    function replaceCard()
+    {
+        self::checkAction('replaceCard');
+        // todo
+    }
+
+    function skipReplaceCard()
+    {
+        self::checkAction('skipReplaceCard');
+        $this->gamestate->nextState('skip');
+    }
+
+    // state: playerMayPlayWord
+
+    function playWord()
+    {
+        self::checkAction('playWord');
+        // todo
+    }
+
+    function skipPlayWord()
+    {
+        self::checkAction('skipPlayWord');
+        $this->gamestate->nextState('skip');
+    }
+
+    // state: playersMayChallenge
+
+    function challengeWord()
+    {
+        self::checkAction('challengeWord');
+        // todo
+    }
+
+    function acceptWord()
+    {
+        self::checkAction('acceptWord');
+        // todo
+    }
+
+    // state: playerMayBuyPatent
+
+    function buyPatent()
+    {
+        self::checkAction('buyPatent');
+        // todo
+    }
+
+    function skipBuyPatent()
+    {
+        self::checkAction('skipBuyPatent');
+        $this->gamestate->nextState('skip');
+    }
+
+    // state: playerMayDiscardCards
+
+    function discardCards()
+    {
+        self::checkAction('discardCards');
+        // todo
+    }
+
+    function skipDiscardCards()
+    {
+        self::checkAction('skipDiscardCards');
+        $this->gamestate->nextState('skip');
+    }
+
+    // state: playerMustDiscardCard
+
+    function discardCard()
+    {
+        self::checkAction('discardCard');
+        // todo
+    }
+
     /*
     
     Example:
@@ -350,7 +428,11 @@ class LetterTycoon extends Table
 
     function stEndTurn()
     {
-        // todo
+        // todo: check for end of game
+        
+        $player_id = self::activeNextPlayer();
+        self::giveExtraTime( $player_id );
+
         $this->gamestate->nextState('nextTurn');
     }
 

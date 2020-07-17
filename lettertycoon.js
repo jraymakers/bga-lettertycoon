@@ -165,7 +165,11 @@ function (dojo, declare) {
                 switch( stateName )
                 {
                     case 'playerMayPlayWord':
-                        this.addActionButton( 'skipToDiscard_button', _('Skip to discard'), 'onSkipToDiscard', null, false, 'gray' ); 
+                        this.addActionButton( 'skipPlayWord_button', _("Skip playing a word"), 'onSkipPlayWord', null, false, 'gray' ); 
+                        break;
+                    
+                    case 'playerMayDiscardCards':
+                        this.addActionButton( 'skipDiscardCards_button', _("Skip discarding cards"), 'onSkipDiscardCards', null, false, 'gray' ); 
                         break;
 /*                      
                  Example:
@@ -219,13 +223,33 @@ function (dojo, declare) {
             return patentStock;
         },
 
+        sendAction: function (action) {
+            this.ajaxcall('/lettertycoon/lettertycoon/'+action+'.html', {
+                lock: true,
+            }, this, function (result) { });
+        },
+
+        action_skipPlayWord: function () {
+            this.sendAction('skipPlayWord');
+        },
+
+        action_skipDiscardCards: function () {
+            this.sendAction('skipDiscardCards');
+        },
 
         ///////////////////////////////////////////////////
         //// Player's action
         
-        onSkipToDiscard: function () {
-            console.log('skip to discard');
+        onSkipPlayWord: function () {
+            console.log('skip play word');
+            this.action_skipPlayWord();
         },
+
+        onSkipDiscardCards: function () {
+            console.log('skip discard cards');
+            this.action_skipDiscardCards();
+        },
+
         /*
         
             Here, you are defining methods to handle player's action (ex: results of mouse click on 

@@ -1,51 +1,139 @@
 <?php
 /**
  *------
- * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * LetterTycoon implementation : © <Your name here> <Your email address here>
- *
- * This code has been produced on the BGA studio platform for use on https://boardgamearena.com.
- * See http://en.doc.boardgamearena.com/Studio for more information.
- * -----
- * 
- * lettertycoon.action.php
- *
- * LetterTycoon main action entry point
- *
- *
- * In this file, you are describing all the methods that can be called from your
- * user interface logic (javascript).
- *       
- * If you define a method "myAction" here, then you can call it from your javascript code with:
- * this.ajaxcall( "/lettertycoon/lettertycoon/myAction.html", ...)
- *
- */
-  
-  
-  class action_lettertycoon extends APP_GameAction
-  { 
+* BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+* LetterTycoon implementation : © <Your name here> <Your email address here>
+*
+* This code has been produced on the BGA studio platform for use on https://boardgamearena.com.
+* See http://en.doc.boardgamearena.com/Studio for more information.
+* -----
+* 
+* lettertycoon.action.php
+*
+* LetterTycoon main action entry point
+*
+*
+* In this file, you are describing all the methods that can be called from your
+* user interface logic (javascript).
+*       
+* If you define a method "myAction" here, then you can call it from your javascript code with:
+* this.ajaxcall( "/lettertycoon/lettertycoon/myAction.html", ...)
+*
+*/
+
+
+class action_lettertycoon extends APP_GameAction
+{ 
     // Constructor: please do not modify
-   	public function __default()
-  	{
-  	    if( self::isArg( 'notifwindow') )
-  	    {
+    public function __default()
+    {
+        if( self::isArg( 'notifwindow') )
+        {
             $this->view = "common_notifwindow";
-  	        $this->viewArgs['table'] = self::getArg( "table", AT_posint, true );
-  	    }
-  	    else
-  	    {
+            $this->viewArgs['table'] = self::getArg( "table", AT_posint, true );
+        }
+        else
+        {
             $this->view = "lettertycoon_lettertycoon";
             self::trace( "Complete reinitialization of board game" );
-      }
-  	} 
-  	
-  	// TODO: defines your action entry points there
+        }
+    } 
+  
+    // TODO: defines your action entry points there
 
+    // state: playerMayReplaceCard
+
+    public function replaceCard()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
+
+    public function skipReplaceCard()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
+
+    // state: playerMayPlayWord
+
+    public function playWord()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
+
+    public function skipPlayWord()
+    {
+        self::setAjaxMode();
+        $this->game->skipPlayWord();
+        self::ajaxResponse();
+    }
+
+    // state: playersMayChallenge
+
+    public function challengeWord()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
+
+    public function acceptWord()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
+
+    // state: playerMayBuyPatent
+
+    public function buyPatent()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
+
+    public function skipBuyPatent()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
+
+    // state: playerMayDiscardCards
+
+    public function discardCards()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
+
+    public function skipDiscardCards()
+    {
+        self::setAjaxMode();
+        $this->game->skipDiscardCards();
+        self::ajaxResponse();
+    }
+
+    // state: playerMustDiscardCard
+
+    public function discardCard()
+    {
+        self::setAjaxMode();
+
+        self::ajaxResponse();
+    }
 
     /*
     
     Example:
-  	
+    
     public function myAction()
     {
         self::setAjaxMode();     
@@ -63,6 +151,4 @@
     
     */
 
-  }
-  
-
+}
