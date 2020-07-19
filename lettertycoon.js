@@ -124,6 +124,7 @@ function (dojo, declare) {
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(2);
+                        dojo.addClass('discard_button', 'show');
                     }
                     break;
             }
@@ -146,6 +147,7 @@ function (dojo, declare) {
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(0);
+                        dojo.removeClass('discard_button', 'show');
                     }
                     break;
             }               

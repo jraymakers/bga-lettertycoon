@@ -70,3 +70,17 @@
 #played_word_2 {
     display: none;
 }
+
+#current_player_area_header {
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+#discard_button {
+    display: none;
+    margin-left: 10px;
+}
+#discard_button.show {
+    display: inline;
+}

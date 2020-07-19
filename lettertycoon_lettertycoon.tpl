@@ -43,7 +43,10 @@
 </div>
 
 <div class="whiteblock" id="current_player_area">
-    <div class="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOU}</div>
+    <div id="current_player_area_header">
+        <span class="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOU}</span>
+        <a href="#" id="discard_button" class="bgabutton bgabutton_gray"><span>{DISCARD}</span></a>
+    </div>
     <div id="current_player_hand"></div>
     <div class="player_area_patents" id="player_area_patents_{CURRENT_PLAYER_ID}"></div>
 </div>
