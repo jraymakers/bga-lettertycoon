@@ -129,7 +129,6 @@ function (dojo, declare) {
                         this.handStock.setSelectionMode(2);
                     }
                     break;
-
             }
         },
 
@@ -154,19 +153,6 @@ function (dojo, declare) {
                         this.handStock.setSelectionMode(0);
                     }
                     break;
-            /* Example:
-            
-            case 'myGameState':
-            
-                // Hide the HTML block we are displaying only during this game state
-                dojo.style( 'my_html_block_id', 'display', 'none' );
-                
-                break;
-           */
-           
-           
-            case 'dummmy':
-                break;
             }               
         }, 
 
@@ -188,31 +174,12 @@ function (dojo, declare) {
                     case 'playerMayDiscardCards':
                         this.addActionButton( 'skipDiscardCards_button', _("Skip discarding cards"), 'onSkipDiscardCards', null, false, 'gray' ); 
                         break;
-/*                      
-                 Example:
- 
-                 case 'myGameState':
-                    
-                    // Add 3 action buttons in the action status bar:
-                    
-                    this.addActionButton( 'button_1_id', _('Button 1 label'), 'onMyMethodToCall1' ); 
-                    this.addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' ); 
-                    this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
-                    break;
-*/
                 }
             }
         },        
 
         ///////////////////////////////////////////////////
         //// Utility methods
-        
-        /*
-        
-            Here, you can defines some utility methods that you can use everywhere in your javascript
-            script.
-        
-        */
 
         getLetterIndex: function (letter) {
             return letter.charCodeAt(0) - 65; // 'A'
