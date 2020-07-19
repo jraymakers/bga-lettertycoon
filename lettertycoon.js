@@ -16,14 +16,14 @@
  */
 
 define([
-    "dojo","dojo/_base/declare",
-    "ebg/core/gamegui",
-    "ebg/counter",
-    "ebg/stock"
+    'dojo','dojo/_base/declare',
+    'ebg/core/gamegui',
+    'ebg/counter',
+    'ebg/stock'
 ],
 function (dojo, declare) {
-    return declare("bgagame.lettertycoon", ebg.core.gamegui, {
-        constructor: function(){
+    return declare('bgagame.lettertycoon', ebg.core.gamegui, {
+        constructor: function () {
             console.log('lettertycoon constructor');
 
             // constants
@@ -56,9 +56,8 @@ function (dojo, declare) {
             "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
         */
         
-        setup: function( gamedatas )
-        {
-            console.log( "Starting game setup" );
+        setup: function (gamedatas) {
+            console.log('Starting game setup');
 
             this.communityStock = this.createCardStock('community_pool');
             this.handStock = this.createCardStock('current_player_hand');
@@ -96,12 +95,12 @@ function (dojo, declare) {
                 this.handStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
             }
 
-            dojo.connect( this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged' );
+            dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
             
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
-            console.log( "Ending game setup" );
+            console.log('Ending game setup');
         },
        
 
@@ -111,12 +110,10 @@ function (dojo, declare) {
         // onEnteringState: this method is called each time we are entering into a new game state.
         //                  You can use this method to perform some user interface changes at this moment.
         //
-        onEnteringState: function( stateName, args )
-        {
-            console.log( 'Entering state: '+stateName );
+        onEnteringState: function (stateName, args) {
+            console.log('Entering state: '+stateName);
             
-            switch( stateName )
-            {
+            switch (stateName) {
                 case 'playerMayPlayWord':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(1);
@@ -135,12 +132,10 @@ function (dojo, declare) {
         // onLeavingState: this method is called each time we are leaving a game state.
         //                 You can use this method to perform some user interface changes at this moment.
         //
-        onLeavingState: function( stateName )
-        {
-            console.log( 'Leaving state: '+stateName );
+        onLeavingState: function( stateName ) {
+            console.log('Leaving state: '+stateName);
             
-            switch( stateName )
-            {
+            switch (stateName) {
                 case 'playerMayPlayWord':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(0);
@@ -159,20 +154,17 @@ function (dojo, declare) {
         // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
         //                        action status bar (ie: the HTML links in the status bar).
         //        
-        onUpdateActionButtons: function( stateName, args )
-        {
-            console.log( 'onUpdateActionButtons: '+stateName );
+        onUpdateActionButtons: function (stateName, args) {
+            console.log('onUpdateActionButtons: '+stateName);
                       
-            if( this.isCurrentPlayerActive() )
-            {            
-                switch( stateName )
-                {
+            if (this.isCurrentPlayerActive()) {            
+                switch (stateName) {
                     case 'playerMayPlayWord':
-                        this.addActionButton( 'skipPlayWord_button', _("Skip playing a word"), 'onSkipPlayWord', null, false, 'gray' ); 
+                        this.addActionButton('skipPlayWord_button', _('Skip playing a word'), 'onSkipPlayWord', null, false, 'gray'); 
                         break;
                     
                     case 'playerMayDiscardCards':
-                        this.addActionButton( 'skipDiscardCards_button', _("Skip discarding cards"), 'onSkipDiscardCards', null, false, 'gray' ); 
+                        this.addActionButton('skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray'); 
                         break;
                 }
             }
@@ -300,9 +292,8 @@ function (dojo, declare) {
                   your lettertycoon.game.php file.
         
         */
-        setupNotifications: function()
-        {
-            console.log( 'notifications subscriptions setup' );
+        setupNotifications: function () {
+            console.log('notifications subscriptions setup');
             
             // TODO: here, associate your game notifications with local methods
             
