@@ -123,6 +123,12 @@ function (dojo, declare) {
                         this.communityStock.setSelectionMode(1);
                     }
                     break;
+                
+                case 'playerMayDiscardCards':
+                    if (this.isCurrentPlayerActive()) {
+                        this.handStock.setSelectionMode(2);
+                    }
+                    break;
 
             }
         },
@@ -136,7 +142,18 @@ function (dojo, declare) {
             
             switch( stateName )
             {
-            
+                case 'playerMayPlayWord':
+                    if (this.isCurrentPlayerActive()) {
+                        this.handStock.setSelectionMode(0);
+                        this.communityStock.setSelectionMode(0);
+                    }
+                    break;
+
+                case 'playerMayDiscardCards':
+                    if (this.isCurrentPlayerActive()) {
+                        this.handStock.setSelectionMode(0);
+                    }
+                    break;
             /* Example:
             
             case 'myGameState':
