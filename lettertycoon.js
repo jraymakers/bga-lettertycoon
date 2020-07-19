@@ -182,7 +182,7 @@ function (dojo, declare) {
             cardStock.create( this, $(element_id), this.cardWidth, this.cardHeight );
             cardStock.image_items_per_row = 13;
             for (var letter = 0, letters = 26; letter < letters; letter++) {
-                cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.jpg', letter );
+                cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.png', letter );
             }
             cardStock.setSelectionMode(0);
             return cardStock;
