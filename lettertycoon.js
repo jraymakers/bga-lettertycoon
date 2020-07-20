@@ -95,7 +95,9 @@ function (dojo, declare) {
                 this.handStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
             }
 
+            dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
+            dojo.connect($('discard_button'), 'onclick', this, 'onDiscardButtonClicked');
             
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -112,6 +114,7 @@ function (dojo, declare) {
         //
         onEnteringState: function (stateName, args) {
             console.log('Entering state: '+stateName);
+            this.currentState = stateName;
             
             switch (stateName) {
                 case 'playerMayPlayWord':
@@ -124,6 +127,7 @@ function (dojo, declare) {
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(2);
+                        this.updateDiscardButton();
                         dojo.addClass('discard_button', 'show');
                     }
                     break;
@@ -135,6 +139,7 @@ function (dojo, declare) {
         //
         onLeavingState: function( stateName ) {
             console.log('Leaving state: '+stateName);
+            this.currentState = null;
             
             switch (stateName) {
                 case 'playerMayPlayWord':
@@ -239,8 +244,55 @@ function (dojo, declare) {
         
         */
 
+       onCommunitySelectionChanged: function () {
+            console.log('community selection changed');
+
+            var items = this.communityStock.getSelectedItems();
+
+            console.log(items);
+        },
+
         onHandSelectionChanged: function () {
             console.log('hand selection changed');
+
+            var items = this.handStock.getSelectedItems();
+
+            console.log(items);
+
+            switch (this.currentState) {
+                case 'playerMayPlayWord':
+                    break;
+                case 'playerMayDiscardCards':
+                    this.updateDiscardButton();
+                    break;
+
+            }
+        },
+
+        updateDiscardButton: function () {
+            var selectedItems = this.handStock.getSelectedItems();
+            dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'discard_button', 'only');
+            if (selectedItems.length > 0) {
+                if (dojo.hasClass('discard_button', 'disabled')) {
+                    dojo.removeClass('discard_button', 'disabled');
+                }
+            } else {
+                if (!dojo.hasClass('discard_button', 'disabled')) {
+                    dojo.addClass('discard_button', 'disabled');
+                }
+            }
+        },
+
+        getDiscardButtonLabel: function (numSelectedCards) {
+            if (numSelectedCards > 0) {
+                return dojo.string.substitute(_('Discard selected cards (${n})'), { n: numSelectedCards });
+            } else {
+                return _('Select cards to discard');
+            }
+        },
+
+        onDiscardButtonClicked: function () {
+            console.log('discard button clicked');
 
             var items = this.handStock.getSelectedItems();
 
