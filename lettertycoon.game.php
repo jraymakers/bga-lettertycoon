@@ -260,10 +260,40 @@ class LetterTycoon extends Table
 
     // state: playerMayDiscardCards
 
-    function discardCards()
+    function discardCards($card_ids)
     {
         self::checkAction('discardCards');
-        // todo
+
+        $active_player_id = self::getActivePlayerId();
+
+        // ensure cards are in active player's hand
+        $cards = $this->cards->getCards($card_ids);
+        foreach( $cards as $card )
+        {
+            if( $card['location'] != 'hand' || $card['location_arg'] != $active_player_id )
+            {
+                throw new BgaUserException( self::_('You cannot discard a card that is not in your hand.') );
+            }
+        }
+        
+        // discard the cards
+        $this->cards->moveCards($card_ids, 'discard');
+
+        // notify the active player to discard the specific cards
+        self::notifyPlayer($active_player_id, 'activePlayerDiscardedCards', '', array(
+            'card_ids' => $card_ids
+        ));
+
+        // todo: notify all players about the number of cards discarded
+        self::notifyAllPlayers('playerDiscardedNumberOfCards',
+            clienttranslate('${player_name} discarded ${num_cards} card(s)'),
+            array(
+                'player_name' => self::getActivePlayerName(),
+                'num_cards' => count($card_ids)
+            )
+        );
+        
+        $this->gamestate->nextState('discardCards');
     }
 
     function skipDiscardCards()

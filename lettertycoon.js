@@ -206,14 +206,29 @@ function (dojo, declare) {
             return patentStock;
         },
 
-        sendAction: function (action) {
-            this.ajaxcall('/lettertycoon/lettertycoon/'+action+'.html', {
-                lock: true,
-            }, this, function (result) { });
+        sendAction: function (action, args) {
+            var params = {};
+            if (args) {
+                for (var key in args) {
+                    params[key] = args[key];
+                }
+            }
+            params.lock = true;
+            this.ajaxcall('/lettertycoon/lettertycoon/'+action+'.html', params, this, function (result) { });
+        },
+
+        toNumberList: function (ids) {
+            return ids.join(';');
         },
 
         action_skipPlayWord: function () {
             this.sendAction('skipPlayWord');
+        },
+
+        action_discardCards: function (cardIds) {
+            this.sendAction('discardCards', {
+                card_ids: this.toNumberList(cardIds)
+            });
         },
 
         action_skipDiscardCards: function () {
@@ -297,6 +312,8 @@ function (dojo, declare) {
             var items = this.handStock.getSelectedItems();
 
             console.log(items);
+
+            this.action_discardCards(items.map(item => item.id));
         },
         
         /* Example:
@@ -360,6 +377,9 @@ function (dojo, declare) {
             // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
+
+            dojo.subscribe('activePlayerDiscardedCards', this, 'notif_activePlayerDiscardedCards');
+            dojo.subscribe('playerDiscardedNumberOfCards', this, 'notif_playerDiscardedNumberOfCards');
         },  
         
         // TODO: from this point and below, you can write your game notifications handling methods
@@ -378,5 +398,20 @@ function (dojo, declare) {
         },    
         
         */
+
+        notif_activePlayerDiscardedCards: function (notif) {
+            console.log('active player discarded cards');
+            console.log(notif);
+            for (var i in notif.args.card_ids) {
+                var card_id = notif.args.card_ids[i];
+                this.handStock.removeFromStockById(card_id, undefined, true);
+            }
+            this.handStock.updateDisplay();
+        },
+
+        notif_playerDiscardedNumberOfCards: function (notif) {
+            console.log('player discarded number of cards');
+            console.log(notif);
+        }
    });             
 });

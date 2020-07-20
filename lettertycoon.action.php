@@ -37,7 +37,21 @@ class action_lettertycoon extends APP_GameAction
             $this->view = "lettertycoon_lettertycoon";
             self::trace( "Complete reinitialization of board game" );
         }
-    } 
+    }
+
+    function parseNumberList($number_list_arg)
+    {
+        // Removing last ';' if exists
+        if (substr( $number_list_arg, -1 ) == ';' ) {
+            $number_list_arg = substr( $number_list_arg, 0, -1 );
+        }
+
+        if( $number_list_arg == '' ) {
+            return array();
+        } else {
+            return explode( ';', $number_list_arg );
+        }
+    }
   
     // TODO: defines your action entry points there
 
@@ -110,7 +124,8 @@ class action_lettertycoon extends APP_GameAction
     public function discardCards()
     {
         self::setAjaxMode();
-
+        $card_ids = self::parseNumberList(self::getArg('card_ids', AT_numberlist, true));
+        $this->game->discardCards($card_ids);
         self::ajaxResponse();
     }
 
