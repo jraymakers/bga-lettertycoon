@@ -206,6 +206,28 @@ function (dojo, declare) {
             return patentStock;
         },
 
+        updateDiscardButton: function () {
+            var selectedItems = this.handStock.getSelectedItems();
+            dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'discard_button', 'only');
+            if (selectedItems.length > 0) {
+                if (dojo.hasClass('discard_button', 'disabled')) {
+                    dojo.removeClass('discard_button', 'disabled');
+                }
+            } else {
+                if (!dojo.hasClass('discard_button', 'disabled')) {
+                    dojo.addClass('discard_button', 'disabled');
+                }
+            }
+        },
+
+        getDiscardButtonLabel: function (numSelectedCards) {
+            if (numSelectedCards > 0) {
+                return dojo.string.substitute(_('Discard selected cards (${n})'), { n: numSelectedCards });
+            } else {
+                return _('Select cards to discard');
+            }
+        },
+
         sendAction: function (action, args) {
             var params = {};
             if (args) {
@@ -248,23 +270,20 @@ function (dojo, declare) {
             this.action_skipDiscardCards();
         },
 
-        /*
-        
-            Here, you are defining methods to handle player's action (ex: results of mouse click on 
-            game objects).
-            
-            Most of the time, these methods:
-            _ check the action is possible at this game state.
-            _ make a call to the game server
-        
-        */
-
        onCommunitySelectionChanged: function () {
             console.log('community selection changed');
 
             var items = this.communityStock.getSelectedItems();
 
             console.log(items);
+
+            switch (this.currentState) {
+
+                case 'playerMayPlayWord':
+                    // todo
+                    break;
+
+            }
         },
 
         onHandSelectionChanged: function () {
@@ -275,34 +294,15 @@ function (dojo, declare) {
             console.log(items);
 
             switch (this.currentState) {
+
                 case 'playerMayPlayWord':
+                    // todo
                     break;
+
                 case 'playerMayDiscardCards':
                     this.updateDiscardButton();
                     break;
 
-            }
-        },
-
-        updateDiscardButton: function () {
-            var selectedItems = this.handStock.getSelectedItems();
-            dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'discard_button', 'only');
-            if (selectedItems.length > 0) {
-                if (dojo.hasClass('discard_button', 'disabled')) {
-                    dojo.removeClass('discard_button', 'disabled');
-                }
-            } else {
-                if (!dojo.hasClass('discard_button', 'disabled')) {
-                    dojo.addClass('discard_button', 'disabled');
-                }
-            }
-        },
-
-        getDiscardButtonLabel: function (numSelectedCards) {
-            if (numSelectedCards > 0) {
-                return dojo.string.substitute(_('Discard selected cards (${n})'), { n: numSelectedCards });
-            } else {
-                return _('Select cards to discard');
             }
         },
 
@@ -315,6 +315,17 @@ function (dojo, declare) {
 
             this.action_discardCards(items.map(item => item.id));
         },
+
+        /*
+        
+            Here, you are defining methods to handle player's action (ex: results of mouse click on 
+            game objects).
+            
+            Most of the time, these methods:
+            _ check the action is possible at this game state.
+            _ make a call to the game server
+        
+        */
         
         /* Example:
         
