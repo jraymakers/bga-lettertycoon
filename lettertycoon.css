@@ -67,6 +67,20 @@
     }
 */
 
+#word_area_header {
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+#clear_button {
+    display: none;
+    margin-left: 10px;
+}
+#clear_button.show {
+    display: inline;
+}
+
 #played_word_2 {
     display: none;
 }

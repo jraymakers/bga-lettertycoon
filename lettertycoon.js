@@ -41,6 +41,9 @@ function (dojo, declare) {
             // patent stocks
             this.availablePatents = null;
             this.patentStocksByPlayer = {}; // key: player_id
+
+            // ui state
+            this.mainWordOrigins = [];
         },
         
         /*
@@ -62,6 +65,7 @@ function (dojo, declare) {
             this.communityStock = this.createCardStock('community_pool');
             this.handStock = this.createCardStock('current_player_hand');
             this.mainWordStock = this.createCardStock('main_word');
+            this.mainWordStock.order_items = false;
             // TODO: create this when needed?
             // this.extraWordStock = this.createCardStock('extra_word');
             
@@ -97,6 +101,7 @@ function (dojo, declare) {
 
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
+            dojo.connect($('clear_button'), 'onclick', this, 'onClearButtonClicked');
             dojo.connect($('discard_button'), 'onclick', this, 'onDiscardButtonClicked');
             
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -206,6 +211,19 @@ function (dojo, declare) {
             return patentStock;
         },
 
+        updateClearButton: function () {
+            var items = this.mainWordStock.getAllItems();
+            if (items.length > 0) {
+                if (!dojo.hasClass('clear_button', 'show')) {
+                    dojo.addClass('clear_button', 'show');
+                }
+            } else {
+                if (dojo.hasClass('clear_button', 'show')) {
+                    dojo.removeClass('clear_button', 'show');
+                }
+            }
+        },
+
         updateDiscardButton: function () {
             var selectedItems = this.handStock.getSelectedItems();
             dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'discard_button', 'only');
@@ -280,7 +298,16 @@ function (dojo, declare) {
             switch (this.currentState) {
 
                 case 'playerMayPlayWord':
-                    // todo
+                    {
+                        if (items.length === 1) {
+                            var item = items[0];
+                            var elementId = this.communityStock.getItemDivId(item.id);
+                            this.mainWordStock.addToStockWithId(item.type, item.id, $(elementId));
+                            this.communityStock.removeFromStockById(item.id);
+                            this.mainWordOrigins.push('community');
+                            this.updateClearButton();
+                        }
+                    }
                     break;
 
             }
@@ -296,7 +323,16 @@ function (dojo, declare) {
             switch (this.currentState) {
 
                 case 'playerMayPlayWord':
-                    // todo
+                    {
+                        if (items.length === 1) {
+                            var item = items[0];
+                            var elementId = this.handStock.getItemDivId(item.id);
+                            this.mainWordStock.addToStockWithId(item.type, item.id, $(elementId));
+                            this.handStock.removeFromStockById(item.id);
+                            this.mainWordOrigins.push('hand');
+                            this.updateClearButton();
+                        }
+                    }
                     break;
 
                 case 'playerMayDiscardCards':
@@ -304,6 +340,27 @@ function (dojo, declare) {
                     break;
 
             }
+        },
+
+        onClearButtonClicked: function () {
+            console.log('clear button clicked');
+
+            var items = this.mainWordStock.getAllItems();
+
+            console.log(items);
+
+            for (var i in items) {
+                var item = items[i];
+                var elementId = this.mainWordStock.getItemDivId(item.id);
+                if (this.mainWordOrigins[i] === 'community') {
+                    this.communityStock.addToStockWithId(item.type, item.id, $(elementId));
+                } else if (this.mainWordOrigins[i] === 'hand') {
+                    this.handStock.addToStockWithId(item.type, item.id, $(elementId));
+                }
+            }
+            this.mainWordStock.removeAll();
+            this.mainWordOrigins = [];
+            this.updateClearButton();
         },
 
         onDiscardButtonClicked: function () {

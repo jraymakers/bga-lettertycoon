@@ -37,7 +37,10 @@
 </div>
 
 <div class="whiteblock">
-    <div class="area_label">{TABLE}</div>
+    <div id="word_area_header">
+        <span class="area_label"">{WORD_AREA}</span>
+        <a href="#" id="clear_button" class="bgabutton bgabutton_gray">{CLEAR}</a>
+    </div>
     <div id="main_word"></div>
     <div id="extra_word"></div>
 </div>
