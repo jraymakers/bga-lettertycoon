@@ -204,6 +204,7 @@ $machinestates = array(
         'transitions' => array( 'discardCard' => 75 )
     ),
 
+    // maybe not needed?
     75 => array(
         'name' => 'discardCards',
         'description' => '',

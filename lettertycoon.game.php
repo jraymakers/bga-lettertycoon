@@ -114,7 +114,7 @@ class LetterTycoon extends Table
         $players = self::loadPlayersBasicInfos();
         foreach( $players as $player_id => $player )
         {
-            $cards = $this->cards->pickCards( 7, 'deck', $player_id );
+            $this->cards->pickCards( 7, 'deck', $player_id );
         }
 
         // deal 3 cards to the community pool
@@ -444,6 +444,7 @@ class LetterTycoon extends Table
         $this->gamestate->nextState();
     }
 
+    // maybe not needed?
     function stDiscardCards()
     {
         // todo
@@ -452,7 +453,17 @@ class LetterTycoon extends Table
 
     function stRefillHand()
     {
-        // todo
+        $active_player_id = self::getActivePlayerId();
+        $num_cards = $this->cards->countCardsInLocation( 'hand', $active_player_id );
+
+        if ($num_cards < 7) {
+            $new_cards = $this->cards->pickCards( 7 - $num_cards, 'deck', $active_player_id );
+
+            self::notifyPlayer($active_player_id, 'activePlayerReceivedCards', '', array(
+                'new_cards' => $new_cards
+            ));
+        }
+
         $this->gamestate->nextState();
     }
 

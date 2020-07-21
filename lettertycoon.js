@@ -379,6 +379,11 @@ function (dojo, declare) {
             // 
 
             dojo.subscribe('activePlayerDiscardedCards', this, 'notif_activePlayerDiscardedCards');
+            this.notifqueue.setSynchronous( 'activePlayerDiscardedCards', 1000 );
+            
+            dojo.subscribe('activePlayerReceivedCards', this, 'notif_activePlayerReceivedCards');
+            this.notifqueue.setSynchronous( 'activePlayerReceivedCards', 1000 );
+
             dojo.subscribe('playerDiscardedNumberOfCards', this, 'notif_playerDiscardedNumberOfCards');
         },  
         
@@ -407,6 +412,16 @@ function (dojo, declare) {
                 this.handStock.removeFromStockById(card_id, undefined, true);
             }
             this.handStock.updateDisplay();
+        },
+
+        notif_activePlayerReceivedCards: function (notif) {
+            console.log('active player received cards');
+            console.log(notif);
+            for (var i in notif.args.new_cards) {
+                var new_card = notif.args.new_cards[i];
+                this.handStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
+                    $('current_player_area_header'));
+            }
         },
 
         notif_playerDiscardedNumberOfCards: function (notif) {
