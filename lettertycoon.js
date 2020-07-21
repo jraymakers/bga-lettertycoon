@@ -379,10 +379,9 @@ function (dojo, declare) {
             // 
 
             dojo.subscribe('activePlayerDiscardedCards', this, 'notif_activePlayerDiscardedCards');
-            this.notifqueue.setSynchronous( 'activePlayerDiscardedCards', 1000 );
+            this.notifqueue.setSynchronous( 'activePlayerDiscardedCards', 2000 );
             
             dojo.subscribe('activePlayerReceivedCards', this, 'notif_activePlayerReceivedCards');
-            this.notifqueue.setSynchronous( 'activePlayerReceivedCards', 1000 );
 
             dojo.subscribe('playerDiscardedNumberOfCards', this, 'notif_playerDiscardedNumberOfCards');
         },  
