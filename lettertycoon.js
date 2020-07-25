@@ -189,18 +189,23 @@ function (dojo, declare) {
             return letter.charCodeAt(0) - 65; // 'A'
         },
 
-        createCardStock: function(element_id) {
+        createCardStock: function (element_id) {
             var cardStock = new ebg.stock();
             cardStock.create( this, $(element_id), this.cardWidth, this.cardHeight );
             cardStock.image_items_per_row = 13;
             for (var letter = 0, letters = 26; letter < letters; letter++) {
                 cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards_small.jpg', letter );
             }
+            cardStock.onItemCreate = dojo.hitch(this, 'createCard' ); 
             cardStock.setSelectionMode(0);
             return cardStock;
         },
 
-        createPatentStock: function(element_id) {
+        createCard: function (card_div, card_type_id, card_id) {
+            dojo.addClass(card_div, 'card');
+        },
+
+        createPatentStock: function (element_id) {
             var patentStock = new ebg.stock();
             patentStock.create( this, $(element_id), this.patentWidth, this.patentHeight );
             patentStock.image_items_per_row = 2;
