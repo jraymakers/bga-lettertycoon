@@ -80,8 +80,9 @@
 }
 
 .player_area_name {
-    background-color: rgb(240,228,182);
+    background-color: rgba(240,228,182,0.25);
     padding: 5px;
+    border-radius: 8px;
 }
 
 #word_area_header {
