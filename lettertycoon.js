@@ -283,13 +283,21 @@ function (dojo, declare) {
         ///////////////////////////////////////////////////
         //// Player's action
         
-        onSkipPlayWord: function () {
+        onSkipPlayWord: function (evt) {
             console.log('skip play word');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
             this.action_skipPlayWord();
         },
 
-        onSkipDiscardCards: function () {
+        onSkipDiscardCards: function (evt) {
             console.log('skip discard cards');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
             this.action_skipDiscardCards();
         },
 
@@ -347,8 +355,11 @@ function (dojo, declare) {
             }
         },
 
-        onClearButtonClicked: function () {
+        onClearButtonClicked: function (evt) {
             console.log('clear button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
 
             var items = this.mainWordStock.getAllItems();
 
@@ -365,11 +376,15 @@ function (dojo, declare) {
             }
             this.mainWordStock.removeAll();
             this.mainWordOrigins = [];
+
             this.updateClearButton();
         },
 
-        onDiscardButtonClicked: function () {
+        onDiscardButtonClicked: function (evt) {
             console.log('discard button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
 
             var items = this.handStock.getSelectedItems();
 
