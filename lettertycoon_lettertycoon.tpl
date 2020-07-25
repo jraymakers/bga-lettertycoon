@@ -26,17 +26,17 @@
 -->
 
 
-<div class="whiteblock">
+<div class="dark_area">
     <div class="area_label">{AVAILABLE_PATENTS}</div>
     <div id="available_patents"></div>
 </div>
 
-<div class="whiteblock">
+<div class="dark_area">
     <div class="area_label">{COMMUNITY_POOL}</div>
     <div id="community_pool"></div>
 </div>
 
-<div class="whiteblock">
+<div class="dark_area">
     <div id="word_area_header">
         <span class="area_label"">{WORD_AREA}</span>
         <a href="#" id="clear_button" class="bgabutton bgabutton_gray">{CLEAR}</a>
@@ -45,7 +45,7 @@
     <div id="extra_word"></div>
 </div>
 
-<div class="whiteblock" id="current_player_area">
+<div class="dark_area" id="current_player_area">
     <div id="current_player_area_header">
         <span class="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOU}</span>
         <a href="#" id="discard_button" class="bgabutton bgabutton_blue"></a>
@@ -57,8 +57,10 @@
 <div id="player_areas">
 
     <!-- BEGIN player -->
-    <div class="whiteblock other_player_area" id="other_player_area_{PLAYER_ID}">
-        <div class="player_area_name" style="color:#{PLAYER_COLOR}">{PLAYER_NAME}</div>
+    <div class="dark_area other_player_area" id="other_player_area_{PLAYER_ID}">
+        <div class="other_player_area_header">
+            <span class="player_area_name" style="color:#{PLAYER_COLOR}">{PLAYER_NAME}</span>
+        </div>
         <div class="player_area_patents" id="player_area_patents_{PLAYER_ID}"></div>
     </div>
     <!-- END player -->

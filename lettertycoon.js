@@ -27,10 +27,10 @@ function (dojo, declare) {
             console.log('lettertycoon constructor');
 
             // constants
-            this.cardWidth = 60;
-            this.cardHeight = 80;
-            this.patentWidth = 81;
-            this.patentHeight = 41;
+            this.cardWidth = 120;
+            this.cardHeight = 165;
+            this.patentWidth = 120;
+            this.patentHeight = 79;
 
             // card stocks
             this.communityStock = null;
@@ -194,7 +194,7 @@ function (dojo, declare) {
             cardStock.create( this, $(element_id), this.cardWidth, this.cardHeight );
             cardStock.image_items_per_row = 13;
             for (var letter = 0, letters = 26; letter < letters; letter++) {
-                cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards.png', letter );
+                cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards_small.jpg', letter );
             }
             cardStock.setSelectionMode(0);
             return cardStock;
@@ -205,7 +205,7 @@ function (dojo, declare) {
             patentStock.create( this, $(element_id), this.patentWidth, this.patentHeight );
             patentStock.image_items_per_row = 2;
             for (var letter = 0, letters = 26; letter < letters; letter++) {
-                patentStock.addItemType( letter, letter, g_gamethemeurl+'img/patents.jpg', letter );
+                patentStock.addItemType( letter, letter, g_gamethemeurl+'img/patents_small.jpg', letter );
             }
             patentStock.setSelectionMode(0);
             return patentStock;
