@@ -75,11 +75,13 @@ CREATE TABLE IF NOT EXISTS `patent` (
 -- letter: 'A' to 'Z'
 -- vowel: 1 if vowel, 0 if consonant (for setting value of Y)
 -- card_id: id of card or NULL if "generated" letter
+-- community: 1 if from community pool, 0 if from hand (or generated)
 CREATE TABLE IF NOT EXISTS `word` (
   `word_num` tinyint(1) unsigned NOT NULL,
   `word_pos` tinyint(2) unsigned NOT NULL,
   `letter` char(1) NOT NULL,
   `vowel` tinyint(1) unsigned NOT NULL,
   `card_id` tinyint(3) unsigned,
+  `community` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`word_num`, `word_pos`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
