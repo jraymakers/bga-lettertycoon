@@ -121,6 +121,16 @@
     height: 25px;
 }
 
+.zeppelin_icon {
+    display: inline-block;
+    background-image: url('img/zeppelin_large.png');
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 37px 25px;
+    width: 37px;
+    height: 25px;
+}
+
 .dark_area {
     background-color: rgba(26,26,26,0.25);
     padding: 5px 10px;

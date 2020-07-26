@@ -78,17 +78,20 @@ var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_I
 */
 
 var jstpl_player_board_info='<div class="player_board_info">\
-<span class="player_board_info_item">\
+<span class="player_board_info_item player_board_coins" id="player_board_coins_${player_id}">\
 <span class="player_board_counter" id="player_board_coins_counter_${player_id}">0</span>\
 <span class="coin_icon"></span>\
 </span>\
-<span class="player_board_info_item">\
+<span class="player_board_info_item player_board_stock" id="player_board_stock_${player_id}">\
 <span class="player_board_counter" id="player_board_stock_counter_${player_id}">0</span>\
 <span class="stock_icon"></span>\
 </span>\
-<span class="player_board_info_item">\
+<span class="player_board_info_item player_board_patents" id="player_board_patents_${player_id}">\
 <span class="player_board_counter" id="player_board_patents_counter_${player_id}">0</span>\
 <span class="patents_icon"></span>\
+</span>\
+<span class="player_board_info_item player_board_zeppelin" id="player_board_zeppelin_${player_id}">\
+<span class="zeppelin_icon"></span>\
 </span>\
 </div>';
 

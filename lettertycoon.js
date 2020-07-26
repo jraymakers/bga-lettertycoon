@@ -78,6 +78,9 @@ function (dojo, declare) {
                     this.format_block('jstpl_player_board_info', { player_id: player_id }),
                     $('player_board_'+player_id)
                 );
+                if (players[player_id].order !== '1') {
+                    dojo.style($('player_board_zeppelin_'+player_id), 'display', 'none');
+                }
             }
 
             var patent_owners = gamedatas.patent_owners;
@@ -107,6 +110,15 @@ function (dojo, declare) {
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
             dojo.connect($('clear_button'), 'onclick', this, 'onClearButtonClicked');
             dojo.connect($('discard_button'), 'onclick', this, 'onDiscardButtonClicked');
+
+            var score = _('Score (Money + Stock + Value of Patents)');
+            var scoreHtml = '<span>'+score+'</span>';
+            this.addTooltipHtmlToClass('player_score_value', scoreHtml);
+            this.addTooltipHtmlToClass('fa-star', scoreHtml);
+            this.addTooltipHtmlToClass('player_board_coins', '<span>'+_('Money')+'</span>');
+            this.addTooltipHtmlToClass('player_board_stock', '<span>'+_('Stock')+'</span>');
+            this.addTooltipHtmlToClass('player_board_patents', '<span>'+_('Value of Patents')+'</span>');
+            this.addTooltipHtmlToClass('player_board_zeppelin', '<span>'+_('Start Player')+'</span>');
             
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
