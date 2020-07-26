@@ -74,6 +74,10 @@ function (dojo, declare) {
             var players = gamedatas.players;
             for (var player_id in players) {
                 this.patentStocksByPlayer[player_id] = this.createPatentStock('player_area_patents_'+player_id);
+                dojo.place(
+                    this.format_block('jstpl_player_board_info', { player_id: player_id }),
+                    $('player_board_'+player_id)
+                );
             }
 
             var patent_owners = gamedatas.patent_owners;
@@ -196,13 +200,13 @@ function (dojo, declare) {
             for (var letter = 0, letters = 26; letter < letters; letter++) {
                 cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards_small.jpg', letter );
             }
-            cardStock.onItemCreate = dojo.hitch(this, 'createCard' ); 
+            cardStock.onItemCreate = dojo.hitch(this, 'createCard'); 
             cardStock.setSelectionMode(0);
             return cardStock;
         },
 
-        createCard: function (card_div, card_type_id, card_id) {
-            dojo.addClass(card_div, 'card');
+        createCard: function (element, type, id) {
+            dojo.addClass(element, 'card');
         },
 
         createPatentStock: function (element_id) {
@@ -212,8 +216,13 @@ function (dojo, declare) {
             for (var letter = 0, letters = 26; letter < letters; letter++) {
                 patentStock.addItemType( letter, letter, g_gamethemeurl+'img/patents_small.jpg', letter );
             }
+            patentStock.onItemCreate = dojo.hitch(this, 'createPatent'); 
             patentStock.setSelectionMode(0);
             return patentStock;
+        },
+
+        createPatent: function (element, type, id) {
+            dojo.addClass(element, 'patent');
         },
 
         updateClearButton: function () {
