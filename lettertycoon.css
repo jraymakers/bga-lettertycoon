@@ -76,7 +76,7 @@
 .player_board_info {
     display: flex;
     align-items: center;
-    padding: 5px 0;
+    margin: 5px 0;
 }
 
 .player_board_info_item {
