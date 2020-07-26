@@ -76,7 +76,14 @@ class action_lettertycoon extends APP_GameAction
     public function playWord()
     {
         self::setAjaxMode();
-
+        $main_word = array(
+            'letters' => self::getArg('main_word_letters', AT_alphanum, true),
+            'letter_origins' => self::getArg('main_word_letter_origins', AT_alphanum, true),
+            'letter_types' => self::getArg('main_word_letter_types', AT_alphanum, true),
+            'card_ids' => self::parseNumberList(self::getArg('main_word_card_ids', AT_numberlist, true))
+        );
+        // todo: optional extra word args
+        $this->game->playWord($main_word);
         self::ajaxResponse();
     }
 

@@ -39,6 +39,7 @@
 <div class="dark_area">
     <div id="word_area_header">
         <span class="area_label"">{WORD_AREA}</span>
+        <a href="#" id="play_word_button" class="bgabutton bgabutton_blue">{PLAY_WORD}</a>
         <a href="#" id="clear_button" class="bgabutton bgabutton_gray">{CLEAR}</a>
     </div>
     <div id="main_word"></div>

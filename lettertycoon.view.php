@@ -45,6 +45,7 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['AVAILABLE_PATENTS'] = self::_("Available Patents");
         $this->tpl['COMMUNITY_POOL'] = self::_("Community Pool");
         $this->tpl['WORD_AREA'] = self::_("Word Area");
+        $this->tpl['PLAY_WORD'] = self::_("Play Word");
         $this->tpl['CLEAR'] = self::_("Clear");
         $this->tpl['YOU'] = self::_("You");
 

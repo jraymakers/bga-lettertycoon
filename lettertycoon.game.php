@@ -159,7 +159,7 @@ class LetterTycoon extends Table
 
         // TODO: filter out word if not active player and word not played yet
         // OR: just don't persist word until played
-        $sql = 'SELECT `word_num` as `num`, `word_pos` as `pos`, `letter`, `vowel`, `card_id` FROM word ';
+        $sql = 'SELECT `word_num`, `word_pos`, `letter`, `letter_origin`, `letter_type`, `card_id` FROM word ';
         $result['word'] = self::getCollectionFromDb( $sql );
   
         return $result;
@@ -218,10 +218,11 @@ class LetterTycoon extends Table
 
     // state: playerMayPlayWord
 
-    function playWord()
+    function playWord($main_word)
     {
         self::checkAction('playWord');
         // todo
+        self::dump('playWord: main_word', $main_word);
     }
 
     function skipPlayWord()

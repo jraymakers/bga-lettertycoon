@@ -154,6 +154,14 @@
     height: 50px;
 }
 
+#play_word_button {
+    display: none;
+    margin-left: 10px;
+}
+#play_word_button.show {
+    display: inline;
+}
+
 #clear_button {
     display: none;
     margin-left: 10px;

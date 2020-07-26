@@ -43,7 +43,8 @@ function (dojo, declare) {
             this.patentStocksByPlayer = {}; // key: player_id
 
             // ui state
-            this.mainWordOrigins = [];
+            this.mainWordOrigins = []; // values: 'c' = community, 'g' = generated, 'h' = hand
+            this.mainWordTypes = []; // values: 'c' = consonant, 'v' = vowel, '_' = as defined
         },
         
         /*
@@ -108,6 +109,7 @@ function (dojo, declare) {
 
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
+            dojo.connect($('play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');
             dojo.connect($('clear_button'), 'onclick', this, 'onClearButtonClicked');
             dojo.connect($('discard_button'), 'onclick', this, 'onDiscardButtonClicked');
 
@@ -202,7 +204,29 @@ function (dojo, declare) {
         //// Utility methods
 
         getLetterIndex: function (letter) {
-            return letter.charCodeAt(0) - 65; // 'A'
+            return letter.charCodeAt(0) - 65; // 65 = 'A'
+        },
+
+        getLetterFromIndex: function (letterIndex) {
+            return String.fromCharCode(65 + letterIndex); // 65 = 'A'
+        },
+
+        getItemIds: function (items) {
+            var ids = [];
+            for (var i in items) {
+                var item = items[i];
+                ids.push(item.id);
+            }
+            return ids;
+        },
+
+        getLetterListFromItems: function (items) {
+            var letters = [];
+            for (var i in items) {
+                var item = items[i];
+                letters.push(this.getLetterFromIndex(item.type));
+            }
+            return letters;
         },
 
         createCardStock: function (element_id) {
@@ -237,31 +261,29 @@ function (dojo, declare) {
             dojo.addClass(element, 'patent');
         },
 
-        updateClearButton: function () {
-            var items = this.mainWordStock.getAllItems();
-            if (items.length > 0) {
-                if (!dojo.hasClass('clear_button', 'show')) {
-                    dojo.addClass('clear_button', 'show');
+        setClassIf: function (condition, id, cls) {
+            if (condition) {
+                if (!dojo.hasClass(id, cls)) {
+                    dojo.addClass(id, cls);
                 }
             } else {
-                if (dojo.hasClass('clear_button', 'show')) {
-                    dojo.removeClass('clear_button', 'show');
+                if (dojo.hasClass(id, cls)) {
+                    dojo.removeClass(id, cls);
                 }
             }
+        },
+
+        updateWordAreaButtons: function () {
+            var items = this.mainWordStock.getAllItems();
+            this.setClassIf(items.length > 0, 'play_word_button', 'show');
+            this.setClassIf(items.length < 3, 'play_word_button', 'disabled');
+            this.setClassIf(items.length > 0, 'clear_button', 'show');
         },
 
         updateDiscardButton: function () {
             var selectedItems = this.handStock.getSelectedItems();
             dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'discard_button', 'only');
-            if (selectedItems.length > 0) {
-                if (dojo.hasClass('discard_button', 'disabled')) {
-                    dojo.removeClass('discard_button', 'disabled');
-                }
-            } else {
-                if (!dojo.hasClass('discard_button', 'disabled')) {
-                    dojo.addClass('discard_button', 'disabled');
-                }
-            }
+            this.setClassIf(selectedItems.length > 0, 'discard_button', 'disabled');
         },
 
         getDiscardButtonLabel: function (numSelectedCards) {
@@ -269,6 +291,19 @@ function (dojo, declare) {
                 return dojo.string.substitute(_('Discard selected cards (${n})'), { n: numSelectedCards });
             } else {
                 return _('Select cards to discard');
+            }
+        },
+
+        playSelectedCard: function (fromStock, origin, wordStock, wordOrigins, wordTypes) {
+            var items = fromStock.getSelectedItems();
+            if (items.length === 1) {
+                var item = items[0];
+                var elementId = fromStock.getItemDivId(item.id);
+                wordStock.addToStockWithId(item.type, item.id, $(elementId));
+                fromStock.removeFromStockById(item.id);
+                wordOrigins.push(origin);
+                wordTypes.push(item.type === 24 ? 'v' : '_'); // Y defaults to vowel
+                this.updateWordAreaButtons();
             }
         },
 
@@ -285,6 +320,17 @@ function (dojo, declare) {
 
         toNumberList: function (ids) {
             return ids.join(';');
+        },
+
+        action_playWord: function (mainWord, extraWord) {
+            var args = {
+                main_word_letters: mainWord.letters.join(''),
+                main_word_letter_origins: mainWord.letterOrigins.join(''),
+                main_word_letter_types: mainWord.letterTypes.join(''),
+                main_word_card_ids: this.toNumberList(mainWord.cardIds)
+            };
+            // todo: add extra word args
+            this.sendAction('playWord', args);
         },
 
         action_skipPlayWord: function () {
@@ -322,26 +368,14 @@ function (dojo, declare) {
             this.action_skipDiscardCards();
         },
 
-       onCommunitySelectionChanged: function () {
+        onCommunitySelectionChanged: function () {
             console.log('community selection changed');
-
-            var items = this.communityStock.getSelectedItems();
-
-            console.log(items);
 
             switch (this.currentState) {
 
                 case 'playerMayPlayWord':
-                    {
-                        if (items.length === 1) {
-                            var item = items[0];
-                            var elementId = this.communityStock.getItemDivId(item.id);
-                            this.mainWordStock.addToStockWithId(item.type, item.id, $(elementId));
-                            this.communityStock.removeFromStockById(item.id);
-                            this.mainWordOrigins.push('community');
-                            this.updateClearButton();
-                        }
-                    }
+                    this.playSelectedCard(this.communityStock, 'c',
+                        this.mainWordStock, this.mainWordOrigins, this.mainWordTypes);
                     break;
 
             }
@@ -350,23 +384,11 @@ function (dojo, declare) {
         onHandSelectionChanged: function () {
             console.log('hand selection changed');
 
-            var items = this.handStock.getSelectedItems();
-
-            console.log(items);
-
             switch (this.currentState) {
 
                 case 'playerMayPlayWord':
-                    {
-                        if (items.length === 1) {
-                            var item = items[0];
-                            var elementId = this.handStock.getItemDivId(item.id);
-                            this.mainWordStock.addToStockWithId(item.type, item.id, $(elementId));
-                            this.handStock.removeFromStockById(item.id);
-                            this.mainWordOrigins.push('hand');
-                            this.updateClearButton();
-                        }
-                    }
+                    this.playSelectedCard(this.handStock, 'h',
+                        this.mainWordStock, this.mainWordOrigins, this.mainWordTypes);
                     break;
 
                 case 'playerMayDiscardCards':
@@ -374,6 +396,26 @@ function (dojo, declare) {
                     break;
 
             }
+        },
+
+        onPlayWordButtonClicked: function (evt) {
+            console.log('play word button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            var items = this.mainWordStock.getAllItems();
+
+            console.log(items);
+
+            var mainWord = {
+                letters: this.getLetterListFromItems(items),
+                letterOrigins: this.mainWordOrigins,
+                letterTypes: this.mainWordTypes,
+                cardIds: this.getItemIds(items),
+            };
+
+            this.action_playWord(mainWord);
         },
 
         onClearButtonClicked: function (evt) {
@@ -389,16 +431,16 @@ function (dojo, declare) {
             for (var i in items) {
                 var item = items[i];
                 var elementId = this.mainWordStock.getItemDivId(item.id);
-                if (this.mainWordOrigins[i] === 'community') {
+                if (this.mainWordOrigins[i] === 'c') {
                     this.communityStock.addToStockWithId(item.type, item.id, $(elementId));
-                } else if (this.mainWordOrigins[i] === 'hand') {
+                } else if (this.mainWordOrigins[i] === 'h') {
                     this.handStock.addToStockWithId(item.type, item.id, $(elementId));
                 }
             }
             this.mainWordStock.removeAll();
             this.mainWordOrigins = [];
 
-            this.updateClearButton();
+            this.updateWordAreaButtons();
         },
 
         onDiscardButtonClicked: function (evt) {
@@ -411,7 +453,9 @@ function (dojo, declare) {
 
             console.log(items);
 
-            this.action_discardCards(items.map(item => item.id));
+            var ids = this.getItemIds(items);
+
+            this.action_discardCards(ids);
         },
 
         /*
