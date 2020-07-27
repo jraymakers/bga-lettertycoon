@@ -206,6 +206,7 @@ class LetterTycoon extends Table
 
     function replaceCard()
     {
+        // Note: player can replace card from community pool!
         self::checkAction('replaceCard');
         // todo
     }
@@ -221,8 +222,74 @@ class LetterTycoon extends Table
     function playWord($main_word)
     {
         self::checkAction('playWord');
-        // todo
-        self::dump('playWord: main_word', $main_word);
+
+        // todo: check args for validity
+        // - for each word (main and extra):
+        //   - does it have letters, letter_orgins, letter_types, and card_ids?
+        //   - are they all the same length?
+        //   - does letters contain only capital letters?
+        //   - does letter_origins only contain valid chars?
+        //   - does letter_types only contain valid chars?
+        //   - do the cards in card_ids match the info in letters, letter_origins, and letter_types?
+
+        // todo: check rules
+        // - does each word contain at least three letters?
+        // - does each word contain the minimum number of factory cards? (? when using V, 3 when using X, ? when using Z)
+        // - is there at least one card from the players hand (Question: in each word or total)?
+        // - if there are non-null letter types:
+        //   - do these correspond to Ys?
+        // - if there are two words:
+        //   - does the player own the V patent?
+        // - if there is a duplicated letter:
+        //   - does the player own the X patent?
+        //   - is there only one duplicated letter?
+        //   - was the duplicated letter played as a card somewhere else (in either word)?
+        // - if there is an appended S:
+        //   - does the player own the Z patent?
+        //   - is there only one duplicated S?
+        //   - does it appear at the end of a word?
+
+        // Questions:
+        // - If you play two words with the V power, does each word require a card from your hand, or just one?
+        //   (Ex: OIL from community, STEEL from hand.)
+        // - The X power says you must play at least 3 factory cards in addition to the duplicated letter.
+        //   If you also have the V and play 2 words, do you need 3 cards per word, or in total?
+        //   (Ex: SEE, where S and the first E are cards.)
+        // - The Z power lets you append an S to a word.
+        //   Do you need to play 3 factory cards, like with the X power?
+        //   (Ex: YES, where Y and E are cards.)
+        // - If you use both the V and the X, can you duplicate a card played in one word and use it in the other? - YES
+
+        // self::dump('playWord: main_word', $main_word);
+
+        // clear word table first?
+        $sql = 'DELETE FROM word ';
+        self::DbQuery( $sql );
+
+        $main_letters = $main_word['letters'];
+        $main_letter_origins = $main_word['letter_origins'];
+        $main_letter_types = $main_word['letter_types'];
+        $main_card_ids = $main_word['card_ids'];
+
+        $main_length = strlen($main_letters);
+
+        // save main word
+        $sql = 'INSERT INTO word (word_num, word_pos, letter, letter_origin, letter_type, card_id) VALUES ';
+        $values = array();
+        for ( $i = 0; $i < $main_length; $i++ )
+        {
+            $letter = $main_letters[$i];
+            $letter_origin = $main_letter_origins[$i];
+            $letter_type = $main_letter_types[$i];
+            $card_id = $main_card_ids[$i]; // NULL?
+            $values[] = "(1, $i, '$letter', '$letter_origin', '$letter_type', $card_id)";
+        }
+        $sql .= implode( ',', $values );
+        self::DbQuery( $sql );
+
+        // todo: extra word
+
+        $this->gamestate->nextState('playWord');
     }
 
     function skipPlayWord()
@@ -381,6 +448,7 @@ class LetterTycoon extends Table
 
     function stReplaceCard()
     {
+        // Note: player can replace card from community pool!
         // todo
         $this->gamestate->nextState();
     }

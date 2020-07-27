@@ -43,7 +43,7 @@ function (dojo, declare) {
             this.patentStocksByPlayer = {}; // key: player_id
 
             // ui state
-            this.mainWordOrigins = []; // values: 'c' = community, 'g' = generated, 'h' = hand
+            this.mainWordOrigins = []; // values: 'c' = community, 'd' = duplicated, 'h' = hand, 's' = appended S
             this.mainWordTypes = []; // values: 'c' = consonant, 'v' = vowel, '_' = as defined
         },
         
@@ -196,6 +196,10 @@ function (dojo, declare) {
                     case 'playerMayDiscardCards':
                         this.addActionButton('skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray'); 
                         break;
+                    
+                    case 'playerMayBuyPatent':
+                        this.addActionButton('skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'gray'); 
+                        break;
                 }
             }
         },        
@@ -337,6 +341,10 @@ function (dojo, declare) {
             this.sendAction('skipPlayWord');
         },
 
+        action_skipBuyPatent: function () {
+            this.sendAction('skipBuyPatent');
+        },
+
         action_discardCards: function (cardIds) {
             this.sendAction('discardCards', {
                 card_ids: this.toNumberList(cardIds)
@@ -357,6 +365,15 @@ function (dojo, declare) {
             dojo.stopEvent(evt);
 
             this.action_skipPlayWord();
+        },
+
+        onSkipBuyPatent: function (evt) {
+            console.log('skip buy patent');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.action_skipBuyPatent();
         },
 
         onSkipDiscardCards: function (evt) {

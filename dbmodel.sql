@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `patent` (
 -- word_num: 1 or 2
 -- word_pos: 1 to 12
 -- letter: 'A' to 'Z'
--- letter_origin: 'c' = community, 'g' = generated, 'h' = hand
+-- letter_origin: 'c' = community, 'd' = duplicated, 'h' = hand, 's' = appended S
 -- letter_type: 'c' = consonant, 'v' = vowel, NULL = as defined (for setting value of Y)
 -- card_id: id of card or NULL if generated
 CREATE TABLE IF NOT EXISTS `word` (

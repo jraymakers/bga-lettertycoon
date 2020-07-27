@@ -82,4 +82,7 @@ $game_options = array(
         ),
     ),
 
+    // possible variant: stacked doubles only add, so 2x and 2x is 3x instead of 4x
+    // (proposed by designer on forums)
+
 );
