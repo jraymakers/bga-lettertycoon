@@ -231,34 +231,28 @@ class LetterTycoon extends Table
         //   - does letter_origins only contain valid chars?
         //   - does letter_types only contain valid chars?
         //   - do the cards in card_ids match the info in letters, letter_origins, and letter_types?
+        //     - do the card letters match "letters"?
+        //     - do the card origins match "letter_origins"?
+        //     - do all Ys (and only Ys) have defined letter_types?
+        //     (or do we allow undefined for Y if there are no relevant powers?)
 
         // todo: check rules
         // - does each word contain at least three letters?
-        // - does each word contain the minimum number of factory cards? (? when using V, 3 when using X, ? when using Z)
-        // - is there at least one card from the players hand (Question: in each word or total)?
+        // - is there at least one card from the players hand (in each word, if there are two)?
         // - if there are non-null letter types:
-        //   - do these correspond to Ys?
+        //   - do these correspond to Ys? (or is this checked above?)
         // - if there are two words:
         //   - does the player own the V patent?
+        //   - does each word have at least one card from the player's hand?
         // - if there is a duplicated letter:
         //   - does the player own the X patent?
         //   - is there only one duplicated letter?
         //   - was the duplicated letter played as a card somewhere else (in either word)?
+        //   - was a total of at least three factory cards played (possibly across both words)?
         // - if there is an appended S:
         //   - does the player own the Z patent?
         //   - is there only one duplicated S?
         //   - does it appear at the end of a word?
-
-        // Questions:
-        // - If you play two words with the V power, does each word require a card from your hand, or just one?
-        //   (Ex: OIL from community, STEEL from hand.)
-        // - The X power says you must play at least 3 factory cards in addition to the duplicated letter.
-        //   If you also have the V and play 2 words, do you need 3 cards per word, or in total?
-        //   (Ex: SEE, where S and the first E are cards.)
-        // - The Z power lets you append an S to a word.
-        //   Do you need to play 3 factory cards, like with the X power?
-        //   (Ex: YES, where Y and E are cards.)
-        // - If you use both the V and the X, can you duplicate a card played in one word and use it in the other? - YES
 
         // self::dump('playWord: main_word', $main_word);
 
