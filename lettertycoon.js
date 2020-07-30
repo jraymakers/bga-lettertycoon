@@ -175,6 +175,7 @@ function (dojo, declare) {
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(0);
                         this.communityStock.setSelectionMode(0);
+                        this.hideWordAreaButtons();
                     }
                     break;
 
@@ -290,10 +291,15 @@ function (dojo, declare) {
             this.setClassIf(items.length > 0, 'clear_button', 'show');
         },
 
+        hideWordAreaButtons: function () {
+            dojo.removeClass('play_word_button', 'show');
+            dojo.removeClass('clear_button', 'show');
+        },
+
         updateDiscardButton: function () {
             var selectedItems = this.handStock.getSelectedItems();
             dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'discard_button', 'only');
-            this.setClassIf(selectedItems.length > 0, 'discard_button', 'disabled');
+            this.setClassIf(selectedItems.length === 0, 'discard_button', 'disabled');
         },
 
         getDiscardButtonLabel: function (numSelectedCards) {
@@ -554,6 +560,15 @@ function (dojo, declare) {
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
 
+            dojo.subscribe('playerPlayedWord', this, 'notif_playerPlayedWord');
+            this.notifqueue.setSynchronous( 'playerPlayedWord', 2000 );
+
+            dojo.subscribe('communityReceivedCards', this, 'notif_communityReceivedCards');
+            this.notifqueue.setSynchronous( 'communityReceivedCards', 2000 );
+
+            dojo.subscribe('wordDiscarded', this, 'notif_wordDiscarded');
+            this.notifqueue.setSynchronous( 'wordDiscarded', 2000 );
+
             dojo.subscribe('activePlayerDiscardedCards', this, 'notif_activePlayerDiscardedCards');
             this.notifqueue.setSynchronous( 'activePlayerDiscardedCards', 2000 );
             
@@ -561,29 +576,59 @@ function (dojo, declare) {
 
             dojo.subscribe('playerDiscardedNumberOfCards', this, 'notif_playerDiscardedNumberOfCards');
         },  
-        
-        // TODO: from this point and below, you can write your game notifications handling methods
-        
-        /*
-        Example:
-        
-        notif_cardPlayed: function( notif )
-        {
-            console.log( 'notif_cardPlayed' );
-            console.log( notif );
-            
-            // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-            
-            // TODO: play the card in the user interface.
-        },    
-        
-        */
+
+        notif_playerPlayedWord: function (notif) {
+            console.log('player played word');
+            console.log(notif);
+            var mainWordItems = this.mainWordStock.getAllItems();
+            if (mainWordItems.length === 0) {
+                var player_id = notif.args.player_id;
+                var main_word = notif.args.main_word;
+                var card_ids = main_word.card_ids;
+                var letters = main_word.letters;
+                var letter_origins = main_word.letter_origins;
+                for (var i in card_ids) {
+                    var card_id = card_ids[i];
+                    var letter = letters[i];
+                    var letter_origin = letter_origins[i];
+                    var elementId = undefined;
+                    if (letter_origin === 'c') {
+                        elementId = this.communityStock.getItemDivId(card_id);
+                    }
+                    if (letter_origin === 'h') {
+                        elementId = $('overall_player_board_'+player_id);
+                    }
+                    this.mainWordStock.addToStockWithId(this.getLetterIndex(letter), card_id, elementId);
+                    if (letter_origin === 'c') {
+                        this.communityStock.removeFromStockById(card_id);
+                    }
+                }
+            }
+        },
+
+        notif_communityReceivedCards: function (notif) {
+            console.log('community received cards');
+            console.log(notif);
+            var new_cards = notif.args.new_cards;
+            for (var i in new_cards) {
+                var new_card = new_cards[i];
+                this.communityStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
+                    $('community_pool_area_header'));
+            }
+        },
+
+        notif_wordDiscarded: function (notif) {
+            console.log('word discarded');
+            console.log(notif);
+            this.mainWordStock.removeAll();
+        },
 
         notif_activePlayerDiscardedCards: function (notif) {
             console.log('active player discarded cards');
             console.log(notif);
-            for (var i in notif.args.card_ids) {
-                var card_id = notif.args.card_ids[i];
+            var card_ids = notif.args.card_ids;
+            for (var i in card_ids) {
+                var card_id = card_ids[i];
                 this.handStock.removeFromStockById(card_id, undefined, true);
             }
             this.handStock.updateDisplay();
@@ -592,8 +637,9 @@ function (dojo, declare) {
         notif_activePlayerReceivedCards: function (notif) {
             console.log('active player received cards');
             console.log(notif);
-            for (var i in notif.args.new_cards) {
-                var new_card = notif.args.new_cards[i];
+            var new_cards = notif.args.new_cards;
+            for (var i in new_cards) {
+                var new_card = new_cards[i];
                 this.handStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
                     $('current_player_area_header'));
             }

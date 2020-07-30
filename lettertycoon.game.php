@@ -286,6 +286,18 @@ class LetterTycoon extends Table
 
         // todo: extra word
 
+        // move main word cards from community or hand to word
+        $this->cards->moveCards($main_card_ids, 'word');
+
+        self::notifyAllPlayers('playerPlayedWord',
+            clienttranslate('${player_name} played "${main_word.letters}"'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName(),
+                'main_word' => $main_word
+            )
+        );
+
         $this->gamestate->nextState('playWord');
     }
 
@@ -374,33 +386,6 @@ class LetterTycoon extends Table
         self::checkAction('discardCard');
         // todo
     }
-
-    /*
-    
-    Example:
-
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
-        
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
-    }
-    
-    */
-
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
@@ -506,7 +491,26 @@ class LetterTycoon extends Table
 
     function stRefillCommunityPool()
     {
-        // todo
+        // refill community pool if needed
+        $num_community_cards = $this->cards->countCardsInLocation( 'community' );
+
+        if ($num_community_cards < 3) {
+            $new_community_cards = $this->cards->pickCardsForLocation( 3 - $num_community_cards, 'deck', 'community' );
+
+            self::notifyAllPlayers('communityReceivedCards', '', array(
+                'new_cards' => $new_community_cards
+            ));
+        }
+
+        // clear word table
+        $sql = 'DELETE FROM word ';
+        self::DbQuery( $sql );
+
+        // discard all word cards
+        $this->cards->moveAllCardsInLocation( 'word', 'discard' );
+
+        self::notifyAllPlayers('wordDiscarded', '', array());
+
         $this->gamestate->nextState();
     }
 

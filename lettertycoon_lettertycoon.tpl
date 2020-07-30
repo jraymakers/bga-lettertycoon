@@ -32,7 +32,9 @@
 </div>
 
 <div class="dark_area">
-    <div class="area_label">{COMMUNITY_POOL}</div>
+    <div id="community_pool_area_header">
+        <div class="area_label">{COMMUNITY_POOL}</div>
+    </div>
     <div id="community_pool"></div>
 </div>
 
