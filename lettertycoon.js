@@ -107,6 +107,12 @@ function (dojo, declare) {
                 this.handStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
             }
 
+            var main_word = gamedatas.main_word;
+            for (var i in main_word) {
+                var part = main_word[i];
+                this.mainWordStock.addToStockWithId(this.getLetterIndex(part.letter), part.card_id);
+            }
+
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
             dojo.connect($('play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');

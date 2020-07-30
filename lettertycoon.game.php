@@ -157,10 +157,13 @@ class LetterTycoon extends Table
         $sql = 'SELECT patent_id, owning_player_id FROM patent ';
         $result['patent_owners'] = self::getCollectionFromDb( $sql, true );
 
-        // TODO: filter out word if not active player and word not played yet
-        // OR: just don't persist word until played
-        $sql = 'SELECT `word_num`, `word_pos`, `letter`, `letter_origin`, `letter_type`, `card_id` FROM word ';
-        $result['word'] = self::getCollectionFromDb( $sql );
+        $sql = 'SELECT letter, letter_origin, letter_type, card_id
+                FROM word
+                WHERE word_num = 1
+                ORDER BY word_pos ';
+        $result['main_word'] = self::getObjectListFromDb( $sql );
+
+        // todo: extra word
   
         return $result;
     }
