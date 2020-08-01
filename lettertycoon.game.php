@@ -444,6 +444,30 @@ class LetterTycoon extends Table
     function stAutomaticChallenge()
     {
         // todo
+
+        // get main word letters
+        $main_word_letters = '';
+        $sql = 'SELECT letter FROM word WHERE word_num = 1 ORDER BY word_pos ';
+        $main_word_letter_objects = self::getObjectListFromDb( $sql );
+        $num_letter_objects = count($main_word_letter_objects);
+        for ( $i = 0; $i < $num_letter_objects; $i++ )
+        {
+            $main_word_letters .= $main_word_letter_objects[$i]['letter'];
+        }
+        self::debug("MAIN WORD: ($main_word_letters)");
+        $num_main_word_letters = strlen($main_word_letters);
+
+        // load appropriate wordlist
+        if (3 <= $num_main_word_letters && $num_main_word_letters <= 12) {
+            $wordlist_filename = "$num_main_word_letters-letter-words.txt";
+            self::debug("ABOUT TO LOAD $wordlist_filename FILE ");
+            $words = file(__DIR__ . "/modules/$wordlist_filename");
+            $word_count = count($words);
+            self::debug("COUNT OF $num_main_word_letters-LETTER WORDS: ($word_count) ");
+        } else {
+            self::debug("NO WORDLIST FOR LENGTH: ($num_main_word_letters) ");
+        }
+
         $this->gamestate->nextState('wordAccepted');
     }
 
