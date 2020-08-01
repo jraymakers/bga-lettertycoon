@@ -150,15 +150,21 @@ function (dojo, declare) {
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(1);
                         this.communityStock.setSelectionMode(1);
+                        this.updateWordAreaButtons();
                     }
                     break;
-                
+
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(2);
                         this.updateDiscardButton();
                         dojo.addClass('discard_button', 'show');
                     }
+                    break;
+
+                case 'endTurn':
+                    this.mainWordOrigins = [];
+                    this.mainWordTypes = [];
                     break;
             }
         },
@@ -176,10 +182,10 @@ function (dojo, declare) {
                         this.handStock.setSelectionMode(0);
                         this.communityStock.setSelectionMode(0);
                         this.hideWordAreaButtons();
-                        this.mainWordOrigins = [];
-                        this.mainWordTypes = [];
                     }
                     break;
+                
+                
 
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
@@ -325,6 +331,24 @@ function (dojo, declare) {
             }
         },
 
+        clearWordArea: function () {
+            var items = this.mainWordStock.getAllItems();
+            for (var i in items) {
+                var item = items[i];
+                var elementId = this.mainWordStock.getItemDivId(item.id);
+                if (this.mainWordOrigins[i] === 'c') {
+                    this.communityStock.addToStockWithId(item.type, item.id, $(elementId));
+                } else if (this.mainWordOrigins[i] === 'h') {
+                    this.handStock.addToStockWithId(item.type, item.id, $(elementId));
+                }
+            }
+            this.mainWordStock.removeAll();
+            this.mainWordOrigins = [];
+            this.mainWordTypes = [];
+            // todo: extra word
+            this.updateWordAreaButtons();
+        },
+
         sendAction: function (action, args) {
             var params = {};
             if (args) {
@@ -455,24 +479,7 @@ function (dojo, declare) {
             evt.preventDefault();
             dojo.stopEvent(evt);
 
-            var items = this.mainWordStock.getAllItems();
-
-            console.log(items);
-
-            for (var i in items) {
-                var item = items[i];
-                var elementId = this.mainWordStock.getItemDivId(item.id);
-                if (this.mainWordOrigins[i] === 'c') {
-                    this.communityStock.addToStockWithId(item.type, item.id, $(elementId));
-                } else if (this.mainWordOrigins[i] === 'h') {
-                    this.handStock.addToStockWithId(item.type, item.id, $(elementId));
-                }
-            }
-            this.mainWordStock.removeAll();
-            this.mainWordOrigins = [];
-            this.mainWordTypes = [];
-
-            this.updateWordAreaButtons();
+            this.clearWordArea();
         },
 
         onDiscardButtonClicked: function (evt) {
@@ -564,7 +571,10 @@ function (dojo, declare) {
             // 
 
             dojo.subscribe('playerPlayedWord', this, 'notif_playerPlayedWord');
-            this.notifqueue.setSynchronous( 'playerPlayedWord', 2000 );
+            this.notifqueue.setSynchronous( 'playerPlayedWord', 3000 );
+
+            dojo.subscribe('automaticChallengeRejectedWordTryAgain', this, 'notif_automaticChallengeRejectedWordTryAgain');
+            this.notifqueue.setSynchronous( 'automaticChallengeRejectedWordTryAgain', 2000 );
 
             dojo.subscribe('communityReceivedCards', this, 'notif_communityReceivedCards');
             this.notifqueue.setSynchronous( 'communityReceivedCards', 2000 );
@@ -586,9 +596,10 @@ function (dojo, declare) {
             if (mainWordItems.length === 0) {
                 var player_id = notif.args.player_id;
                 var main_word = notif.args.main_word;
-                var card_ids = main_word.card_ids;
                 var letters = main_word.letters;
                 var letter_origins = main_word.letter_origins;
+                var letter_types = main_word.letter_types;
+                var card_ids = main_word.card_ids;
                 for (var i in card_ids) {
                     var card_id = card_ids[i];
                     var letter = letters[i];
@@ -605,7 +616,16 @@ function (dojo, declare) {
                         this.communityStock.removeFromStockById(card_id);
                     }
                 }
+                this.mainWordOrigins = letter_origins.split('');
+                this.mainWordTypes = letter_types.split('');
             }
+            // todo: extra word
+        },
+
+        notif_automaticChallengeRejectedWordTryAgain: function (notif) {
+            console.log('automatic challenge rejected word try again');
+            console.log(notif);
+            this.clearWordArea();
         },
 
         notif_communityReceivedCards: function (notif) {

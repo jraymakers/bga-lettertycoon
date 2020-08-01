@@ -195,16 +195,26 @@ class LetterTycoon extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
+    function clearWord()
+    {
+        $sql = 'DELETE FROM word ';
+        self::DbQuery( $sql );
+    }
+
     // $word_num = 1 for main word, 2 for extra word
-    function getWordLetters($word_num)
+    function getWordObjects($word_num)
+    {
+        $sql = "SELECT letter, letter_origin, letter_type, card_id
+                FROM word WHERE word_num = $word_num ORDER BY word_pos ";
+        return self::getObjectListFromDb($sql);
+    }
+
+    function stringFromWordObjects($word_objects)
     {
         $letters = '';
-        $sql = "SELECT letter FROM word WHERE word_num = $word_num ORDER BY word_pos ";
-        $letter_objects = self::getObjectListFromDb( $sql );
-        $num_letter_objects = count($letter_objects);
-        for ( $i = 0; $i < $num_letter_objects; $i++ )
+        foreach ( $word_objects as $word_object )
         {
-            $letters .= $letter_objects[$i]['letter'];
+            $letters .= $word_object['letter'];
         }
         return $letters;
     }
@@ -302,8 +312,7 @@ class LetterTycoon extends Table
         // self::dump('playWord: main_word', $main_word);
 
         // clear word table first?
-        $sql = 'DELETE FROM word ';
-        self::DbQuery( $sql );
+        self::clearWord();
 
         $main_letters = $main_word['letters'];
         $main_letter_origins = $main_word['letter_origins'];
@@ -485,22 +494,58 @@ class LetterTycoon extends Table
 
     function stAutomaticChallenge()
     {
-        $main_word = strtolower(self::getWordLetters(1));
-        $main_word_len = strlen($main_word);
+        // get main word objects
+        $main_word_objects = self::getWordObjects(1);
 
-        $main_word_wordlist = self::loadWordList($main_word_len);
+        // get main word string
+        $main_word = self::stringFromWordObjects($main_word_objects);
 
-        // $main_word_wordlist_count = count($main_word_wordlist);
-        // self::debug("COUNT OF $main_word_len-LETTER WORDS: ($main_word_wordlist_count) ");
+        // load appropriate word list
+        $main_word_wordlist = self::loadWordList(strlen($main_word));
 
-        // todo: search word list, select next state appropriately
-        $inList = self::isWordInList($main_word, $main_word_wordlist);
-        if ($inList) self::debug("WORD $main_word *IS* IN LIST ");
-        else self::debug("WORD $main_word IS *NOT* IN LIST ");
+        // is the main word in the word list?
+        $mainWordInList = self::isWordInList(strtolower($main_word), $main_word_wordlist);
 
-        // todo: extra word
+        if ($mainWordInList)
+        {
+            $this->gamestate->nextState('wordAccepted');
+        }
+        else
+        {
+            // todo: support limited number of retries
 
-        $this->gamestate->nextState('wordAccepted');
+            $active_player_id = self::getActivePlayerId();
+            
+            // move word cards back to community and hand and clear word
+            $community_cards = array();
+            $hand_cards = array();
+            foreach ( $main_word_objects as $main_word_object)
+            {
+                $letter_origin = $main_word_object['letter_origin'];
+                if ($letter_origin == 'c')
+                {
+                    $community_cards[] = $main_word_object['card_id'];
+                }
+                elseif ($letter_origin = 'h')
+                {
+                    $hand_cards[] = $main_word_object['card_id'];
+                }
+            }
+            $this->cards->moveCards($community_cards, 'community');
+            $this->cards->moveCards($hand_cards, 'hand', $active_player_id);
+            self::clearWord();
+
+            self::notifyAllPlayers('automaticChallengeRejectedWordTryAgain',
+                clienttranslate('Automatic challenge rejected "${main_word}", ${player_name} may try again'),
+                array(
+                    'player_id' => $active_player_id,
+                    'player_name' => self::getActivePlayerName(),
+                    'main_word' => $main_word
+                )
+            );
+
+            $this->gamestate->nextState('wordRejectedTryAgain');
+        }
     }
 
     function stPlayersMayChallenge()
@@ -559,8 +604,7 @@ class LetterTycoon extends Table
         }
 
         // clear word table
-        $sql = 'DELETE FROM word ';
-        self::DbQuery( $sql );
+        self::clearWord();
 
         // discard all word cards
         $this->cards->moveAllCardsInLocation( 'word', 'discard' );
