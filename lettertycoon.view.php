@@ -47,7 +47,7 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['WORD_AREA'] = self::_("Word Area");
         $this->tpl['PLAY_WORD'] = self::_("Play Word");
         $this->tpl['CLEAR'] = self::_("Clear");
-        $this->tpl['YOU'] = self::_("You");
+        $this->tpl['YOUR_HAND'] = self::_("Your Hand");
 
         $this->tpl['CURRENT_PLAYER_ID'] = $current_player_id;
         $this->tpl['CURRENT_PLAYER_COLOR'] = $players[$current_player_id]['player_color'];
@@ -55,7 +55,13 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->page->begin_block( 'lettertycoon_lettertycoon', 'player' );
         foreach( $players as $player_id => $player )
         {
-            if( $player_id != $current_player_id ) {
+            if( $player_id == $current_player_id ) {
+                $this->page->insert_block( 'player', array(
+                    'PLAYER_ID' => $player_id,
+                    'PLAYER_NAME' => self::_("Your Patents"),
+                    'PLAYER_COLOR' => $player['player_color'],
+                ) );
+            } else {
                 $this->page->insert_block( 'player', array(
                     'PLAYER_ID' => $player_id,
                     'PLAYER_NAME' => $player['player_name'],

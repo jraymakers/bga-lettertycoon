@@ -174,7 +174,7 @@
     display: none;
 }
 
-#current_player_area_header {
+#current_player_hand_area_header {
     display: flex;
     align-items: center;
     height: 50px;
@@ -188,7 +188,7 @@
     display: inline;
 }
 
-.other_player_area_header {
+.player_patents_area_header {
     display: flex;
     align-items: center;
     height: 30px;

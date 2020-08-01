@@ -74,7 +74,7 @@ function (dojo, declare) {
 
             var players = gamedatas.players;
             for (var player_id in players) {
-                this.patentStocksByPlayer[player_id] = this.createPatentStock('player_area_patents_'+player_id);
+                this.patentStocksByPlayer[player_id] = this.createPatentStock('player_patents_'+player_id);
                 dojo.place(
                     this.format_block('jstpl_player_board_info', { player_id: player_id }),
                     $('player_board_'+player_id)
@@ -641,7 +641,7 @@ function (dojo, declare) {
             for (var i in new_cards) {
                 var new_card = new_cards[i];
                 this.handStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
-                    $('current_player_area_header'));
+                    $('current_player_hand_area_header'));
             }
         },
 

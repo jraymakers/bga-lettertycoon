@@ -25,17 +25,12 @@
     Please REMOVE this comment before publishing your game on BGA
 -->
 
-
-<div class="dark_area">
-    <div class="area_label">{AVAILABLE_PATENTS}</div>
-    <div id="available_patents"></div>
-</div>
-
-<div class="dark_area">
-    <div id="community_pool_area_header">
-        <div class="area_label">{COMMUNITY_POOL}</div>
+<div class="dark_area" id="current_player_hand_area">
+    <div id="current_player_hand_area_header">
+        <span class="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOUR_HAND}</span>
+        <a href="#" id="discard_button" class="bgabutton bgabutton_blue"></a>
     </div>
-    <div id="community_pool"></div>
+    <div id="current_player_hand"></div>
 </div>
 
 <div class="dark_area">
@@ -48,23 +43,28 @@
     <div id="extra_word"></div>
 </div>
 
-<div class="dark_area" id="current_player_area">
-    <div id="current_player_area_header">
-        <span class="player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOU}</span>
-        <a href="#" id="discard_button" class="bgabutton bgabutton_blue"></a>
+<div class="dark_area">
+    <div id="community_pool_area_header">
+        <div class="area_label">{COMMUNITY_POOL}</div>
     </div>
-    <div id="current_player_hand"></div>
-    <div class="player_area_patents" id="player_area_patents_{CURRENT_PLAYER_ID}"></div>
+    <div id="community_pool"></div>
+</div>
+
+<div class="dark_area">
+    <div id="available_patents_area_header">
+        <div class="area_label">{AVAILABLE_PATENTS}</div>
+    </div>
+    <div id="available_patents"></div>
 </div>
 
 <div id="player_areas">
 
     <!-- BEGIN player -->
-    <div class="dark_area other_player_area" id="other_player_area_{PLAYER_ID}">
-        <div class="other_player_area_header">
+    <div class="dark_area player_patents_area" id="player_patents_area_{PLAYER_ID}">
+        <div class="player_patents_area_header">
             <span class="player_area_name" style="color:#{PLAYER_COLOR}">{PLAYER_NAME}</span>
         </div>
-        <div class="player_area_patents" id="player_area_patents_{PLAYER_ID}"></div>
+        <div class="player_patents" id="player_patents_{PLAYER_ID}"></div>
     </div>
     <!-- END player -->
 
