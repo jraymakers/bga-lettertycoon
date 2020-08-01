@@ -99,6 +99,7 @@ class LetterTycoon extends Table
         }
         $this->cards->createCards( $cards, 'deck' );
         $this->cards->shuffle( 'deck' );
+        $this->cards->autoreshuffle = true;
 
         // initialize patent table
         $sql = 'INSERT INTO patent (patent_id, owning_player_id) VALUES ';
@@ -193,6 +194,47 @@ class LetterTycoon extends Table
     /*
         In this space, you can put any utility methods useful for your game logic
     */
+
+    // $word_num = 1 for main word, 2 for extra word
+    function getWordLetters($word_num)
+    {
+        $letters = '';
+        $sql = "SELECT letter FROM word WHERE word_num = $word_num ORDER BY word_pos ";
+        $letter_objects = self::getObjectListFromDb( $sql );
+        $num_letter_objects = count($letter_objects);
+        for ( $i = 0; $i < $num_letter_objects; $i++ )
+        {
+            $letters .= $letter_objects[$i]['letter'];
+        }
+        return $letters;
+    }
+
+    function loadWordList($word_length)
+    {
+        if (3 <= $word_length && $word_length <= 12) {
+            $wordlist_filename = "$word_length-letter-words.txt";
+            $words = file(__DIR__ . "/modules/$wordlist_filename", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            return $words;
+        } else {
+            self::warn("no wordlist for length: ($word_length) ");
+            return array();
+        }
+    }
+
+    function isWordInList($word, $list)
+    {
+        $low = 0;
+        $high = count($list) - 1;
+        while ( $low <= $high )
+        {
+            $mid = floor( ($low + $high) / 2 );
+            $comp = strcmp($list[$mid], $word);
+            if ($comp < 0) $low = $mid + 1;
+            elseif ($comp > 0) $high = $mid - 1;
+            else return TRUE;
+        }
+        return FALSE;
+    }
 
 
 
@@ -443,30 +485,20 @@ class LetterTycoon extends Table
 
     function stAutomaticChallenge()
     {
-        // todo
+        $main_word = strtolower(self::getWordLetters(1));
+        $main_word_len = strlen($main_word);
 
-        // get main word letters
-        $main_word_letters = '';
-        $sql = 'SELECT letter FROM word WHERE word_num = 1 ORDER BY word_pos ';
-        $main_word_letter_objects = self::getObjectListFromDb( $sql );
-        $num_letter_objects = count($main_word_letter_objects);
-        for ( $i = 0; $i < $num_letter_objects; $i++ )
-        {
-            $main_word_letters .= $main_word_letter_objects[$i]['letter'];
-        }
-        self::debug("MAIN WORD: ($main_word_letters)");
-        $num_main_word_letters = strlen($main_word_letters);
+        $main_word_wordlist = self::loadWordList($main_word_len);
 
-        // load appropriate wordlist
-        if (3 <= $num_main_word_letters && $num_main_word_letters <= 12) {
-            $wordlist_filename = "$num_main_word_letters-letter-words.txt";
-            self::debug("ABOUT TO LOAD $wordlist_filename FILE ");
-            $words = file(__DIR__ . "/modules/$wordlist_filename");
-            $word_count = count($words);
-            self::debug("COUNT OF $num_main_word_letters-LETTER WORDS: ($word_count) ");
-        } else {
-            self::debug("NO WORDLIST FOR LENGTH: ($num_main_word_letters) ");
-        }
+        // $main_word_wordlist_count = count($main_word_wordlist);
+        // self::debug("COUNT OF $main_word_len-LETTER WORDS: ($main_word_wordlist_count) ");
+
+        // todo: search word list, select next state appropriately
+        $inList = self::isWordInList($main_word, $main_word_wordlist);
+        if ($inList) self::debug("WORD $main_word *IS* IN LIST ");
+        else self::debug("WORD $main_word IS *NOT* IN LIST ");
+
+        // todo: extra word
 
         $this->gamestate->nextState('wordAccepted');
     }
