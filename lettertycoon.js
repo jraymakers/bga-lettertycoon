@@ -176,6 +176,8 @@ function (dojo, declare) {
                         this.handStock.setSelectionMode(0);
                         this.communityStock.setSelectionMode(0);
                         this.hideWordAreaButtons();
+                        this.mainWordOrigins = [];
+                        this.mainWordTypes = [];
                     }
                     break;
 
@@ -468,6 +470,7 @@ function (dojo, declare) {
             }
             this.mainWordStock.removeAll();
             this.mainWordOrigins = [];
+            this.mainWordTypes = [];
 
             this.updateWordAreaButtons();
         },
@@ -567,7 +570,6 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous( 'communityReceivedCards', 2000 );
 
             dojo.subscribe('wordDiscarded', this, 'notif_wordDiscarded');
-            this.notifqueue.setSynchronous( 'wordDiscarded', 2000 );
 
             dojo.subscribe('activePlayerDiscardedCards', this, 'notif_activePlayerDiscardedCards');
             this.notifqueue.setSynchronous( 'activePlayerDiscardedCards', 2000 );
