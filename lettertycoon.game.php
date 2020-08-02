@@ -42,6 +42,7 @@ class LetterTycoon extends Table
 
         $this->cards = self::getNew( 'module.common.deck' );
         $this->cards->init( 'card' );
+        $this->cards->autoreshuffle = true;
     }
     
     protected function getGameName( )
@@ -99,7 +100,6 @@ class LetterTycoon extends Table
         }
         $this->cards->createCards( $cards, 'deck' );
         $this->cards->shuffle( 'deck' );
-        $this->cards->autoreshuffle = true;
 
         // initialize patent table
         $sql = 'INSERT INTO patent (patent_id, owning_player_id) VALUES ';
@@ -599,10 +599,18 @@ class LetterTycoon extends Table
                 WHERE player_id = $active_player_id";
         self::DbQuery( $sql );
 
+        if ($stock > 0)
+        {
+            $message = clienttranslate('${player_name} received $${money} and ${stock} stock');
+        }
+        else
+        {
+            $message = clienttranslate('${player_name} received $${money}');
+        }
+
         // notify
         self::notifyAllPlayers('playerReceivedMoneyAndStock',
-            // todo?: omit stock if zero?
-            clienttranslate('${player_name} received ${money} coins and ${stock} stock'),
+            $message,
             array(
                 'player_id' => self::getActivePlayerId(),
                 'player_name' => self::getActivePlayerName(),
