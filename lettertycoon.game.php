@@ -574,7 +574,43 @@ class LetterTycoon extends Table
 
     function stScoreWord()
     {
-        // todo
+        $active_player_id = self::getActivePlayerId();
+
+        // get main word objects
+        $main_word_objects = self::getWordObjects(1);
+
+        // get main word string
+        $main_word = self::stringFromWordObjects($main_word_objects);
+
+        // get main word length
+        $main_word_len = strlen($main_word);
+
+        $main_word_scores = $this->scores[$main_word_len];
+        $money = $main_word_scores['money'];
+        $stock = $main_word_scores['stock'];
+
+        // todo: extra word
+
+        // update player money, stock, and score
+        $sql = "UPDATE player SET
+                    `money` = `money` + $money,
+                    `stock` = `stock` + $stock,
+                    player_score = $money + $stock + player_score_aux
+                WHERE player_id = $active_player_id";
+        self::DbQuery( $sql );
+
+        // notify
+        self::notifyAllPlayers('playerReceivedMoneyAndStock',
+            // todo?: omit stock if zero?
+            clienttranslate('${player_name} received ${money} coins and ${stock} stock'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName(),
+                'money' => $money,
+                'stock' => $stock
+            )
+        );
+
         $this->gamestate->nextState();
     }
 

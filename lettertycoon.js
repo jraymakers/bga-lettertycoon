@@ -42,6 +42,11 @@ function (dojo, declare) {
             this.availablePatents = null;
             this.patentStocksByPlayer = {}; // key: player_id
 
+            // per-player counters
+            this.playerMoney = {}; // key: player_id
+            this.playerStock = {}; // key: player_id
+            this.playerPatentsValue = {}; // key: player_id
+
             // ui state
             this.mainWordOrigins = []; // values: 'c' = community, 'd' = duplicated, 'h' = hand, 's' = appended S
             this.mainWordTypes = []; // values: 'c' = consonant, 'v' = vowel, '_' = as defined
@@ -74,14 +79,21 @@ function (dojo, declare) {
 
             var players = gamedatas.players;
             for (var player_id in players) {
-                this.patentStocksByPlayer[player_id] = this.createPatentStock('player_patents_'+player_id);
+                var player = players[player_id];
                 dojo.place(
                     this.format_block('jstpl_player_board_info', { player_id: player_id }),
                     $('player_board_'+player_id)
                 );
-                if (players[player_id].order !== '1') {
+                this.playerMoney[player_id] =
+                    this.createCounter('player_board_coins_counter_'+player_id, player.money);
+                this.playerStock[player_id] =
+                    this.createCounter('player_board_stock_counter_'+player_id, player.stock);
+                this.playerPatentsValue[player_id] =
+                    this.createCounter('player_board_patents_counter_'+player_id, player.patents_value);
+                if (player.order !== '1') {
                     dojo.style($('player_board_zeppelin_'+player_id), 'display', 'none');
                 }
+                this.patentStocksByPlayer[player_id] = this.createPatentStock('player_patents_'+player_id);
             }
 
             var patent_owners = gamedatas.patent_owners;
@@ -278,6 +290,13 @@ function (dojo, declare) {
 
         createPatent: function (element, type, id) {
             dojo.addClass(element, 'patent');
+        },
+
+        createCounter: function (element_id, value) {
+            var counter = new ebg.counter();
+            counter.create(element_id);
+            counter.setValue(value);
+            return counter;
         },
 
         setClassIf: function (condition, id, cls) {
@@ -576,6 +595,8 @@ function (dojo, declare) {
             dojo.subscribe('automaticChallengeRejectedWordTryAgain', this, 'notif_automaticChallengeRejectedWordTryAgain');
             this.notifqueue.setSynchronous( 'automaticChallengeRejectedWordTryAgain', 2000 );
 
+            dojo.subscribe('playerReceivedMoneyAndStock', this, 'notif_playerReceivedMoneyAndStock');
+
             dojo.subscribe('communityReceivedCards', this, 'notif_communityReceivedCards');
             this.notifqueue.setSynchronous( 'communityReceivedCards', 2000 );
 
@@ -626,6 +647,17 @@ function (dojo, declare) {
             console.log('automatic challenge rejected word try again');
             console.log(notif);
             this.clearWordArea();
+        },
+
+        notif_playerReceivedMoneyAndStock: function (notif) {
+            console.log('player received money and stock');
+            console.log(notif);
+            var player_id = notif.args.player_id;
+            var money = notif.args.money;
+            var stock = notif.args.stock;
+            this.playerMoney[player_id].incValue(money);
+            this.playerStock[player_id].incValue(stock);
+            this.scoreCtrl[player_id].incValue(money + stock);
         },
 
         notif_communityReceivedCards: function (notif) {
