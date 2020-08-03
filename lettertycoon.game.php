@@ -1,24 +1,15 @@
 <?php
- /**
-  *------
-  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
-  * LetterTycoon implementation : © <Your name here> <Your email address here>
-  * 
-  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
-  * See http://en.boardgamearena.com/#!doc/Studio for more information.
-  * -----
-  * 
-  * lettertycoon.game.php
-  *
-  * This is the main file for your game logic.
-  *
-  * In this PHP file, you are going to defines the rules of the game.
-  *
-  */
-
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * LetterTycoon implementation : © Jeff Raymakers <jephly@gmail.com>
+ * 
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ */
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
-
 
 class LetterTycoon extends Table
 {
@@ -89,8 +80,6 @@ class LetterTycoon extends Table
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
-        // TODO: setup the initial game situation here
 
         // initialize card table
         $cards = array();
@@ -191,10 +180,6 @@ class LetterTycoon extends Table
 //////////// Utility functions
 ////////////    
 
-    /*
-        In this space, you can put any utility methods useful for your game logic
-    */
-
     function clearWord()
     {
         $sql = 'DELETE FROM word ';
@@ -245,7 +230,6 @@ class LetterTycoon extends Table
         }
         return FALSE;
     }
-
 
 
 //////////////////////////////////////////////////////////////////////////////
