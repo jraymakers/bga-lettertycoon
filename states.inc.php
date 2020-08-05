@@ -165,6 +165,7 @@ $machinestates = array(
         'transitions' => array( 'buyPatent' => 51, 'skip' => 52 )
     ),
 
+    // maybe not needed?
     51 => array(
         'name' => 'buyPatent',
         'description' => '',

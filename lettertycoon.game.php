@@ -180,6 +180,43 @@ class LetterTycoon extends Table
 //////////// Utility functions
 ////////////    
 
+    function getPlayerMoney($player_id)
+    {
+        $sql = "SELECT `money` FROM player WHERE player_id = '$player_id' ";
+        return self::getUniqueValueFromDB($sql);
+    }
+
+    // function getPatentOwnerId($patent_id)
+    // {
+    //     $sql = "SELECT owning_player_id FROM patent WHERE patent_id = '$patent_id' ";
+    //     return self::getUniqueValueFromDB($sql);
+    // }
+
+    function isPatentOwned($patent_id)
+    {
+        $sql = "SELECT EXISTS(SELECT 1 FROM patent
+                WHERE patent_id = '$patent_id' AND owning_player_id IS NOT NULL
+                LIMIT 1) ";
+        return self::getUniqueValueFromDB($sql);
+    }
+
+    function setPatentOwner($patent_id, $player_id)
+    {
+        $sql = "UPDATE patent SET owning_player_id = $player_id WHERE patent_id = '$patent_id' ";
+        self::DbQuery( $sql );
+    }
+
+    function updatePlayerCounters($player_id, $money_change, $stock_change, $patents_value_change)
+    {
+        $sql = "UPDATE player SET
+                    `money` = `money` + $money_change,
+                    `stock` = `stock` + $stock_change,
+                    player_score_aux = player_score_aux + $patents_value_change,
+                    player_score = player_score + $money_change + $stock_change + $patents_value_change
+                WHERE player_id = $player_id";
+        self::DbQuery( $sql );
+    }
+
     function clearWord()
     {
         $sql = 'DELETE FROM word ';
@@ -192,6 +229,14 @@ class LetterTycoon extends Table
         $sql = "SELECT letter, letter_origin, letter_type, card_id
                 FROM word WHERE word_num = $word_num ORDER BY word_pos ";
         return self::getObjectListFromDb($sql);
+    }
+
+    function wordContainsCardWithLetter($letter)
+    {
+        $sql = "SELECT EXISTS(SELECT 1 FROM word
+                WHERE letter = '$letter' AND card_id IS NOT NULL
+                LIMIT 1) ";
+        return self::getUniqueValueFromDB($sql);
     }
 
     function stringFromWordObjects($word_objects)
@@ -358,10 +403,48 @@ class LetterTycoon extends Table
 
     // state: playerMayBuyPatent
 
-    function buyPatent()
+    function buyPatent($letter_index)
     {
         self::checkAction('buyPatent');
-        // todo
+
+        if ($letter_index < 0 || $letter_index > 25) {
+            throw new BgaVisibleSystemException( "letter_index out of range: $letter_index" );
+        }
+
+        $letter = chr(65 + $letter_index);
+        $cost = $this->patent_costs[$letter];
+
+        if (self::isPatentOwned($letter)) {
+            throw new BgaUserException(self::_('You may not buy a patent that is already owned by another player.'));
+        }
+
+        if (!self::wordContainsCardWithLetter($letter)) {
+            throw new BgaUserException(self::_('You may only buy a patent that matches a card a word played this turn.'));
+        }
+
+        $active_player_id = self::getActivePlayerId();
+
+        $player_money = self::getPlayerMoney($active_player_id);
+
+        if ($player_money < $cost) {
+            throw new BgaUserException(self::_('You do not have enough money to buy that patent.'));
+        }
+
+        self::setPatentOwner($letter, $active_player_id);
+
+        self::updatePlayerCounters($active_player_id, -$cost, 0, $cost);
+
+        self::notifyAllPlayers('playerBoughtPatent',
+            clienttranslate('${player_name} bought the "${letter}" patent for $${cost}'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName(),
+                'letter' => $letter,
+                'cost' => $cost
+            )
+        );
+
+        $this->gamestate->nextState('buyPatent');
     }
 
     function skipBuyPatent()
@@ -575,13 +658,7 @@ class LetterTycoon extends Table
 
         // todo: extra word
 
-        // update player money, stock, and score
-        $sql = "UPDATE player SET
-                    `money` = `money` + $money,
-                    `stock` = `stock` + $stock,
-                    player_score = $money + $stock + player_score_aux
-                WHERE player_id = $active_player_id";
-        self::DbQuery( $sql );
+        self::updatePlayerCounters($active_player_id, $money, $stock, 0);
 
         if ($stock > 0)
         {

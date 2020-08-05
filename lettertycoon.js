@@ -119,6 +119,7 @@ function (dojo, declare) {
 
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
+            dojo.connect(this.availablePatents, 'onChangeSelection', this, 'onPatentSelectionChanged');
             dojo.connect($('play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');
             dojo.connect($('clear_button'), 'onclick', this, 'onClearButtonClicked');
             dojo.connect($('discard_button'), 'onclick', this, 'onDiscardButtonClicked');
@@ -157,6 +158,12 @@ function (dojo, declare) {
                         this.updateWordAreaButtons();
                     }
                     break;
+                
+                case 'playerMayBuyPatent':
+                    if (this.isCurrentPlayerActive()) {
+                        this.availablePatents.setSelectionMode(1);
+                    }
+                    break;
 
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
@@ -189,7 +196,11 @@ function (dojo, declare) {
                     }
                     break;
                 
-                
+                case 'playerMayBuyPatent':
+                    if (this.isCurrentPlayerActive()) {
+                        this.availablePatents.setSelectionMode(0);
+                    }
+                    break;
 
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
@@ -360,6 +371,15 @@ function (dojo, declare) {
             this.updateWordAreaButtons();
         },
 
+        buySelectedPatent: function () {
+            var items = this.availablePatents.getSelectedItems();
+            console.log(items);
+            if (items.length === 1) {
+                var item = items[0];
+                this.action_buyPatent(item.type);
+            }
+        },
+
         sendAction: function (action, args) {
             var params = {};
             if (args) {
@@ -388,6 +408,12 @@ function (dojo, declare) {
 
         action_skipPlayWord: function () {
             this.sendAction('skipPlayWord');
+        },
+
+        action_buyPatent: function (letterIndex) {
+            this.sendAction('buyPatent', {
+                letter_index: letterIndex
+            });
         },
 
         action_skipBuyPatent: function () {
@@ -464,6 +490,18 @@ function (dojo, declare) {
             }
         },
 
+        onPatentSelectionChanged: function () {
+            console.log('patent selection changed');
+
+            switch (this.currentState) {
+
+                case 'playerMayBuyPatent':
+                    this.buySelectedPatent();
+                    break;
+
+            }
+        },
+
         onPlayWordButtonClicked: function (evt) {
             console.log('play word button clicked');
 
@@ -531,6 +569,8 @@ function (dojo, declare) {
 
             dojo.subscribe('playerReceivedMoneyAndStock', this, 'notif_playerReceivedMoneyAndStock');
 
+            dojo.subscribe('playerBoughtPatent', this, 'notif_playerBoughtPatent');
+
             dojo.subscribe('communityReceivedCards', this, 'notif_communityReceivedCards');
             this.notifqueue.setSynchronous( 'communityReceivedCards', 2000 );
 
@@ -592,6 +632,13 @@ function (dojo, declare) {
             this.playerMoney[player_id].incValue(money);
             this.playerStock[player_id].incValue(stock);
             this.scoreCtrl[player_id].incValue(money + stock);
+        },
+
+        notif_playerBoughtPatent: function (notif) {
+            console.log('player bought patent');
+            console.log(notif);
+            // todo: move patent to player area
+            // todo: update counters
         },
 
         notif_communityReceivedCards: function (notif) {

@@ -106,7 +106,8 @@ class action_lettertycoon extends APP_GameAction
     public function buyPatent()
     {
         self::setAjaxMode();
-
+        $letter_index = self::getArg('letter_index', AT_int, true);
+        $this->game->buyPatent($letter_index);
         self::ajaxResponse();
     }
 
