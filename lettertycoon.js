@@ -93,9 +93,9 @@ function (dojo, declare) {
                 var letter_index = this.getLetterIndex(letter);
                 var owner = patent_owners[letter];
                 if (owner) {
-                    this.patentStocksByPlayer[owner].addToStock(letter_index);
+                    this.patentStocksByPlayer[owner].addToStockWithId(letter_index, letter_index);
                 } else {
-                    this.availablePatents.addToStock(letter_index);
+                    this.availablePatents.addToStockWithId(letter_index, letter_index);
                 }
             }
 
@@ -637,8 +637,17 @@ function (dojo, declare) {
         notif_playerBoughtPatent: function (notif) {
             console.log('player bought patent');
             console.log(notif);
-            // todo: move patent to player area
-            // todo: update counters
+            var player_id = notif.args.player_id;
+            var letter = notif.args.letter;
+            var cost = notif.args.cost;
+            var letterIndex = this.getLetterIndex(letter);
+            // move patent to player area from available patents
+            this.patentStocksByPlayer[player_id].addToStockWithId(letterIndex, letterIndex,
+                this.availablePatents.getItemDivId(letterIndex));
+            this.availablePatents.removeFromStockById(letterIndex);
+            // update counters
+            this.playerMoney[player_id].incValue(-cost);
+            this.playerPatentsValue[player_id].incValue(cost);
         },
 
         notif_communityReceivedCards: function (notif) {
