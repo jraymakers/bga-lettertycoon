@@ -85,6 +85,25 @@
     padding: 5px 0;
 }
 
+#community_pool_and_game_cards_area {
+    display: flex;
+}
+
+#community_pool_area {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 0;
+}
+
+#game_cards_area {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 .player_area_name {
     font-weight: bold;
 }
@@ -137,6 +156,58 @@
 
 .card {
     border-radius: 8px;
+}
+
+#game_cards {
+    display: flex;
+}
+
+.game_card {
+    width: 120px;
+    height: 165px;
+    margin-right: 5px;
+}
+
+#frequencies_card {
+    background-image: url('img/frequencies.jpg');
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 120px 165px;
+}
+
+#scoring_card {
+    background-image: url('img/scoring.jpg');
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 120px 165px;
+}
+
+#goal2_card {
+    background-image: url('img/goal2.jpg');
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 120px 165px;
+}
+
+#goal3_card {
+    background-image: url('img/goal3.jpg');
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 120px 165px;
+}
+
+#goal4_card {
+    background-image: url('img/goal4.jpg');
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 120px 165px;
+}
+
+#goal5_card {
+    background-image: url('img/goal5.jpg');
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 120px 165px;
 }
 
 .patent {

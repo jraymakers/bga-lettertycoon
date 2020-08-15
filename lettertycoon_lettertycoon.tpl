@@ -18,11 +18,24 @@
     <div id="extra_word"></div>
 </div>
 
-<div class="dark_area">
-    <div id="community_pool_area_header">
-        <div class="area_label">{COMMUNITY_POOL}</div>
+<div id="community_pool_and_game_cards_area">
+    <div class="dark_area" id="community_pool_area">
+        <div id="community_pool_area_header">
+            <div class="area_label">{COMMUNITY_POOL}</div>
+        </div>
+        <div id="community_pool"></div>
     </div>
-    <div id="community_pool"></div>
+
+    <div class="dark_area" id="game_cards_area">
+        <div id="game_cards_area_header">
+            <div class="area_label">{GAME_CARDS}</div>
+        </div>
+        <div id="game_cards">
+            <div class="card game_card" id="scoring_card"></div>
+            <div class="card game_card" id="frequencies_card"></div>
+            <div class="card game_card" id="goal{PLAYER_COUNT}_card"></div>
+        </div>
+    </div>
 </div>
 
 <div class="dark_area">
