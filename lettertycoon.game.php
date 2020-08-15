@@ -138,8 +138,6 @@ class LetterTycoon extends Table
                 `money`, `stock` FROM player ';
         $result['players'] = self::getCollectionFromDb( $sql );
   
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
-
         $result['community'] = $this->cards->getCardsInLocation( 'community' );
 
         $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
@@ -153,7 +151,7 @@ class LetterTycoon extends Table
                 ORDER BY word_pos ';
         $result['main_word'] = self::getObjectListFromDb( $sql );
 
-        // todo: extra word
+        // TODO: extra word
   
         return $result;
     }
@@ -186,6 +184,7 @@ class LetterTycoon extends Table
         return self::getUniqueValueFromDB($sql);
     }
 
+    // TODO: use or remove this
     // function getPatentOwnerId($patent_id)
     // {
     //     $sql = "SELECT owning_player_id FROM patent WHERE patent_id = '$patent_id' ";
@@ -292,7 +291,7 @@ class LetterTycoon extends Table
     {
         // Note: player can replace card from community pool!
         self::checkAction('replaceCard');
-        // todo
+        // TODO: implement
     }
 
     function skipReplaceCard()
@@ -307,7 +306,7 @@ class LetterTycoon extends Table
     {
         self::checkAction('playWord');
 
-        // todo: check args for validity
+        // TODO: check args for validity
         // - for each word (main and extra):
         //   - does it have letters, letter_orgins, letter_types, and card_ids?
         //   - are they all the same length?
@@ -320,7 +319,7 @@ class LetterTycoon extends Table
         //     - do all Ys (and only Ys) have defined letter_types?
         //     (or do we allow undefined for Y if there are no relevant powers?)
 
-        // todo: check rules
+        // TODO: check rules
         // - does each word contain at least three letters?
         // - is there at least one card from the players hand (in each word, if there are two)?
         // - if there are non-null letter types:
@@ -340,7 +339,7 @@ class LetterTycoon extends Table
 
         // self::dump('playWord: main_word', $main_word);
 
-        // clear word table first?
+        // clear word table first, just in case
         self::clearWord();
 
         $main_letters = $main_word['letters'];
@@ -364,7 +363,7 @@ class LetterTycoon extends Table
         $sql .= implode( ',', $values );
         self::DbQuery( $sql );
 
-        // todo: extra word
+        // TODO: extra word
 
         // move main word cards from community or hand to word
         $this->cards->moveCards($main_card_ids, 'word');
@@ -392,13 +391,13 @@ class LetterTycoon extends Table
     function challengeWord()
     {
         self::checkAction('challengeWord');
-        // todo
+        // TODO: implement
     }
 
     function acceptWord()
     {
         self::checkAction('acceptWord');
-        // todo
+        // TODO: implement
     }
 
     // state: playerMayBuyPatent
@@ -479,7 +478,7 @@ class LetterTycoon extends Table
             'card_ids' => $card_ids
         ));
 
-        // todo: notify all players about the number of cards discarded
+        // notify all players about the number of cards discarded
         self::notifyAllPlayers('playerDiscardedNumberOfCards',
             clienttranslate('${player_name} discarded ${num_cards} card(s)'),
             array(
@@ -502,7 +501,7 @@ class LetterTycoon extends Table
     function discardCard()
     {
         self::checkAction('discardCard');
-        // todo
+        // TODO: implement
     }
     
 //////////////////////////////////////////////////////////////////////////////
@@ -549,13 +548,13 @@ class LetterTycoon extends Table
     function stReplaceCard()
     {
         // Note: player can replace card from community pool!
-        // todo
+        // TODO: implement
         $this->gamestate->nextState();
     }
 
     function stPlayWord()
     {
-        // todo
+        // TODO: implement
         $this->gamestate->nextState('automaticChallengeVariant');
     }
 
@@ -579,7 +578,7 @@ class LetterTycoon extends Table
         }
         else
         {
-            // todo: support limited number of retries
+            // TODO: support limited number of retries
 
             $active_player_id = self::getActivePlayerId();
             
@@ -617,25 +616,25 @@ class LetterTycoon extends Table
 
     function stPlayersMayChallenge()
     {
-        // todo
+        // TODO: implement
         $this->gamestate->nextState('scoreWord');
     }
 
     function stResolveChallenge()
     {
-        // todo
+        // TODO: implement
         $this->gamestate->nextState('wordAccepted');
     }
 
     function stChallengeFailed()
     {
-        // todo
+        // TODO: implement
         $this->gamestate->nextState();
     }
 
     function stChallengeSucceeded()
     {
-        // todo
+        // TODO: implement
         $this->gamestate->nextState();
     }
 
@@ -656,7 +655,15 @@ class LetterTycoon extends Table
         $money = $main_word_scores['money'];
         $stock = $main_word_scores['stock'];
 
-        // todo: extra word
+        // TODO: extra word
+
+        // TODO: If word contains Q, then 2x money and stock
+
+        // TODO: B patent scoring
+
+        // TODO: J patent scoring
+        
+        // TODO: K patent scoring
 
         self::updatePlayerCounters($active_player_id, $money, $stock, 0);
 
@@ -685,13 +692,14 @@ class LetterTycoon extends Table
 
     function stPayRoyalties()
     {
-        // todo
+        // TODO: implement
         $this->gamestate->nextState();
     }
 
+    // TODO: maybe not needed?
     function stBuyPatent()
     {
-        // todo
+        // TODO: implement
         $this->gamestate->nextState();
     }
 
@@ -719,10 +727,10 @@ class LetterTycoon extends Table
         $this->gamestate->nextState();
     }
 
-    // maybe not needed?
+    // TODO: maybe not needed?
     function stDiscardCards()
     {
-        // todo
+        // TODO: implement
         $this->gamestate->nextState();
     }
 
@@ -744,7 +752,7 @@ class LetterTycoon extends Table
 
     function stEndTurn()
     {
-        // todo: check for end of game
+        // TODO: check for end of game
         
         $player_id = self::activeNextPlayer();
         self::giveExtraTime( $player_id );

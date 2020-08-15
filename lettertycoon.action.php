@@ -51,14 +51,14 @@ class action_lettertycoon extends APP_GameAction
     public function replaceCard()
     {
         self::setAjaxMode();
-
+        // TODO: implement
         self::ajaxResponse();
     }
 
     public function skipReplaceCard()
     {
         self::setAjaxMode();
-
+        // TODO: implement
         self::ajaxResponse();
     }
 
@@ -90,14 +90,14 @@ class action_lettertycoon extends APP_GameAction
     public function challengeWord()
     {
         self::setAjaxMode();
-
+        // TODO: implement
         self::ajaxResponse();
     }
 
     public function acceptWord()
     {
         self::setAjaxMode();
-
+        // TODO: implement
         self::ajaxResponse();
     }
 
@@ -140,7 +140,7 @@ class action_lettertycoon extends APP_GameAction
     public function discardCard()
     {
         self::setAjaxMode();
-
+        // TODO: implement
         self::ajaxResponse();
     }
 

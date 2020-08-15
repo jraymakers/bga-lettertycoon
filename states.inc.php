@@ -165,7 +165,7 @@ $machinestates = array(
         'transitions' => array( 'buyPatent' => 51, 'skip' => 52 )
     ),
 
-    // maybe not needed?
+    // TODO: maybe not needed?
     51 => array(
         'name' => 'buyPatent',
         'description' => '',
@@ -200,7 +200,7 @@ $machinestates = array(
         'transitions' => array( 'discardCard' => 75 )
     ),
 
-    // maybe not needed?
+    // TODO: maybe not needed?
     75 => array(
         'name' => 'discardCards',
         'description' => '',

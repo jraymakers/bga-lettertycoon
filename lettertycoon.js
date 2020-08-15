@@ -367,7 +367,7 @@ function (dojo, declare) {
             this.mainWordStock.removeAll();
             this.mainWordOrigins = [];
             this.mainWordTypes = [];
-            // todo: extra word
+            // TODO: extra word
             this.updateWordAreaButtons();
         },
 
@@ -402,7 +402,7 @@ function (dojo, declare) {
                 main_word_letter_types: mainWord.letterTypes.join(''),
                 main_word_card_ids: this.toNumberList(mainWord.cardIds)
             };
-            // todo: add extra word args
+            // TODO: add extra word args
             this.sendAction('playWord', args);
         },
 
@@ -614,7 +614,7 @@ function (dojo, declare) {
                 this.mainWordOrigins = letter_origins.split('');
                 this.mainWordTypes = letter_types.split('');
             }
-            // todo: extra word
+            // TODO: extra word
         },
 
         notif_automaticChallengeRejectedWordTryAgain: function (notif) {
