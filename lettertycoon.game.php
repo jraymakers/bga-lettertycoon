@@ -759,6 +759,8 @@ class LetterTycoon extends Table
             );
         }
 
+        // TODO: skip playerMayBuyPatent if no purchases are possible?
+
         $this->gamestate->nextState();
     }
 
