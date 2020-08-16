@@ -146,7 +146,7 @@ class LetterTycoon extends Table
 
         $result['main_word'] = self::getWordObjects(1);
 
-        // TODO: extra word
+        // TODO: extra word (V patent power)
   
         return $result;
     }
@@ -292,7 +292,7 @@ class LetterTycoon extends Table
     {
         // Note: player can replace card from community pool!
         self::checkAction('replaceCard');
-        // TODO: implement
+        // TODO: implement (Q patent power)
     }
 
     function skipReplaceCard()
@@ -307,7 +307,7 @@ class LetterTycoon extends Table
     {
         self::checkAction('playWord');
 
-        // TODO: check args for validity
+        // TODO: check args for validity (play word)
         // - for each word (main and extra):
         //   - does it have letters, letter_orgins, letter_types, and card_ids?
         //   - are they all the same length?
@@ -320,7 +320,7 @@ class LetterTycoon extends Table
         //     - do all Ys (and only Ys) have defined letter_types?
         //     (or do we allow undefined for Y if there are no relevant powers?)
 
-        // TODO: check rules
+        // TODO: check rules (play word)
         // - does each word contain at least three letters?
         // - is there at least one card from the players hand (in each word, if there are two)?
         // - if there are non-null letter types:
@@ -364,7 +364,7 @@ class LetterTycoon extends Table
         $sql .= implode( ',', $values );
         self::DbQuery( $sql );
 
-        // TODO: extra word
+        // TODO: extra word (V patent power)
 
         // move main word cards from community or hand to word
         $this->cards->moveCards($main_card_ids, 'word');
@@ -392,13 +392,13 @@ class LetterTycoon extends Table
     function challengeWord()
     {
         self::checkAction('challengeWord');
-        // TODO: implement
+        // TODO: implement (players challenge)
     }
 
     function acceptWord()
     {
         self::checkAction('acceptWord');
-        // TODO: implement
+        // TODO: implement (players challenge)
     }
 
     // state: playerMayBuyPatent
@@ -502,7 +502,7 @@ class LetterTycoon extends Table
     function discardCard()
     {
         self::checkAction('discardCard');
-        // TODO: implement
+        // TODO: implement (challenge)
     }
     
 //////////////////////////////////////////////////////////////////////////////
@@ -549,13 +549,13 @@ class LetterTycoon extends Table
     function stReplaceCard()
     {
         // Note: player can replace card from community pool!
-        // TODO: implement
+        // TODO: implement (Q patent power)
         $this->gamestate->nextState();
     }
 
     function stPlayWord()
     {
-        // TODO: implement
+        // TODO: implement (challenge modes)
         $this->gamestate->nextState('automaticChallengeVariant');
     }
 
@@ -579,7 +579,7 @@ class LetterTycoon extends Table
         }
         else
         {
-            // TODO: support limited number of retries
+            // TODO: support limited number of retries (automatic challenge)
 
             $active_player_id = self::getActivePlayerId();
             
@@ -617,25 +617,25 @@ class LetterTycoon extends Table
 
     function stPlayersMayChallenge()
     {
-        // TODO: implement
+        // TODO: implement (players challenge)
         $this->gamestate->nextState('scoreWord');
     }
 
     function stResolveChallenge()
     {
-        // TODO: implement
+        // TODO: implement (players challenge)
         $this->gamestate->nextState('wordAccepted');
     }
 
     function stChallengeFailed()
     {
-        // TODO: implement
+        // TODO: implement (players challenge)
         $this->gamestate->nextState();
     }
 
     function stChallengeSucceeded()
     {
-        // TODO: implement
+        // TODO: implement (players challenge)
         $this->gamestate->nextState();
     }
 
@@ -656,7 +656,7 @@ class LetterTycoon extends Table
         $money = $main_word_scores['money'];
         $stock = $main_word_scores['stock'];
 
-        // TODO: extra word
+        // TODO: extra word (V patent power)
 
         // TODO: If word contains Q, then 2x money and stock
 

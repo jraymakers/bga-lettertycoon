@@ -64,7 +64,7 @@ function (dojo, declare) {
             this.handStock = this.createCardStock('current_player_hand');
             this.mainWordStock = this.createCardStock('main_word');
             this.mainWordStock.order_items = false;
-            // TODO: create this when needed?
+            // TODO: create this when needed? (V patent power)
             // this.extraWordStock = this.createCardStock('extra_word');
             
             this.availablePatents = this.createPatentStock('available_patents');
@@ -367,7 +367,7 @@ function (dojo, declare) {
             this.mainWordStock.removeAll();
             this.mainWordOrigins = [];
             this.mainWordTypes = [];
-            // TODO: extra word
+            // TODO: extra word (V patent power)
             this.updateWordAreaButtons();
         },
 
@@ -402,7 +402,7 @@ function (dojo, declare) {
                 main_word_letter_types: mainWord.letterTypes.join(''),
                 main_word_card_ids: this.toNumberList(mainWord.cardIds)
             };
-            // TODO: add extra word args
+            // TODO: add extra word args (V patent power)
             this.sendAction('playWord', args);
         },
 
@@ -617,7 +617,7 @@ function (dojo, declare) {
                 this.mainWordOrigins = letter_origins.split('');
                 this.mainWordTypes = letter_types.split('');
             }
-            // TODO: extra word
+            // TODO: extra word (V patent power)
         },
 
         notif_automaticChallengeRejectedWordTryAgain: function (notif) {

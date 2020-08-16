@@ -51,14 +51,14 @@ class action_lettertycoon extends APP_GameAction
     public function replaceCard()
     {
         self::setAjaxMode();
-        // TODO: implement
+        // TODO: implement (Q patent power)
         self::ajaxResponse();
     }
 
     public function skipReplaceCard()
     {
         self::setAjaxMode();
-        // TODO: implement
+        // TODO: implement (Q patent power)
         self::ajaxResponse();
     }
 
@@ -73,7 +73,7 @@ class action_lettertycoon extends APP_GameAction
             'letter_types' => self::getArg('main_word_letter_types', AT_alphanum, true),
             'card_ids' => self::parseNumberList(self::getArg('main_word_card_ids', AT_numberlist, true)) // NULL?
         );
-        // todo: optional extra word args
+        // TODO: optional extra word args (V patent power)
         $this->game->playWord($main_word);
         self::ajaxResponse();
     }
@@ -90,14 +90,14 @@ class action_lettertycoon extends APP_GameAction
     public function challengeWord()
     {
         self::setAjaxMode();
-        // TODO: implement
+        // TODO: implement (players challenge)
         self::ajaxResponse();
     }
 
     public function acceptWord()
     {
         self::setAjaxMode();
-        // TODO: implement
+        // TODO: implement (players challenge)
         self::ajaxResponse();
     }
 
@@ -140,7 +140,7 @@ class action_lettertycoon extends APP_GameAction
     public function discardCard()
     {
         self::setAjaxMode();
-        // TODO: implement
+        // TODO: implement (challenge)
         self::ajaxResponse();
     }
 
