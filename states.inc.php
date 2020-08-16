@@ -148,6 +148,7 @@ $machinestates = array(
         'transitions' => array( '' => 46 )
     ),
 
+    // TODO: maybe not needed?
     46 => array(
         'name' => 'payRoyalties',
         'description' => '',

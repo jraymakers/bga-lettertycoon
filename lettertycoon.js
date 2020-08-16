@@ -568,6 +568,9 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous( 'automaticChallengeRejectedWordTryAgain', 2000 );
 
             dojo.subscribe('playerReceivedMoneyAndStock', this, 'notif_playerReceivedMoneyAndStock');
+            this.notifqueue.setSynchronous( 'playerReceivedMoneyAndStock', 2000 );
+
+            dojo.subscribe('playerReceivedRoyalties', this, 'notif_playerReceivedRoyalties');
 
             dojo.subscribe('playerBoughtPatent', this, 'notif_playerBoughtPatent');
 
@@ -632,6 +635,14 @@ function (dojo, declare) {
             this.playerMoney[player_id].incValue(money);
             this.playerStock[player_id].incValue(stock);
             this.scoreCtrl[player_id].incValue(money + stock);
+        },
+
+        notif_playerReceivedRoyalties: function (notif) {
+            console.log('player received royalties');
+            console.log(notif);
+            var player_id = notif.args.player_id;
+            var royalties = notif.args.royalties;
+            this.playerMoney[player_id].incValue(royalties);
         },
 
         notif_playerBoughtPatent: function (notif) {

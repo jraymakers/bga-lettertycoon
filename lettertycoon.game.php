@@ -142,14 +142,9 @@ class LetterTycoon extends Table
 
         $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
 
-        $sql = 'SELECT patent_id, owning_player_id FROM patent ';
-        $result['patent_owners'] = self::getCollectionFromDb( $sql, true );
+        $result['patent_owners'] = self::getPatentOwners();
 
-        $sql = 'SELECT letter, letter_origin, letter_type, card_id
-                FROM word
-                WHERE word_num = 1
-                ORDER BY word_pos ';
-        $result['main_word'] = self::getObjectListFromDb( $sql );
+        $result['main_word'] = self::getWordObjects(1);
 
         // TODO: extra word
   
@@ -190,6 +185,12 @@ class LetterTycoon extends Table
     //     $sql = "SELECT owning_player_id FROM patent WHERE patent_id = '$patent_id' ";
     //     return self::getUniqueValueFromDB($sql);
     // }
+
+    function getPatentOwners()
+    {
+        $sql = "SELECT patent_id, owning_player_id FROM patent ";
+        return self::getCollectionFromDB($sql, true);
+    }
 
     function isPatentOwned($patent_id)
     {
@@ -687,9 +688,46 @@ class LetterTycoon extends Table
             )
         );
 
+        // pay royalties
+
+        $patent_owners = self::getPatentOwners();
+
+        $royalties_by_player = array();
+
+        foreach ($main_word_objects as $word_object) {
+            $letter_origin = $word_object['letter_origin'];
+            if ($letter_origin == 'c' || $letter_origin == 'h') {
+                $letter = $word_object['letter'];
+                $patent_owner = $patent_owners[$letter];
+                if (isset($patent_owner) && $patent_owner != $active_player_id) {
+                    if (array_key_exists($patent_owner, $royalties_by_player)) {
+                        $royalties_by_player[$patent_owner] += 1;
+                    } else {
+                        $royalties_by_player[$patent_owner] = 1;
+                    }
+                }
+            }
+        }
+
+        $players = self::loadPlayersBasicInfos();
+
+        foreach ($royalties_by_player as $player_id => $royalties) {
+            self::updatePlayerCounters($player_id, $royalties, 0, 0);
+
+            self::notifyAllPlayers('playerReceivedRoyalties',
+            clienttranslate('${player_name} received $${royalties} in royalties'),
+                array(
+                    'player_id' => $player_id,
+                    'player_name' => $players[$player_id]['player_name'],
+                    'royalties' => $royalties
+                )
+            );
+        }
+
         $this->gamestate->nextState();
     }
 
+    // TODO: maybe not needed?
     function stPayRoyalties()
     {
         // TODO: implement
