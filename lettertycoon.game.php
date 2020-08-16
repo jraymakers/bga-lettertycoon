@@ -25,6 +25,9 @@ class LetterTycoon extends Table
         
         self::initGameStateLabels(
             array(
+                // globals
+                'last_round' => 10, // 0 is no, 1 is yes
+
                 // game options
                 'challenge_mode' => 100,
                 'automatic_challenge_retries' => 101,
@@ -75,6 +78,8 @@ class LetterTycoon extends Table
 
         // Init global values with their initial values
         //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+
+        self::setGameStateInitialValue('last_round', 0);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -179,12 +184,17 @@ class LetterTycoon extends Table
         return self::getUniqueValueFromDB($sql);
     }
 
-    // TODO: use or remove this
-    // function getPatentOwnerId($patent_id)
-    // {
-    //     $sql = "SELECT owning_player_id FROM patent WHERE patent_id = '$patent_id' ";
-    //     return self::getUniqueValueFromDB($sql);
-    // }
+    function getPlayerPatentsValue($player_id)
+    {
+        $sql = "SELECT player_score_aux FROM player WHERE player_id = '$player_id' ";
+        return self::getUniqueValueFromDB($sql);
+    }
+
+    function getPlayerPatentsCount($player_id)
+    {
+        $sql = "SELECT COUNT(patent_id) FROM patent WHERE owning_player_id = '$player_id' ";
+        return self::getUniqueValueFromDB($sql);
+    }
 
     function getPatentOwners()
     {
@@ -272,6 +282,31 @@ class LetterTycoon extends Table
             if ($comp < 0) $low = $mid + 1;
             elseif ($comp > 0) $high = $mid - 1;
             else return TRUE;
+        }
+        return FALSE;
+    }
+
+    function playerMeetsGoal($player_id)
+    {
+        $goal = $this->goals[self::getPlayersNumber()];
+        $goal_minimum = $goal['minimum'];
+        $goal_value = $goal['value'];
+
+        $player_patents_count = self::getPlayerPatentsCount($player_id);
+        $player_patents_value = self::getPlayerPatentsValue($player_id);
+
+        return $player_patents_count >= $goal_minimum && $player_patents_value >= $goal_value;
+    }
+
+    function isLastTurnOfLastRound()
+    {
+        // is this the last round?
+        if (self::getGameStateValue('last_round') == 1)
+        {
+            $active_player_id = self::getActivePlayerId();
+            $nextPlayerTable = self::getNextPlayerTable();
+            // is the next player the first player?
+            return $nextPlayerTable[$active_player_id] == $nextPlayerTable[0];
         }
         return FALSE;
     }
@@ -437,7 +472,7 @@ class LetterTycoon extends Table
         self::notifyAllPlayers('playerBoughtPatent',
             clienttranslate('${player_name} bought the "${letter}" patent for $${cost}'),
             array(
-                'player_id' => self::getActivePlayerId(),
+                'player_id' => $active_player_id,
                 'player_name' => self::getActivePlayerName(),
                 'letter' => $letter,
                 'cost' => $cost
@@ -681,7 +716,7 @@ class LetterTycoon extends Table
         self::notifyAllPlayers('playerReceivedMoneyAndStock',
             $message,
             array(
-                'player_id' => self::getActivePlayerId(),
+                'player_id' => $active_player_id,
                 'player_name' => self::getActivePlayerName(),
                 'money' => $money,
                 'stock' => $stock
@@ -734,10 +769,24 @@ class LetterTycoon extends Table
         $this->gamestate->nextState();
     }
 
-    // TODO: maybe not needed?
     function stBuyPatent()
     {
-        // TODO: implement
+        $active_player_id = self::getActivePlayerId();
+
+        // check if the last round was triggered
+        if (self::playerMeetsGoal($active_player_id))
+        {
+            self::setGameStateValue('last_round', 1);
+
+            self::notifyAllPlayers('playerTriggeredLastRound',
+                clienttranslate('${player_name} triggered the last round!'),
+                array(
+                    'player_id' => $active_player_id,
+                    'player_name' => self::getActivePlayerName()
+                )
+            );
+        }
+
         $this->gamestate->nextState();
     }
 
@@ -790,12 +839,14 @@ class LetterTycoon extends Table
 
     function stEndTurn()
     {
-        // TODO: check for end of game
-        
-        $player_id = self::activeNextPlayer();
-        self::giveExtraTime( $player_id );
+        if (self::isLastTurnOfLastRound()) {
+            $this->gamestate->nextState('endGame');
+        } else {
+            $player_id = self::activeNextPlayer();
+            self::giveExtraTime( $player_id );
 
-        $this->gamestate->nextState('nextTurn');
+            $this->gamestate->nextState('nextTurn');
+        }
     }
 
 //////////////////////////////////////////////////////////////////////////////
