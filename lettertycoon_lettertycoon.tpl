@@ -12,10 +12,11 @@
     <div id="word_area_header">
         <span class="area_label"">{WORD_AREA}</span>
         <a href="#" id="play_word_button" class="bgabutton bgabutton_blue">{PLAY_WORD}</a>
+        <a href="#" id="start_second_word_button" class="bgabutton bgabutton_gray">{START_SECOND_WORD}</a>
         <a href="#" id="clear_button" class="bgabutton bgabutton_gray">{CLEAR}</a>
     </div>
     <div id="main_word"></div>
-    <div id="extra_word"></div>
+    <div id="second_word"></div>
 </div>
 
 <div id="community_pool_and_game_cards_area">

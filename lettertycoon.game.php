@@ -151,7 +151,7 @@ class LetterTycoon extends Table
 
         $result['main_word'] = self::getWordObjects(1);
 
-        // TODO: extra word (V patent power)
+        $result['second_word'] = self::getWordObjects(2);
   
         return $result;
     }
@@ -227,13 +227,36 @@ class LetterTycoon extends Table
         self::DbQuery( $sql );
     }
 
+    function saveWord($word_num /* 1 or 2 */, $word_args)
+    {
+        $letters = $word_args['letters'];
+        $letter_origins = $word_args['letter_origins'];
+        $letter_types = $word_args['letter_types'];
+        $card_ids = $word_args['card_ids'];
+
+        $length = strlen($letters);
+
+        $sql = 'INSERT INTO word (word_num, word_pos, letter, letter_origin, letter_type, card_id) VALUES ';
+        $values = array();
+        for ( $word_pos = 0; $word_pos < $length; $word_pos++ )
+        {
+            $letter = $letters[$word_pos];
+            $letter_origin = $letter_origins[$word_pos];
+            $letter_type = $letter_types[$word_pos];
+            $card_id = $card_ids[$word_pos]; // NULL?
+            $values[] = "($word_num, $word_pos, '$letter', '$letter_origin', '$letter_type', $card_id)";
+        }
+        $sql .= implode( ',', $values );
+        self::DbQuery( $sql );
+    }
+
     function clearWord()
     {
         $sql = 'DELETE FROM word ';
         self::DbQuery( $sql );
     }
 
-    // $word_num = 1 for main word, 2 for extra word
+    // $word_num = 1 for main word, 2 for second word
     function getWordObjects($word_num)
     {
         $sql = "SELECT letter, letter_origin, letter_type, card_id
@@ -286,6 +309,72 @@ class LetterTycoon extends Table
         return FALSE;
     }
 
+    function isWordInDictionary($word_string)
+    {
+        // load appropriate word list
+        $wordlist = self::loadWordList(strlen($word_string));
+
+        // is the word in the word list?
+        return self::isWordInList(strtolower($word_string), $wordlist);
+    }
+
+    function returnCardsForWord($word_objects)
+    {
+        // move word cards back to community and hand
+        $community_cards = array();
+        $hand_cards = array();
+
+        foreach ($word_objects as $word_object) {
+            $letter_origin = $word_object['letter_origin'];
+            if ($letter_origin == 'c') {
+                $community_cards[] = $word_object['card_id'];
+            } elseif ($letter_origin = 'h') {
+                $hand_cards[] = $word_object['card_id'];
+            }
+        }
+        
+        $this->cards->moveCards($community_cards, 'community');
+        $this->cards->moveCards($hand_cards, 'hand', self::getActivePlayerId());
+    }
+
+    function returnAllWordCards($main_word_objects, $second_word_objects)
+    {
+        self::returnCardsForWord($main_word_objects);
+        self::returnCardsForWord($second_word_objects);
+        self::clearWord();
+    }
+
+    function notifyAutomaticChallengeRejectedWord($rejected_word_string)
+    {
+        self::notifyAllPlayers('automaticChallengeRejectedWordTryAgain',
+            clienttranslate('Automatic challenge rejected "${rejected_word}", ${player_name} may try again'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName(),
+                'rejected_word' => $rejected_word_string
+            )
+        );
+    }
+
+    function countRoyaltiesForWord($word_objects, $patent_owners, &$royalties_by_player)
+    {
+        $active_player_id = self::getActivePlayerId();
+        foreach ($word_objects as $word_object) {
+            $letter_origin = $word_object['letter_origin'];
+            if ($letter_origin == 'c' || $letter_origin == 'h') {
+                $letter = $word_object['letter'];
+                $patent_owner = $patent_owners[$letter];
+                if (isset($patent_owner) && $patent_owner != $active_player_id) {
+                    if (array_key_exists($patent_owner, $royalties_by_player)) {
+                        $royalties_by_player[$patent_owner] += 1;
+                    } else {
+                        $royalties_by_player[$patent_owner] = 1;
+                    }
+                }
+            }
+        }
+    }
+
     function playerMeetsGoal($player_id)
     {
         $goal = $this->goals[self::getPlayersNumber()];
@@ -304,9 +393,9 @@ class LetterTycoon extends Table
         if (self::getGameStateValue('last_round') == 1)
         {
             $active_player_id = self::getActivePlayerId();
-            $nextPlayerTable = self::getNextPlayerTable();
+            $next_player_table = self::getNextPlayerTable();
             // is the next player the first player?
-            return $nextPlayerTable[$active_player_id] == $nextPlayerTable[0];
+            return $next_player_table[$active_player_id] == $next_player_table[0];
         }
         return FALSE;
     }
@@ -338,12 +427,12 @@ class LetterTycoon extends Table
 
     // state: playerMayPlayWord
 
-    function playWord($main_word)
+    function playWord($main_word, $second_word)
     {
         self::checkAction('playWord');
 
         // TODO: check args for validity (play word)
-        // - for each word (main and extra):
+        // - for each word (main and second):
         //   - does it have letters, letter_orgins, letter_types, and card_ids?
         //   - are they all the same length?
         //   - does letters contain only capital letters?
@@ -378,38 +467,30 @@ class LetterTycoon extends Table
         // clear word table first, just in case
         self::clearWord();
 
-        $main_letters = $main_word['letters'];
-        $main_letter_origins = $main_word['letter_origins'];
-        $main_letter_types = $main_word['letter_types'];
-        $main_card_ids = $main_word['card_ids'];
-
-        $main_length = strlen($main_letters);
-
-        // save main word
-        $sql = 'INSERT INTO word (word_num, word_pos, letter, letter_origin, letter_type, card_id) VALUES ';
-        $values = array();
-        for ( $i = 0; $i < $main_length; $i++ )
-        {
-            $letter = $main_letters[$i];
-            $letter_origin = $main_letter_origins[$i];
-            $letter_type = $main_letter_types[$i];
-            $card_id = $main_card_ids[$i]; // NULL?
-            $values[] = "(1, $i, '$letter', '$letter_origin', '$letter_type', $card_id)";
+        self::saveWord(1, $main_word);
+        if (isset($second_word)) {
+            self::saveWord(2, $second_word);
         }
-        $sql .= implode( ',', $values );
-        self::DbQuery( $sql );
 
-        // TODO: extra word (V patent power)
+        // move word cards from community or hand to word
+        $this->cards->moveCards($main_word['card_ids'], 'word');
+        if (isset($second_word)) {
+            $this->cards->moveCards($second_word['card_ids'], 'word');
+        }
 
-        // move main word cards from community or hand to word
-        $this->cards->moveCards($main_card_ids, 'word');
-
+        if (isset($second_word)) {
+            $message = clienttranslate('${player_name} played "${main_word.letters}" and "${second_word.letters}"');
+        } else {
+            $message = clienttranslate('${player_name} played "${main_word.letters}"');
+        }
+        
         self::notifyAllPlayers('playerPlayedWord',
-            clienttranslate('${player_name} played "${main_word.letters}"'),
+            $message,
             array(
                 'player_id' => self::getActivePlayerId(),
                 'player_name' => self::getActivePlayerName(),
-                'main_word' => $main_word
+                'main_word' => $main_word,
+                'second_word' => $second_word
             )
         );
 
@@ -596,58 +677,28 @@ class LetterTycoon extends Table
 
     function stAutomaticChallenge()
     {
-        // get main word objects
         $main_word_objects = self::getWordObjects(1);
+        $second_word_objects = self::getWordObjects(2);
 
-        // get main word string
-        $main_word = self::stringFromWordObjects($main_word_objects);
-
-        // load appropriate word list
-        $main_word_wordlist = self::loadWordList(strlen($main_word));
-
-        // is the main word in the word list?
-        $mainWordInList = self::isWordInList(strtolower($main_word), $main_word_wordlist);
-
-        if ($mainWordInList)
-        {
-            $this->gamestate->nextState('wordAccepted');
-        }
-        else
-        {
-            // TODO: support limited number of retries (automatic challenge)
-
-            $active_player_id = self::getActivePlayerId();
-            
-            // move word cards back to community and hand and clear word
-            $community_cards = array();
-            $hand_cards = array();
-            foreach ( $main_word_objects as $main_word_object)
-            {
-                $letter_origin = $main_word_object['letter_origin'];
-                if ($letter_origin == 'c')
-                {
-                    $community_cards[] = $main_word_object['card_id'];
-                }
-                elseif ($letter_origin = 'h')
-                {
-                    $hand_cards[] = $main_word_object['card_id'];
-                }
-            }
-            $this->cards->moveCards($community_cards, 'community');
-            $this->cards->moveCards($hand_cards, 'hand', $active_player_id);
-            self::clearWord();
-
-            self::notifyAllPlayers('automaticChallengeRejectedWordTryAgain',
-                clienttranslate('Automatic challenge rejected "${main_word}", ${player_name} may try again'),
-                array(
-                    'player_id' => $active_player_id,
-                    'player_name' => self::getActivePlayerName(),
-                    'main_word' => $main_word
-                )
-            );
-
+        $main_word_string = self::stringFromWordObjects($main_word_objects);
+        if (!self::isWordInDictionary($main_word_string)) {
+            self::returnAllWordCards($main_word_objects, $second_word_objects);
+            self::notifyAutomaticChallengeRejectedWord($main_word_string);
             $this->gamestate->nextState('wordRejectedTryAgain');
+            return;
         }
+
+        if (count($second_word_objects) > 0) {
+            $second_word_string = self::stringFromWordObjects($second_word_objects);
+            if (!self::isWordInDictionary($second_word_string)) {
+                self::returnAllWordCards($main_word_objects, $second_word_objects);
+                self::notifyAutomaticChallengeRejectedWord($second_word_string);
+                $this->gamestate->nextState('wordRejectedTryAgain');
+                return;
+            }
+        }
+        
+        $this->gamestate->nextState('wordAccepted');
     }
 
     function stPlayersMayChallenge()
@@ -678,20 +729,21 @@ class LetterTycoon extends Table
     {
         $active_player_id = self::getActivePlayerId();
 
-        // get main word objects
         $main_word_objects = self::getWordObjects(1);
-
-        // get main word string
-        $main_word = self::stringFromWordObjects($main_word_objects);
-
-        // get main word length
-        $main_word_len = strlen($main_word);
-
+        $main_word_string = self::stringFromWordObjects($main_word_objects);
+        $main_word_len = strlen($main_word_string);
         $main_word_scores = $this->scores[$main_word_len];
         $money = $main_word_scores['money'];
         $stock = $main_word_scores['stock'];
 
-        // TODO: extra word (V patent power)
+        $second_word_objects = self::getWordObjects(2);
+        if (count($second_word_objects) > 0) {
+            $second_word_string = self::stringFromWordObjects($second_word_objects);
+            $second_word_len = strlen($second_word_string);
+            $second_word_scores = $this->scores[$second_word_len];
+            $money += $second_word_scores['money'];
+            $stock += $second_word_scores['stock'];
+        }
 
         // TODO: If word contains Q, then 2x money and stock
 
@@ -703,12 +755,9 @@ class LetterTycoon extends Table
 
         self::updatePlayerCounters($active_player_id, $money, $stock, 0);
 
-        if ($stock > 0)
-        {
+        if ($stock > 0) {
             $message = clienttranslate('${player_name} received $${money} and ${stock} stock');
-        }
-        else
-        {
+        } else {
             $message = clienttranslate('${player_name} received $${money}');
         }
 
@@ -729,20 +778,8 @@ class LetterTycoon extends Table
 
         $royalties_by_player = array();
 
-        foreach ($main_word_objects as $word_object) {
-            $letter_origin = $word_object['letter_origin'];
-            if ($letter_origin == 'c' || $letter_origin == 'h') {
-                $letter = $word_object['letter'];
-                $patent_owner = $patent_owners[$letter];
-                if (isset($patent_owner) && $patent_owner != $active_player_id) {
-                    if (array_key_exists($patent_owner, $royalties_by_player)) {
-                        $royalties_by_player[$patent_owner] += 1;
-                    } else {
-                        $royalties_by_player[$patent_owner] = 1;
-                    }
-                }
-            }
-        }
+        self::countRoyaltiesForWord($main_word_objects, $patent_owners, $royalties_by_player);
+        self::countRoyaltiesForWord($second_word_objects, $patent_owners, $royalties_by_player);
 
         $players = self::loadPlayersBasicInfos();
 

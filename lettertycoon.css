@@ -122,6 +122,14 @@
     display: inline;
 }
 
+#start_second_word_button {
+    display: none;
+    margin-left: 10px;
+}
+#start_second_word_button.show {
+    display: inline;
+}
+
 #clear_button {
     display: none;
     margin-left: 10px;
@@ -130,8 +138,11 @@
     display: inline;
 }
 
-#played_word_2 {
+#second_word {
     display: none;
+}
+#second_word.show {
+    display: block;
 }
 
 #current_player_hand_area_header {
