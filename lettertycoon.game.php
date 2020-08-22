@@ -767,7 +767,7 @@ class LetterTycoon extends Table
     // TODO: maybe not needed?
     function stPayRoyalties()
     {
-        // TODO: implement
+        // TODO: implement (if needed)
         $this->gamestate->nextState();
     }
 
@@ -819,7 +819,7 @@ class LetterTycoon extends Table
     // TODO: maybe not needed?
     function stDiscardCards()
     {
-        // TODO: implement
+        // TODO: implement (if needed)
         $this->gamestate->nextState();
     }
 
