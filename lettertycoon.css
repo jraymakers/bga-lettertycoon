@@ -113,6 +113,11 @@
     align-items: center;
     height: 50px;
 }
+#word_area_footer {
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
 
 #play_word_button {
     display: none;
@@ -128,6 +133,20 @@
 }
 #start_second_word_button.show {
     display: inline;
+}
+#start_second_word_button.disabled {
+    opacity: 0.5;
+}
+
+#duplicate_letter_button {
+    display: none;
+    margin-left: 10px;
+}
+#duplicate_letter_button.show {
+    display: inline;
+}
+#duplicate_letter_button.disabled {
+    opacity: 0.5;
 }
 
 #clear_button {
@@ -167,6 +186,9 @@
 
 .card {
     border-radius: 8px;
+}
+.card.duplicate {
+    opacity: 0.5 !important;
 }
 
 #game_cards {

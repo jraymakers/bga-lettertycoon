@@ -46,14 +46,14 @@ CREATE TABLE IF NOT EXISTS `patent` (
 -- word_pos: 1 to 12
 -- letter: 'A' to 'Z'
 -- letter_origin: 'c' = community, 'd' = duplicated, 'h' = hand, 's' = appended S
--- letter_type: 'c' = consonant, 'v' = vowel, NULL = as defined (for setting value of Y)
--- card_id: id of card or NULL if generated
+-- letter_type: 'c' = consonant, 'v' = vowel, '_' = as defined (for setting value of Y)
+-- card_id: id of card or 200+ if generated
 CREATE TABLE IF NOT EXISTS `word` (
   `word_num` tinyint(1) unsigned NOT NULL,
   `word_pos` tinyint(2) unsigned NOT NULL,
   `letter` char(1) NOT NULL,
   `letter_origin` char(1) NOT NULL,
-  `letter_type` char(1),
-  `card_id` tinyint(3) unsigned,
+  `letter_type` char(1) NOT NULL,
+  `card_id` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`word_num`, `word_pos`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;

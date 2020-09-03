@@ -243,7 +243,7 @@ class LetterTycoon extends Table
             $letter = $letters[$word_pos];
             $letter_origin = $letter_origins[$word_pos];
             $letter_type = $letter_types[$word_pos];
-            $card_id = $card_ids[$word_pos]; // NULL?
+            $card_id = $card_ids[$word_pos];
             $values[] = "($word_num, $word_pos, '$letter', '$letter_origin', '$letter_type', $card_id)";
         }
         $sql .= implode( ',', $values );

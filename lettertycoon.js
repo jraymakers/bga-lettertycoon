@@ -24,6 +24,7 @@ function (dojo, declare) {
             this.cardHeight = 165;
             this.patentWidth = 120;
             this.patentHeight = 79;
+            this.duplicateCardId = 208;
 
             // card stocks
             this.communityStock = null;
@@ -138,9 +139,12 @@ function (dojo, declare) {
 
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
+            dojo.connect(this.wordStock[1], 'onChangeSelection', this, 'onWord1SelectionChanged');
+            dojo.connect(this.wordStock[2], 'onChangeSelection', this, 'onWord2SelectionChanged');
             dojo.connect(this.availablePatents, 'onChangeSelection', this, 'onPatentSelectionChanged');
             dojo.connect($('play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');
             dojo.connect($('start_second_word_button'), 'onclick', this, 'onStartSecondWordButtonClicked');
+            dojo.connect($('duplicate_letter_button'), 'onclick', this, 'onDuplicateLetterButtonClicked');
             dojo.connect($('clear_button'), 'onclick', this, 'onClearButtonClicked');
             dojo.connect($('discard_button'), 'onclick', this, 'onDiscardButtonClicked');
 
@@ -175,6 +179,8 @@ function (dojo, declare) {
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(1);
                         this.communityStock.setSelectionMode(1);
+                        this.wordStock[1].setSelectionMode(1);
+                        this.wordStock[2].setSelectionMode(1);
                         this.showWordAreaButtons();
                         this.updateWordAreaButtons();
                     }
@@ -214,6 +220,8 @@ function (dojo, declare) {
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(0);
                         this.communityStock.setSelectionMode(0);
+                        this.wordStock[1].setSelectionMode(0);
+                        this.wordStock[2].setSelectionMode(0);
                         this.hideWordAreaButtons();
                     }
                     break;
@@ -303,6 +311,9 @@ function (dojo, declare) {
 
         createCard: function (element, type, id) {
             dojo.addClass(element, 'card');
+            if (/208$/.test(id)) { // 208 = duplicate card id
+                dojo.addClass(element, 'duplicate');
+            }
         },
 
         createPatentStock: function (element_id) {
@@ -342,13 +353,20 @@ function (dojo, declare) {
 
         updateWordAreaButtons: function () {
             var mainWordItems = this.wordStock[1].getAllItems();
+            var mainWordSelectedItems = this.wordStock[1].getSelectedItems();
             var secondWordItems = this.wordStock[2].getAllItems();
+            var secondWordSelectedItems = this.wordStock[2].getSelectedItems();
             this.setClassIf(
                 mainWordItems.length < 3 || (this.secondWordStarted && secondWordItems.length < 3),
                 'play_word_button',
                 'disabled'
             );
             this.setClassIf(mainWordItems.length < 3 || this.secondWordStarted, 'start_second_word_button', 'disabled');
+            this.setClassIf(
+                (mainWordSelectedItems.length === 0 && secondWordSelectedItems.length === 0) || this.duplicatePlayed(),
+                'duplicate_letter_button',
+                'disabled'
+            );
             this.setClassIf(mainWordItems.length < 1, 'clear_button', 'disabled');
             this.setClassIf(this.secondWordStarted || secondWordItems.length > 0, 'second_word', 'show');
         },
@@ -356,12 +374,14 @@ function (dojo, declare) {
         showWordAreaButtons: function () {
             dojo.addClass('play_word_button', 'show');
             this.setClassIf(this.patentOwners['V'] === this.getPlayerIdString(), 'start_second_word_button', 'show');
+            this.setClassIf(this.patentOwners['X'] === this.getPlayerIdString(), 'duplicate_letter_button', 'show');
             dojo.addClass('clear_button', 'show');
         },
 
         hideWordAreaButtons: function () {
             dojo.removeClass('play_word_button', 'show');
             dojo.removeClass('start_second_word_button', 'show');
+            dojo.removeClass('duplicate_letter_button', 'show');
             dojo.removeClass('clear_button', 'show');
         },
 
@@ -391,6 +411,42 @@ function (dojo, declare) {
                 wordInfo.origins.push(origin);
                 wordInfo.types.push(item.type === 24 ? 'v' : '_'); // Y defaults to vowel
                 this.updateWordAreaButtons();
+            }
+        },
+
+        duplicateLetter: function (fromStock, word /* 1 or 2 */) {
+            var wordStock = this.wordStock[word];
+            var wordInfo = this.wordInfo[word];
+            var items = fromStock.getSelectedItems();
+            if (items.length === 1) {
+                var item = items[0];
+                var elementId = fromStock.getItemDivId(item.id);
+                wordStock.addToStockWithId(item.type, this.duplicateCardId, $(elementId));
+                wordInfo.origins.push('d');
+                wordInfo.types.push(item.type === 24 ? 'v' : '_'); // Y defaults to vowel
+                this.updateWordAreaButtons();
+            }
+        },
+
+        wordContainsDuplicate: function (word /* 1 or 2 */) {
+            var items = this.wordStock[word].getAllItems();
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i];
+                if (item.id === this.duplicateCardId) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        duplicatePlayed: function () {
+            return this.wordContainsDuplicate(1) || this.wordContainsDuplicate(2);
+        },
+
+        unselectAllItems: function (stock) {
+            var selectedItems = stock.getSelectedItems();
+            for (var i = 0, l = selectedItems.length; i < l; i++) {
+                stock.unselectItem(selectedItems[i].id);
             }
         },
 
@@ -587,6 +643,32 @@ function (dojo, declare) {
             }
         },
 
+        onWord1SelectionChanged: function () {
+            console.log('word 1 selection changed');
+
+            switch (this.currentState) {
+
+                case 'playerMayPlayWord':
+                    this.unselectAllItems(this.wordStock[2]);
+                    this.updateWordAreaButtons();
+                    break;
+
+            }
+        },
+
+        onWord2SelectionChanged: function () {
+            console.log('word 2 selection changed');
+
+            switch (this.currentState) {
+
+                case 'playerMayPlayWord':
+                    this.unselectAllItems(this.wordStock[1]);
+                    this.updateWordAreaButtons();
+                    break;
+
+            }
+        },
+
         onPatentSelectionChanged: function () {
             console.log('patent selection changed');
 
@@ -619,6 +701,17 @@ function (dojo, declare) {
 
             this.secondWordStarted = true;
             this.updateWordAreaButtons();
+        },
+
+        onDuplicateLetterButtonClicked: function (evt) {
+            console.log('duplicate letter button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            var secondWordLetterSelected = this.secondWordStarted && this.wordStock[2].getSelectedItems().length > 0;
+            var wordStock = this.wordStock[secondWordLetterSelected ? 2 : 1];
+            this.duplicateLetter(wordStock, this.secondWordStarted ? 2 : 1);
         },
 
         onClearButtonClicked: function (evt) {
@@ -741,6 +834,8 @@ function (dojo, declare) {
             // update counters
             this.playerMoney[player_id].incValue(-cost);
             this.playerPatentsValue[player_id].incValue(cost);
+            // update patent owners
+            this.patentOwners[letter] = player_id;
         },
 
         notif_communityReceivedCards: function (notif) {
