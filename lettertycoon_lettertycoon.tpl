@@ -19,6 +19,7 @@
     <div id="word_area_footer">
         <a href="#" id="start_second_word_button" class="bgabutton bgabutton_gray">{START_SECOND_WORD}</a>
         <a href="#" id="duplicate_letter_button" class="bgabutton bgabutton_gray">{DUPLICATE_LETTER}</a>
+        <a href="#" id="add_an_s_button" class="bgabutton bgabutton_gray">{ADD_AN_S}</a>
     </div>
 </div>
 

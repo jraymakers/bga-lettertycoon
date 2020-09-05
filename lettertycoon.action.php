@@ -52,7 +52,7 @@ class action_lettertycoon extends APP_GameAction
             'letters' => self::getArg("${prefix}_word_letters", AT_alphanum, true),
             'letter_origins' => self::getArg("${prefix}_word_letter_origins", AT_alphanum, true),
             'letter_types' => self::getArg("${prefix}_word_letter_types", AT_alphanum, true),
-            'card_ids' => self::parseNumberList(self::getArg("${prefix}_word_card_ids", AT_numberlist, true)) // NULL?
+            'card_ids' => self::parseNumberList(self::getArg("${prefix}_word_card_ids", AT_numberlist, true))
         );
     }
   

@@ -24,6 +24,8 @@ function (dojo, declare) {
             this.cardHeight = 165;
             this.patentWidth = 120;
             this.patentHeight = 79;
+
+            this.addedSCardId = 205;
             this.duplicateCardId = 208;
 
             // card stocks
@@ -145,6 +147,7 @@ function (dojo, declare) {
             dojo.connect($('play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');
             dojo.connect($('start_second_word_button'), 'onclick', this, 'onStartSecondWordButtonClicked');
             dojo.connect($('duplicate_letter_button'), 'onclick', this, 'onDuplicateLetterButtonClicked');
+            dojo.connect($('add_an_s_button'), 'onclick', this, 'onAddAnSButtonClicked');
             dojo.connect($('clear_button'), 'onclick', this, 'onClearButtonClicked');
             dojo.connect($('discard_button'), 'onclick', this, 'onDiscardButtonClicked');
 
@@ -311,6 +314,9 @@ function (dojo, declare) {
 
         createCard: function (element, type, id) {
             dojo.addClass(element, 'card');
+            if (/205$/.test(id)) { // 205 = added S card id
+                dojo.addClass(element, 'added_s');
+            }
             if (/208$/.test(id)) { // 208 = duplicate card id
                 dojo.addClass(element, 'duplicate');
             }
@@ -358,31 +364,44 @@ function (dojo, declare) {
             var secondWordSelectedItems = this.wordStock[2].getSelectedItems();
             this.setClassIf(
                 mainWordItems.length < 3 || (this.secondWordStarted && secondWordItems.length < 3),
-                'play_word_button',
-                'disabled'
+                'play_word_button', 'disabled'
             );
-            this.setClassIf(mainWordItems.length < 3 || this.secondWordStarted, 'start_second_word_button', 'disabled');
             this.setClassIf(
-                (mainWordSelectedItems.length === 0 && secondWordSelectedItems.length === 0) || this.duplicatePlayed(),
-                'duplicate_letter_button',
-                'disabled'
+                mainWordItems.length < 1,
+                'clear_button', 'disabled');
+            this.setClassIf(
+                mainWordItems.length < 3 || this.secondWordStarted,
+                'start_second_word_button', 'disabled');
+            this.setClassIf(
+                this.duplicatePlayed()
+                    || (mainWordSelectedItems.length === 0 && secondWordSelectedItems.length === 0)
+                    || this.itemsContainsLetter(mainWordSelectedItems, 'S')
+                    || this.itemsContainsLetter(secondWordSelectedItems, 'S')
+                    || this.currentWordComplete(),
+                'duplicate_letter_button', 'disabled'
             );
-            this.setClassIf(mainWordItems.length < 1, 'clear_button', 'disabled');
+            this.setClassIf(
+                this.addAnSPlayed()
+                    || mainWordItems.length < 2 || (this.secondWordStarted && secondWordItems.length < 2),
+                'add_an_s_button', 'disabled'
+            );
             this.setClassIf(this.secondWordStarted || secondWordItems.length > 0, 'second_word', 'show');
         },
 
         showWordAreaButtons: function () {
             dojo.addClass('play_word_button', 'show');
+            dojo.addClass('clear_button', 'show');
             this.setClassIf(this.patentOwners['V'] === this.getPlayerIdString(), 'start_second_word_button', 'show');
             this.setClassIf(this.patentOwners['X'] === this.getPlayerIdString(), 'duplicate_letter_button', 'show');
-            dojo.addClass('clear_button', 'show');
+            this.setClassIf(this.patentOwners['Z'] === this.getPlayerIdString(), 'add_an_s_button', 'show');
         },
 
         hideWordAreaButtons: function () {
             dojo.removeClass('play_word_button', 'show');
+            dojo.removeClass('clear_button', 'show');
             dojo.removeClass('start_second_word_button', 'show');
             dojo.removeClass('duplicate_letter_button', 'show');
-            dojo.removeClass('clear_button', 'show');
+            dojo.removeClass('add_an_s_button', 'show');
         },
 
         updateDiscardButton: function () {
@@ -400,6 +419,9 @@ function (dojo, declare) {
         },
 
         playSelectedCard: function (fromStock, origin, word /* 1 or 2 */) {
+            if (this.currentWordComplete()) {
+                return;
+            }
             var wordStock = this.wordStock[word];
             var wordInfo = this.wordInfo[word];
             var items = fromStock.getSelectedItems();
@@ -415,6 +437,9 @@ function (dojo, declare) {
         },
 
         duplicateLetter: function (fromStock, word /* 1 or 2 */) {
+            if (this.currentWordComplete()) {
+                return;
+            }
             var wordStock = this.wordStock[word];
             var wordInfo = this.wordInfo[word];
             var items = fromStock.getSelectedItems();
@@ -428,6 +453,18 @@ function (dojo, declare) {
             }
         },
 
+        addAnS: function (word /* 1 or 2 */) {
+            if (this.currentWordComplete()) {
+                return;
+            }
+            var wordStock = this.wordStock[word];
+            var wordInfo = this.wordInfo[word];
+            wordStock.addToStockWithId(this.getLetterIndex('S'), this.addedSCardId);
+            wordInfo.origins.push('s');
+            wordInfo.types.push('_');
+            this.updateWordAreaButtons();
+        },
+
         wordContainsDuplicate: function (word /* 1 or 2 */) {
             var items = this.wordStock[word].getAllItems();
             for (var i = 0, l = items.length; i < l; i++) {
@@ -439,8 +476,33 @@ function (dojo, declare) {
             return false;
         },
 
+        wordHasAddedS: function (word /* 1 or 2 */) {
+            var origins = this.wordInfo[word].origins;
+            return origins[origins.length - 1] === 's';
+        },
+
+        itemsContainsLetter: function (items, letter) {
+            var type = this.getLetterIndex(letter);
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i];
+                if (item.type === type) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        currentWordComplete: function () {
+            return (!this.secondWordStarted && this.wordHasAddedS(1))
+                 || (this.secondWordStarted && this.wordHasAddedS(2));
+        },
+
         duplicatePlayed: function () {
             return this.wordContainsDuplicate(1) || this.wordContainsDuplicate(2);
+        },
+
+        addAnSPlayed: function () {
+            return this.wordHasAddedS(1) || this.wordHasAddedS(2);
         },
 
         unselectAllItems: function (stock) {
@@ -712,6 +774,15 @@ function (dojo, declare) {
             var secondWordLetterSelected = this.secondWordStarted && this.wordStock[2].getSelectedItems().length > 0;
             var wordStock = this.wordStock[secondWordLetterSelected ? 2 : 1];
             this.duplicateLetter(wordStock, this.secondWordStarted ? 2 : 1);
+        },
+
+        onAddAnSButtonClicked: function (evt) {
+            console.log('add an S button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.addAnS(this.secondWordStarted ? 2 : 1);
         },
 
         onClearButtonClicked: function (evt) {

@@ -127,6 +127,14 @@
     display: inline;
 }
 
+#clear_button {
+    display: none;
+    margin-left: 10px;
+}
+#clear_button.show {
+    display: inline;
+}
+
 #start_second_word_button {
     display: none;
     margin-left: 10px;
@@ -149,12 +157,15 @@
     opacity: 0.5;
 }
 
-#clear_button {
+#add_an_s_button {
     display: none;
     margin-left: 10px;
 }
-#clear_button.show {
+#add_an_s_button.show {
     display: inline;
+}
+#add_an_s_button.disabled {
+    opacity: 0.5;
 }
 
 #second_word {
@@ -186,6 +197,9 @@
 
 .card {
     border-radius: 8px;
+}
+.card.added_s {
+    opacity: 0.5 !important;
 }
 .card.duplicate {
     opacity: 0.5 !important;
