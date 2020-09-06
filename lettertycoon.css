@@ -135,6 +135,17 @@
     display: inline;
 }
 
+#change_letter_type_button {
+    display: none;
+    margin-left: 10px;
+}
+#change_letter_type_button.show {
+    display: inline;
+}
+#change_letter_type_button.disabled {
+    opacity: 0.5;
+}
+
 #start_second_word_button {
     display: none;
     margin-left: 10px;
@@ -203,6 +214,43 @@
 }
 .card.duplicate {
     opacity: 0.5 !important;
+}
+.card.consonant::after {
+    position: absolute;
+    top: 10px;
+    left: 47px;
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    content: "C";
+    font-size: 13px;
+    color: rgb(240,228,182);
+    background-color: rgb(22,148,110);
+    box-shadow: 0 0 2px 2px rgba(26,26,26,0.8);
+}
+.card.vowel::after {
+    position: absolute;
+    bottom: 10px;
+    left: 47px;
+    width: 26px;
+    height: 26px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    content: "V";
+    font-size: 13px;
+    color: rgb(240,228,182);
+    background-color: rgb(200,96,51);
+    box-shadow: 0 0 2px 2px rgba(26,26,26,0.8);
+}
+
+.stockitem_selected {
+    border: 0 !important;
+    box-shadow: 0 0 5px 3px rgba(26,26,26,0.8);
 }
 
 #game_cards {

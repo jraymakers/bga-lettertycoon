@@ -145,6 +145,7 @@ function (dojo, declare) {
             dojo.connect(this.wordStock[2], 'onChangeSelection', this, 'onWord2SelectionChanged');
             dojo.connect(this.availablePatents, 'onChangeSelection', this, 'onPatentSelectionChanged');
             dojo.connect($('play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');
+            dojo.connect($('change_letter_type_button'), 'onclick', this, 'onChangeLetterTypeButtonClicked');
             dojo.connect($('start_second_word_button'), 'onclick', this, 'onStartSecondWordButtonClicked');
             dojo.connect($('duplicate_letter_button'), 'onclick', this, 'onDuplicateLetterButtonClicked');
             dojo.connect($('add_an_s_button'), 'onclick', this, 'onAddAnSButtonClicked');
@@ -309,6 +310,7 @@ function (dojo, declare) {
             }
             cardStock.onItemCreate = dojo.hitch(this, 'createCard'); 
             cardStock.setSelectionMode(0);
+            cardStock.setSelectionAppearance('class');
             return cardStock;
         },
 
@@ -370,6 +372,10 @@ function (dojo, declare) {
                 mainWordItems.length < 1,
                 'clear_button', 'disabled');
             this.setClassIf(
+                // TODO: only show change letter type button if player owns a relevant patent?
+                !(this.itemsContainsLetter(mainWordSelectedItems, 'Y') || this.itemsContainsLetter(secondWordSelectedItems, 'Y')),
+                'change_letter_type_button', 'disabled');
+            this.setClassIf(
                 mainWordItems.length < 3 || this.secondWordStarted,
                 'start_second_word_button', 'disabled');
             this.setClassIf(
@@ -385,12 +391,34 @@ function (dojo, declare) {
                     || mainWordItems.length < 2 || (this.secondWordStarted && secondWordItems.length < 2),
                 'add_an_s_button', 'disabled'
             );
+
             this.setClassIf(this.secondWordStarted || secondWordItems.length > 0, 'second_word', 'show');
+            
+            // TODO: only show Y types if player owns a relevant patent?
+            this.updateYTypes(1);
+            this.updateYTypes(2);
+        },
+
+        updateYTypes: function (word /* 1 or 2 */) {
+            var typeY = this.getLetterIndex('Y');
+            var wordStock = this.wordStock[word];
+            var wordInfo = this.wordInfo[word];
+            var items = wordStock.getAllItems();
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i];
+                if (item.type === typeY) {
+                    var elementId = wordStock.getItemDivId(item.id);
+                    var letterType = wordInfo.types[i];
+                    this.setClassIf(letterType === 'c', elementId, 'consonant');
+                    this.setClassIf(letterType === 'v', elementId, 'vowel');
+                }
+            }
         },
 
         showWordAreaButtons: function () {
             dojo.addClass('play_word_button', 'show');
             dojo.addClass('clear_button', 'show');
+            dojo.addClass('change_letter_type_button', 'show');
             this.setClassIf(this.patentOwners['V'] === this.getPlayerIdString(), 'start_second_word_button', 'show');
             this.setClassIf(this.patentOwners['X'] === this.getPlayerIdString(), 'duplicate_letter_button', 'show');
             this.setClassIf(this.patentOwners['Z'] === this.getPlayerIdString(), 'add_an_s_button', 'show');
@@ -399,6 +427,7 @@ function (dojo, declare) {
         hideWordAreaButtons: function () {
             dojo.removeClass('play_word_button', 'show');
             dojo.removeClass('clear_button', 'show');
+            dojo.removeClass('change_letter_type_button', 'show');
             dojo.removeClass('start_second_word_button', 'show');
             dojo.removeClass('duplicate_letter_button', 'show');
             dojo.removeClass('add_an_s_button', 'show');
@@ -465,6 +494,26 @@ function (dojo, declare) {
             this.updateWordAreaButtons();
         },
 
+        changeLetterType: function (stock, word /* 1 or 2 */) {
+            var typeY = this.getLetterIndex('Y');
+            var wordStock = this.wordStock[word];
+            var wordInfo = this.wordInfo[word];
+            var items = stock.getAllItems();
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i];
+                if (stock.isSelected(item.id) && item.type === typeY) {
+                    var currentType = wordInfo.types[i];
+                    if (currentType === 'c') {
+                        wordInfo.types[i] = 'v';
+                    }
+                    if (currentType === 'v') {
+                        wordInfo.types[i] = 'c';
+                    }
+                }
+            }
+            this.updateWordAreaButtons();
+        }, 
+
         wordContainsDuplicate: function (word /* 1 or 2 */) {
             var items = this.wordStock[word].getAllItems();
             for (var i = 0, l = items.length; i < l; i++) {
@@ -490,6 +539,18 @@ function (dojo, declare) {
                 }
             }
             return false;
+        },
+
+        getItemsWithLetter: function (items, letter) {
+            var result = [];
+            var type = this.getLetterIndex(letter);
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i];
+                if (item.type === type) {
+                    result.push(item);
+                }
+            }
+            return result;
         },
 
         currentWordComplete: function () {
@@ -753,6 +814,17 @@ function (dojo, declare) {
             var secondWordParams = this.getWordParamsForPlayWord(2);
 
             this.action_playWord(mainWordParams, secondWordParams);
+        },
+
+        onChangeLetterTypeButtonClicked: function (evt) {
+            console.log('change letter type button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            var secondWordLetterSelected = this.secondWordStarted && this.wordStock[2].getSelectedItems().length > 0;
+            var wordStock = this.wordStock[secondWordLetterSelected ? 2 : 1];
+            this.changeLetterType(wordStock, this.secondWordStarted ? 2 : 1);
         },
 
         onStartSecondWordButtonClicked: function (evt) {
