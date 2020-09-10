@@ -670,6 +670,8 @@ function (dojo, declare) {
                 if (!this.patentOwners[letter]) {
                     var origin = wordInfo.origins[i];
                     if (origin === 'c' || origin === 'h') {
+                        // TODO: Don't mark purchasable letters that cost more than the player has.
+                        // Should this be done server-side so buying can be skipped if there are none?
                         purchasable[letter] = true;
                     }
                 }
