@@ -308,6 +308,9 @@
 .patent {
     border-radius: 8px;
 }
+.patent.unpurchasable {
+    opacity: 0.5 !important;
+}
 
 .log .roundedbox {
     background-color: rgba(26,26,26,0.25);

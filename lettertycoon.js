@@ -128,6 +128,8 @@ function (dojo, declare) {
             for (var i in main_word) {
                 var part = main_word[i];
                 this.wordStock[1].addToStockWithId(this.getLetterIndex(part.letter), part.card_id);
+                this.wordInfo[1].origins[i] = part.letter_origin;
+                this.wordInfo[1].types[i] = part.letter_type;
             }
 
             var second_word = gamedatas.second_word;
@@ -137,6 +139,8 @@ function (dojo, declare) {
             for (var i in second_word) {
                 var part = second_word[i];
                 this.wordStock[2].addToStockWithId(this.getLetterIndex(part.letter), part.card_id);
+                this.wordInfo[2].origins[i] = part.letter_origin;
+                this.wordInfo[2].types[i] = part.letter_type;
             }
 
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
@@ -193,6 +197,7 @@ function (dojo, declare) {
                 case 'playerMayBuyPatent':
                     if (this.isCurrentPlayerActive()) {
                         this.availablePatents.setSelectionMode(1);
+                        this.highlightPurchasablePatents();
                     }
                     break;
 
@@ -232,6 +237,7 @@ function (dojo, declare) {
                 
                 case 'playerMayBuyPatent':
                     if (this.isCurrentPlayerActive()) {
+                        this.clearPurchasablePatentHighlights();
                         this.availablePatents.setSelectionMode(0);
                     }
                     break;
@@ -333,6 +339,7 @@ function (dojo, declare) {
             }
             patentStock.onItemCreate = dojo.hitch(this, 'createPatent'); 
             patentStock.setSelectionMode(0);
+            patentStock.setSelectionAppearance('class');
             return patentStock;
         },
 
@@ -364,7 +371,7 @@ function (dojo, declare) {
             var mainWordSelectedItems = this.wordStock[1].getSelectedItems();
             var secondWordItems = this.wordStock[2].getAllItems();
             var secondWordSelectedItems = this.wordStock[2].getSelectedItems();
-            
+
             this.setClassIf(
                 mainWordItems.length < 3 || (this.secondWordStarted && secondWordItems.length < 3),
                 'play_word_button', 'disabled'
@@ -651,6 +658,47 @@ function (dojo, declare) {
             this.clearWord(2, active_player_id);
             this.secondWordStarted = false;
             this.updateWordAreaButtons();
+        },
+
+        markPurchasableLetters: function (word /* 1 or 2 */, purchasable) {
+            var wordStock = this.wordStock[word];
+            var wordInfo = this.wordInfo[word];
+            var items = wordStock.getAllItems();
+            for (var i in items) {
+                var item = items[i];
+                var letter = this.getLetterFromIndex(item.type);
+                if (!this.patentOwners[letter]) {
+                    var origin = wordInfo.origins[i];
+                    if (origin === 'c' || origin === 'h') {
+                        purchasable[letter] = true;
+                    }
+                }
+            }
+        },
+
+        highlightPurchasablePatents: function () {
+            var purchasable = {};
+            this.markPurchasableLetters(1, purchasable);
+            this.markPurchasableLetters(2, purchasable);
+
+            var items = this.availablePatents.getAllItems();
+            for (var i in items) {
+                var item = items[i];
+                var elementId = this.availablePatents.getItemDivId(item.id);
+                var letter = this.getLetterFromIndex(item.type);
+                if (!purchasable[letter]) {
+                    dojo.addClass(elementId, 'unpurchasable');
+                }
+            }
+        },
+
+        clearPurchasablePatentHighlights: function () {
+            var items = this.availablePatents.getAllItems();
+            for (var i in items) {
+                var item = items[i];
+                var elementId = this.availablePatents.getItemDivId(item.id);
+                dojo.removeClass(elementId, 'unpurchasable');
+            }
         },
 
         buySelectedPatent: function () {
