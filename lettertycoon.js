@@ -364,39 +364,58 @@ function (dojo, declare) {
             var mainWordSelectedItems = this.wordStock[1].getSelectedItems();
             var secondWordItems = this.wordStock[2].getAllItems();
             var secondWordSelectedItems = this.wordStock[2].getSelectedItems();
+            
             this.setClassIf(
                 mainWordItems.length < 3 || (this.secondWordStarted && secondWordItems.length < 3),
                 'play_word_button', 'disabled'
             );
+
             this.setClassIf(
                 mainWordItems.length < 1,
-                'clear_button', 'disabled');
-            this.setClassIf(
-                // TODO: only show change letter type button if player owns a relevant patent?
-                !(this.itemsContainsLetter(mainWordSelectedItems, 'Y') || this.itemsContainsLetter(secondWordSelectedItems, 'Y')),
-                'change_letter_type_button', 'disabled');
-            this.setClassIf(
-                mainWordItems.length < 3 || this.secondWordStarted,
-                'start_second_word_button', 'disabled');
-            this.setClassIf(
-                this.duplicatePlayed()
-                    || (mainWordSelectedItems.length === 0 && secondWordSelectedItems.length === 0)
-                    || this.itemsContainsLetter(mainWordSelectedItems, 'S')
-                    || this.itemsContainsLetter(secondWordSelectedItems, 'S')
-                    || this.currentWordComplete(),
-                'duplicate_letter_button', 'disabled'
+                'clear_button', 'disabled'
             );
-            this.setClassIf(
-                this.addAnSPlayed()
-                    || mainWordItems.length < 2 || (this.secondWordStarted && secondWordItems.length < 2),
-                'add_an_s_button', 'disabled'
-            );
+
+            // only show change letter type button if player owns a relevant patent
+            if (this.vowelsCanAffectPlayerScore()) {
+                this.setClassIf(
+                    !(this.itemsContainsLetter(mainWordSelectedItems, 'Y') || this.itemsContainsLetter(secondWordSelectedItems, 'Y')),
+                    'change_letter_type_button', 'disabled'
+                );
+            }
+
+            if (this.patentOwners['V'] === this.getPlayerIdString()) {
+                this.setClassIf(
+                    mainWordItems.length < 3 || this.secondWordStarted,
+                    'start_second_word_button', 'disabled'
+                );
+            }
+
+            if (this.patentOwners['X'] === this.getPlayerIdString()) {
+                this.setClassIf(
+                    this.duplicatePlayed()
+                        || (mainWordSelectedItems.length === 0 && secondWordSelectedItems.length === 0)
+                        || this.itemsContainsLetter(mainWordSelectedItems, 'S')
+                        || this.itemsContainsLetter(secondWordSelectedItems, 'S')
+                        || this.currentWordComplete(),
+                    'duplicate_letter_button', 'disabled'
+                );
+            }
+
+            if (this.patentOwners['Z'] === this.getPlayerIdString()) {
+                this.setClassIf(
+                    this.addAnSPlayed()
+                        || mainWordItems.length < 2 || (this.secondWordStarted && secondWordItems.length < 2),
+                    'add_an_s_button', 'disabled'
+                );
+            }
 
             this.setClassIf(this.secondWordStarted || secondWordItems.length > 0, 'second_word', 'show');
             
-            // TODO: only show Y types if player owns a relevant patent?
-            this.updateYTypes(1);
-            this.updateYTypes(2);
+            // only show Y types if player owns a relevant patent
+            if (this.vowelsCanAffectPlayerScore()) {
+                this.updateYTypes(1);
+                this.updateYTypes(2);
+            }
         },
 
         updateYTypes: function (word /* 1 or 2 */) {
@@ -418,7 +437,7 @@ function (dojo, declare) {
         showWordAreaButtons: function () {
             dojo.addClass('play_word_button', 'show');
             dojo.addClass('clear_button', 'show');
-            dojo.addClass('change_letter_type_button', 'show');
+            this.setClassIf(this.vowelsCanAffectPlayerScore(), 'change_letter_type_button', 'show');
             this.setClassIf(this.patentOwners['V'] === this.getPlayerIdString(), 'start_second_word_button', 'show');
             this.setClassIf(this.patentOwners['X'] === this.getPlayerIdString(), 'duplicate_letter_button', 'show');
             this.setClassIf(this.patentOwners['Z'] === this.getPlayerIdString(), 'add_an_s_button', 'show');
@@ -564,6 +583,12 @@ function (dojo, declare) {
 
         addAnSPlayed: function () {
             return this.wordHasAddedS(1) || this.wordHasAddedS(2);
+        },
+
+        vowelsCanAffectPlayerScore: function () {
+            return this.patentOwners['B'] === this.getPlayerIdString()
+                || this.patentOwners['J'] === this.getPlayerIdString()
+                || this.patentOwners['K'] === this.getPlayerIdString();
         },
 
         unselectAllItems: function (stock) {
