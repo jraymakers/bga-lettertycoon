@@ -35,6 +35,7 @@ class view_lettertycoon_lettertycoon extends game_view
 
         global $g_user;
         $current_player_id = $g_user->get_id();
+        $current_player_color = $players[$current_player_id]['player_color'];
 
         $this->tpl['AVAILABLE_PATENTS'] = self::_("Available Patents");
         $this->tpl['COMMUNITY_POOL'] = self::_("Community Pool");
@@ -50,18 +51,17 @@ class view_lettertycoon_lettertycoon extends game_view
 
         $this->tpl['PLAYER_COUNT'] = $players_nbr;
         $this->tpl['CURRENT_PLAYER_ID'] = $current_player_id;
-        $this->tpl['CURRENT_PLAYER_COLOR'] = $players[$current_player_id]['player_color'];
+        $this->tpl['CURRENT_PLAYER_COLOR'] = $current_player_color;
 
         $this->page->begin_block( 'lettertycoon_lettertycoon', 'player' );
+        $this->page->insert_block( 'player', array(
+            'PLAYER_ID' => $current_player_id,
+            'PLAYER_NAME' => self::_("Your Patents"),
+            'PLAYER_COLOR' => $current_player_color,
+        ) );
         foreach( $players as $player_id => $player )
         {
-            if( $player_id == $current_player_id ) {
-                $this->page->insert_block( 'player', array(
-                    'PLAYER_ID' => $player_id,
-                    'PLAYER_NAME' => self::_("Your Patents"),
-                    'PLAYER_COLOR' => $player['player_color'],
-                ) );
-            } else {
+            if( $player_id != $current_player_id ) {
                 $this->page->insert_block( 'player', array(
                     'PLAYER_ID' => $player_id,
                     'PLAYER_NAME' => $player['player_name'],
