@@ -318,6 +318,33 @@ class LetterTycoon extends Table
         return self::isWordInList(strtolower($word_string), $wordlist);
     }
 
+    function refillCommunityPool()
+    {
+        $num_community_cards = $this->cards->countCardsInLocation('community');
+
+        if ($num_community_cards < 3) {
+            $new_community_cards = $this->cards->pickCardsForLocation(3 - $num_community_cards, 'deck', 'community');
+
+            self::notifyAllPlayers('communityReceivedCards', '', array(
+                'new_cards' => $new_community_cards
+            ));
+        }
+    }
+
+    function refillHand()
+    {
+        $active_player_id = self::getActivePlayerId();
+        $num_cards = $this->cards->countCardsInLocation('hand', $active_player_id);
+
+        if ($num_cards < 7) {
+            $new_cards = $this->cards->pickCards(7 - $num_cards, 'deck', $active_player_id);
+
+            self::notifyPlayer($active_player_id, 'activePlayerReceivedCards', '', array(
+                'new_cards' => $new_cards
+            ));
+        }
+    }
+
     function returnCardsForWord($word_objects)
     {
         // move word cards back to community and hand
@@ -468,11 +495,41 @@ class LetterTycoon extends Table
 
     // state: playerMayReplaceCard
 
-    function replaceCard()
+    function replaceCard($card_id)
     {
-        // Note: player can replace card from community pool!
         self::checkAction('replaceCard');
-        // TODO: implement (Q patent power)
+
+        $active_player_id = self::getActivePlayerId();
+        $card = $this->cards->getCard($card_id);
+
+        if ( !($card['location'] == 'hand' && $card['location_arg'] == $active_player_id || $card['location'] == 'community') ) {
+            throw new BgaUserException( self::_('You cannot replace a card that is not in your hand or the community pool.') );
+        }
+
+        $this->cards->moveCard($card_id, 'discard');
+
+        if ($card['location'] == 'community') {
+            self::notifyAllPlayers('playerReplacedCardFromCommunity',
+                clienttranslate('${player_name} replaced a card from the community pool'),
+                array(
+                    'player_name' => self::getActivePlayerName(),
+                    'card_id' => $card_id
+                )
+            );
+        } else {
+            self::notifyPlayer($active_player_id, 'activePlayerReplacedCardFromHand', '', array(
+                'card_id' => $card_id
+            ));
+
+            self::notifyAllPlayers('playerReplacedCardFromHand',
+                clienttranslate('${player_name} replaced a card from their hand'),
+                array(
+                    'player_name' => self::getActivePlayerName()
+                )
+            );
+        }
+
+        $this->gamestate->nextState('replaceCard');
     }
 
     function skipReplaceCard()
@@ -715,13 +772,20 @@ class LetterTycoon extends Table
 
     function stStartTurn()
     {
-        $this->gamestate->nextState('noReplaceCardOption');
+        $active_player_id = self::getActivePlayerId();
+        $patent_owners = self::getPatentOwners();
+
+        if ($patent_owners['Q'] == $active_player_id) {
+            $this->gamestate->nextState('hasReplaceCardOption');
+        } else {
+            $this->gamestate->nextState('noReplaceCardOption');
+        }
     }
 
     function stReplaceCard()
     {
-        // Note: player can replace card from community pool!
-        // TODO: implement (Q patent power)
+        self::refillCommunityPool();
+        self::refillHand();
         $this->gamestate->nextState();
     }
 
@@ -791,9 +855,9 @@ class LetterTycoon extends Table
 
         $patent_owners = self::getPatentOwners();
         $scoring_patents_owned = array(
-            'B' => $patent_owners['B'] === $active_player_id,
-            'J' => $patent_owners['J'] === $active_player_id,
-            'K' => $patent_owners['K'] === $active_player_id,
+            'B' => $patent_owners['B'] == $active_player_id,
+            'J' => $patent_owners['J'] == $active_player_id,
+            'K' => $patent_owners['K'] == $active_player_id,
         );
 
         if ($second_word_played && $scoring_patents_owned['B'] && $scoring_patents_owned['J']) {
@@ -914,15 +978,7 @@ class LetterTycoon extends Table
     function stRefillCommunityPool()
     {
         // refill community pool if needed
-        $num_community_cards = $this->cards->countCardsInLocation( 'community' );
-
-        if ($num_community_cards < 3) {
-            $new_community_cards = $this->cards->pickCardsForLocation( 3 - $num_community_cards, 'deck', 'community' );
-
-            self::notifyAllPlayers('communityReceivedCards', '', array(
-                'new_cards' => $new_community_cards
-            ));
-        }
+        self::refillCommunityPool();
 
         // clear word table
         self::clearWord();
@@ -944,16 +1000,7 @@ class LetterTycoon extends Table
 
     function stRefillHand()
     {
-        $active_player_id = self::getActivePlayerId();
-        $num_cards = $this->cards->countCardsInLocation( 'hand', $active_player_id );
-
-        if ($num_cards < 7) {
-            $new_cards = $this->cards->pickCards( 7 - $num_cards, 'deck', $active_player_id );
-
-            self::notifyPlayer($active_player_id, 'activePlayerReceivedCards', '', array(
-                'new_cards' => $new_cards
-            ));
-        }
+        self::refillHand();
 
         $this->gamestate->nextState();
     }

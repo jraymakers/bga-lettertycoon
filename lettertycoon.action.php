@@ -61,14 +61,15 @@ class action_lettertycoon extends APP_GameAction
     public function replaceCard()
     {
         self::setAjaxMode();
-        // TODO: implement (Q patent power)
+        $card_id = self::getArg('card_id', AT_alphanum, true);
+        $this->game->replaceCard($card_id);
         self::ajaxResponse();
     }
 
     public function skipReplaceCard()
     {
         self::setAjaxMode();
-        // TODO: implement (Q patent power)
+        $this->game->skipReplaceCard();
         self::ajaxResponse();
     }
 

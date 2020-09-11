@@ -183,6 +183,13 @@ function (dojo, declare) {
             this.currentState = stateName;
             
             switch (stateName) {
+                case 'playerMayReplaceCard':
+                    if (this.isCurrentPlayerActive()) {
+                        this.handStock.setSelectionMode(1);
+                        this.communityStock.setSelectionMode(1);
+                    }
+                    break;
+
                 case 'playerMayPlayWord':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(1);
@@ -225,6 +232,13 @@ function (dojo, declare) {
             this.currentState = null;
             
             switch (stateName) {
+                case 'playerMayReplaceCard':
+                    if (this.isCurrentPlayerActive()) {
+                        this.handStock.setSelectionMode(0);
+                        this.communityStock.setSelectionMode(0);
+                    }
+                    break;
+                
                 case 'playerMayPlayWord':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(0);
@@ -259,6 +273,10 @@ function (dojo, declare) {
                       
             if (this.isCurrentPlayerActive()) {            
                 switch (stateName) {
+                    case 'playerMayReplaceCard':
+                        this.addActionButton('skipReplaceCard_button', _('Skip replacing a card'), 'onSkipReplaceCard', null, false, 'gray'); 
+                        break;
+                    
                     case 'playerMayPlayWord':
                         this.addActionButton('skipPlayWord_button', _('Skip playing a word'), 'onSkipPlayWord', null, false, 'gray'); 
                         break;
@@ -470,6 +488,14 @@ function (dojo, declare) {
                 return dojo.string.substitute(_('Discard selected cards (${n})'), { n: numSelectedCards });
             } else {
                 return _('Select cards to discard');
+            }
+        },
+
+        replaceCard: function (fromStock) {
+            var items = fromStock.getSelectedItems();
+            if (items.length === 1) {
+                var item = items[0];
+                this.action_replaceCard(item.id);
             }
         },
 
@@ -759,6 +785,16 @@ function (dojo, declare) {
             this.sendAction('playWord', args);
         },
 
+        action_replaceCard: function (cardId) {
+            this.sendAction('replaceCard', {
+                card_id: cardId
+            });
+        },
+
+        action_skipReplaceCard: function () {
+            this.sendAction('skipReplaceCard');
+        },
+
         action_skipPlayWord: function () {
             this.sendAction('skipPlayWord');
         },
@@ -785,6 +821,15 @@ function (dojo, declare) {
 
         ///////////////////////////////////////////////////
         //// Player's action
+
+        onSkipReplaceCard: function (evt) {
+            console.log('skip replace card');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.action_skipReplaceCard();
+        },
         
         onSkipPlayWord: function (evt) {
             console.log('skip play word');
@@ -818,6 +863,10 @@ function (dojo, declare) {
 
             switch (this.currentState) {
 
+                case 'playerMayReplaceCard':
+                    this.replaceCard(this.communityStock);
+                    break;
+
                 case 'playerMayPlayWord':
                     this.playSelectedCard(this.communityStock, 'c', this.secondWordStarted ? 2 : 1);
                     break;
@@ -829,6 +878,10 @@ function (dojo, declare) {
             console.log('hand selection changed');
 
             switch (this.currentState) {
+
+                case 'playerMayReplaceCard':
+                    this.replaceCard(this.handStock);
+                    break;
 
                 case 'playerMayPlayWord':
                     this.playSelectedCard(this.handStock, 'h', this.secondWordStarted ? 2 : 1);
@@ -971,6 +1024,12 @@ function (dojo, declare) {
         setupNotifications: function () {
             console.log('notifications subscriptions setup');
 
+            dojo.subscribe('playerReplacedCardFromCommunity', this, 'notif_playerReplacedCardFromCommunity');
+            this.notifqueue.setSynchronous( 'playerReplacedCardFromCommunity', 2000 );
+            dojo.subscribe('activePlayerReplacedCardFromHand', this, 'notif_activePlayerReplacedCardFromHand');
+            this.notifqueue.setSynchronous( 'activePlayerReplacedCardFromHand', 2000 );
+            dojo.subscribe('playerReplacedCardFromHand', this, 'notif_playerReplacedCardFromHand');
+
             dojo.subscribe('playerPlayedWord', this, 'notif_playerPlayedWord');
             this.notifqueue.setSynchronous( 'playerPlayedWord', 3000 );
 
@@ -995,7 +1054,27 @@ function (dojo, declare) {
             dojo.subscribe('activePlayerReceivedCards', this, 'notif_activePlayerReceivedCards');
 
             dojo.subscribe('playerDiscardedNumberOfCards', this, 'notif_playerDiscardedNumberOfCards');
-        },  
+        },
+
+        notif_playerReplacedCardFromCommunity: function (notif) {
+            console.log('player replaced card from community');
+            console.log(notif);
+            var card_id = notif.args.card_id;
+            this.communityStock.removeFromStockById(card_id);
+        },
+
+        notif_activePlayerReplacedCardFromHand: function (notif) {
+            console.log('active player replaced card from hand');
+            console.log(notif);
+            var card_id = notif.args.card_id;
+            this.handStock.removeFromStockById(card_id);
+        },
+
+        notif_playerReplacedCardFromHand: function (notif) {
+            console.log('player replaced card from hand');
+            console.log(notif);
+            // TODO: can/should this callback be removed?
+        },
 
         notif_playerPlayedWord: function (notif) {
             console.log('player played word');
@@ -1100,6 +1179,7 @@ function (dojo, declare) {
         notif_playerDiscardedNumberOfCards: function (notif) {
             console.log('player discarded number of cards');
             console.log(notif);
+            // TODO: can/should this callback be removed?
         }
    });             
 });
