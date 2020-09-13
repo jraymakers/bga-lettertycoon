@@ -272,6 +272,121 @@ class LetterTycoon extends Table
         return self::getUniqueValueFromDB($sql);
     }
 
+    function checkCard($card_id, $expected_card_type, $expected_card_location, $expected_card_location_arg, $context)
+    {
+        $card = $this->cards->getCard($card_id);
+        if (!isset($card)) {
+            throw new BgaVisibleSystemException("card $card_id not found ($context)");
+        }
+        if ($card['type'] !== $expected_card_type) {
+            throw new BgaVisibleSystemException("card $card_id has type '${$card['type']}' but expected '$expected_card_type' ($context)");
+        }
+        if ($card['location'] !== $expected_card_location) {
+            throw new BgaVisibleSystemException("card $card_id has location '${$card['location']} 'but expected '$expected_card_location' ($context)");
+        }
+        if ($card['location_arg'] != $expected_card_location_arg) {
+            throw new BgaVisibleSystemException("card $card_id has location_arg '${$card['location_arg']}' but expected '$expected_card_location_arg' ($context)");
+        }
+    }
+
+    function checkWord($word_args, $active_player_id)
+    {
+        $letters = $word_args['letters'];
+        $letter_origins = $word_args['letter_origins'];
+        $letter_types = $word_args['letter_types'];
+        $card_ids = $word_args['card_ids'];
+
+        $length = strlen($letters);
+
+        if ($length < 3) {
+            throw new BgaVisibleSystemException("word length is less than 3 ('$letters')");
+        }
+
+        if (strlen($letter_origins) !== $length) {
+            throw new BgaVisibleSystemException("letter_origins length invalid: '$letter_origins' ('$letters')");
+        }
+
+        if (strlen($letter_types) !== $length) {
+            throw new BgaVisibleSystemException("letter_types length invalid: '$letter_types' ('$letters')");
+        }
+
+        if (count($card_ids) !== $length) {
+            throw new BgaVisibleSystemException("card_ids length invalid: {${count($card_ids)}} ($length)");
+        }
+
+        $count_h = 0;
+        $count_c = 0;
+        $count_d = 0;
+        $count_s = 0;
+        $duplicated_letter = NULL;
+
+        for ($i = 0; $i < $length; $i++) {
+            $letter = $letters[$i];
+            $letter_origin = $letter_origins[$i];
+            $letter_type = $letter_types[$i];
+            $card_id = $card_ids[$i];
+
+            // check letter
+            if (ord($letter) < ord('A') || ord('Z') < ord($letter)) {
+                throw new BgaVisibleSystemException("letter $i ('$letter') not between 'A' and 'Z' ('$letters')");
+            }
+
+            // checl letter origin and card_id
+            if ($letter_origin === 'h') {
+                self::checkCard($card_id, $letter, 'hand', $active_player_id, "'$letters', '$letter_origins', $i");
+                $count_h++;
+            } else if ($letter_origin === 'c') {
+                self::checkCard($card_id, $letter, 'community', 0, "'$letters', '$letter_origins', $i");
+                $count_c++;
+            } else if ($letter_origin === 'd') {
+                if ($card_id !== '208') {
+                    throw new BgaVisibleSystemException("letter_origin $i is 'd' but card_id ('$card_id') is not '208' ('$letters', '$letter_origins')");
+                }
+                $count_d++;
+                $duplicated_letter = $letter;
+            } else if ($letter_origin === 's') {
+                if ($card_id !== '205') {
+                    throw new BgaVisibleSystemException("letter_origin $i is 's' but card_id ('$card_id') is not '205' ('$letters', '$letter_origins')");
+                }
+                if ($i !== $length - 1) {
+                    throw new BgaVisibleSystemException("letter_origin $i is 's' but not at end of word ('$letters', '$letter_origins')");
+                }
+                $count_s++;
+            } else {
+                throw new BgaVisibleSystemException("letter_origin $i ('$letter_origin') is invalid ('$letters', '$letter_origins')");
+            }
+
+            // check letter type
+            $expected_letter_type = $this->letter_types[$letter];
+            if ($letter_type === '_') {
+                if ($expected_letter_type === 'consonant_or_vowel') {
+                    throw new BgaVisibleSystemException("letter_type $i is '_' but expected 'c' or 'v' ('$letters', '$letter_types')");
+                }
+            } else if ($letter_type === 'v') {
+                if ($expected_letter_type === 'consonant') {
+                    throw new BgaVisibleSystemException("letter_type $i is 'v' but '$letter' is a consonant ('$letters', '$letter_types')");
+                }
+            } else if ($letter_type === 'c') {
+                if ($expected_letter_type === 'vowel') {
+                    throw new BgaVisibleSystemException("letter_type $i is 'c' but '$letter' is a vowel ('$letters', '$letter_types')");
+                }
+            } else {
+                throw new BgaVisibleSystemException("letter_type $i ('$letter_type') is invalid ('$letters', '$letter_types')");
+            }
+        }
+
+        if ($count_h < 1) {
+            throw new BgaUserException(self::_('At least one letter in each word must come from a card in your hand.'));
+        }
+
+        return array(
+            'card_count' => $count_h + $count_c,
+            'duplicate_count' => $count_d,
+            'appended_s_count' => $count_s,
+            'duplicated_letter' => $duplicated_letter
+        );
+    }
+
     function stringFromWordObjects($word_objects)
     {
         $letters = '';
@@ -544,38 +659,55 @@ class LetterTycoon extends Table
     {
         self::checkAction('playWord');
 
-        // TODO: check args for validity (play word)
-        // - for each word (main and second):
-        //   - does it have letters, letter_orgins, letter_types, and card_ids?
-        //   - are they all the same length?
-        //   - does letters contain only capital letters?
-        //   - does letter_origins only contain valid chars?
-        //   - does letter_types only contain valid chars?
-        //   - do the cards in card_ids match the info in letters, letter_origins, and letter_types?
-        //     - do the card letters match "letters"?
-        //     - do the card origins match "letter_origins"?
-        //     - do all Ys (and only Ys) have defined letter_types?
-        //     (or do we allow undefined for Y if there are no relevant powers?)
+        $active_player_id = self::getActivePlayerId();
+        $patent_owners = self::getPatentOwners();
 
-        // TODO: check rules (play word)
-        // - does each word contain at least three letters?
-        // - is there at least one card from the players hand (in each word, if there are two)?
-        // - if there are non-null letter types:
-        //   - do these correspond to Ys? (or is this checked above?)
-        // - if there are two words:
-        //   - does the player own the V patent?
-        //   - does each word have at least one card from the player's hand?
-        // - if there is a duplicated letter:
-        //   - does the player own the X patent?
-        //   - is there only one duplicated letter?
-        //   - was the duplicated letter played as a card somewhere else (in either word)?
-        //   - was a total of at least three factory cards played (possibly across both words)?
-        // - if there is an appended S:
-        //   - does the player own the Z patent?
-        //   - is there only one duplicated S?
-        //   - does it appear at the end of a word?
+        $check_main_word_result = self::checkWord($main_word, $active_player_id);
+        $card_count = $check_main_word_result['card_count'];
+        $duplicate_count = $check_main_word_result['duplicate_count'];
+        $appended_s_count = $check_main_word_result['appended_s_count'];
+        $duplicated_letter = $check_main_word_result['duplicated_letter'];
 
-        // self::dump('playWord: main_word', $main_word);
+        if (isset($second_word)) {
+            if ($patent_owners['V'] != $active_player_id) {
+                throw new BgaVisibleSystemException("second word played but active player does not own V patent");
+            }
+            $check_second_word_result = self::checkWord($second_word, $active_player_id);
+            $card_count += $check_second_word_result['card_count'];
+            $duplicate_count += $check_second_word_result['duplicate_count'];
+            $appended_s_count += $check_second_word_result['appended_s_count'];
+            if (isset($check_second_word_result['duplicated_letter'])) {
+                $duplicated_letter = $check_second_word_result['duplicated_letter'];
+            }
+        }
+
+        if ($duplicate_count > 0) {
+            if ($patent_owners['X'] != $active_player_id) {
+                throw new BgaVisibleSystemException("word contains duplicate letter but active player does not own X patent");
+            }
+            if ($duplicate_count > 1) {
+                throw new BgaVisibleSystemException("word contains more than one duplicate letter");
+            }
+            $duplicated_letter_count = substr_count($main_word['letters'], $duplicated_letter);
+            if (isset($second_word)) {
+                $duplicated_letter_count += substr_count($second_word['letters'], $duplicated_letter);
+            }
+            if ($duplicated_letter_count < 2) {
+                throw new BgaVisibleSystemException("word contains duplicate letter but no matching original");
+            }
+            if ($card_count < 3) {
+                throw new BgaUserException(self::_('You must use at least three (real) cards when using the duplicate letter (X patent) ability.'));
+            }
+        }
+
+        if ($appended_s_count > 0) {
+            if ($patent_owners['Z'] != $active_player_id) {
+                throw new BgaVisibleSystemException("word contains added 'S' but active player does not own Z patent");
+            }
+            if ($appended_s_count > 1) {
+                throw new BgaVisibleSystemException("word contains more than one added 'S'");
+            }
+        }
 
         // clear word table first, just in case
         self::clearWord();
@@ -648,7 +780,7 @@ class LetterTycoon extends Table
         }
 
         if (!self::wordContainsCardWithLetter($letter)) {
-            throw new BgaUserException(self::_('You may only buy a patent that matches a card a word played this turn.'));
+            throw new BgaUserException(self::_('You may only buy a patent that matches a card in a word played this turn.'));
         }
 
         $active_player_id = self::getActivePlayerId();
