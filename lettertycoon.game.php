@@ -178,6 +178,24 @@ class LetterTycoon extends Table
 //////////// Utility functions
 ////////////    
 
+    function getPlayerName($player_id)
+    {
+        $players = self::loadPlayersBasicInfos();
+        return $players[$player_id]['player_name'];
+    }
+
+    function getOtherPlayerIds($player_id)
+    {
+        $sql = "SELECT player_id FROM player WHERE player_id != '$player_id' ";
+        return self::getObjectListFromDB($sql, true);
+    }
+
+    function getPlayersChallenge()
+    {
+        $sql = "SELECT player_id, challenge FROM player ";
+        return self::getCollectionFromDB($sql, true);
+    }
+
     function getPlayerMoney($player_id)
     {
         $sql = "SELECT `money` FROM player WHERE player_id = '$player_id' ";
@@ -223,7 +241,19 @@ class LetterTycoon extends Table
                     `stock` = `stock` + $stock_change,
                     player_score_aux = player_score_aux + $patents_value_change,
                     player_score = player_score + $money_change + $stock_change + $patents_value_change
-                WHERE player_id = $player_id";
+                WHERE player_id = $player_id ";
+        self::DbQuery( $sql );
+    }
+
+    function setPlayerChallenge($player_id, $challenge /* 0 or 1 */)
+    {
+        $sql = "UPDATE player SET challenge = $challenge WHERE player_id = $player_id ";
+        self::DbQuery( $sql );
+    }
+
+    function clearPlayersChallenge()
+    {
+        $sql = "UPDATE player SET challenge = 0 ";
         self::DbQuery( $sql );
     }
 
@@ -433,6 +463,39 @@ class LetterTycoon extends Table
         return self::isWordInList(strtolower($word_string), $wordlist);
     }
 
+    function getRejectedWordIfAny($main_word_objects, $second_word_objects)
+    {
+        $main_word_string = self::stringFromWordObjects($main_word_objects);
+        if (!self::isWordInDictionary($main_word_string)) {
+            return $main_word_string;
+        }
+
+        if (count($second_word_objects) > 0) {
+            $second_word_string = self::stringFromWordObjects($second_word_objects);
+            if (!self::isWordInDictionary($second_word_string)) {
+                return $second_word_string;
+            }
+        }
+        
+        return NULL;
+    }
+
+    function getChallengerId()
+    {
+        $active_player_id = self::getActivePlayerId();
+        $challenge_by_player = self::getPlayersChallenge();
+
+        $player_id = self::getPlayerAfter($active_player_id);
+        while ($player_id != $active_player_id) {
+            if ($challenge_by_player[$player_id] == 1) {
+                return $player_id;
+            }
+            $player_id = self::getPlayerAfter($player_id);
+        }
+
+        return NULL;
+    }
+
     function refillCommunityPool()
     {
         $num_community_cards = $this->cards->countCardsInLocation('community');
@@ -494,6 +557,33 @@ class LetterTycoon extends Table
                 'player_id' => self::getActivePlayerId(),
                 'player_name' => self::getActivePlayerName(),
                 'rejected_word' => $rejected_word_string
+            )
+        );
+    }
+
+    function notifyPlayerChallengeSucceeded($challenger_id, $rejected_word_string)
+    {
+        self::notifyAllPlayers('playerChallengeSucceeded',
+            clienttranslate('Challenge by ${challenger_name} successful! "${rejected_word}" rejected, ${player_name} must discard a card'),
+            array(
+                'challenger_id' => $challenger_id,
+                'challenger_name' => self::getPlayerName($challenger_id),
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName(),
+                'rejected_word' => $rejected_word_string
+            )
+        );
+    }
+
+    function notifyPlayerChallengeFailed($challenger_id)
+    {
+        self::notifyAllPlayers('playerChallengeFailed',
+            clienttranslate('Challenge by ${challenger_name} failed! ${challenger_name} must pay $1 to ${player_name}'),
+            array(
+                'challenger_id' => $challenger_id,
+                'challenger_name' => self::getPlayerName($challenger_id),
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName()
             )
         );
     }
@@ -753,13 +843,16 @@ class LetterTycoon extends Table
     function challengeWord()
     {
         self::checkAction('challengeWord');
-        // TODO: implement (players challenge)
+        $current_player_id = self::getCurrentPlayerId();
+        self::setPlayerChallenge($current_player_id, 1);
+        $this->gamestate->setPlayerNonMultiactive($current_player_id, 'resolveChallenge');
     }
 
     function acceptWord()
     {
         self::checkAction('acceptWord');
-        // TODO: implement (players challenge)
+        $current_player_id = self::getCurrentPlayerId();
+        $this->gamestate->setPlayerNonMultiactive($current_player_id, 'resolveChallenge');
     }
 
     // state: playerMayBuyPatent
@@ -860,10 +953,37 @@ class LetterTycoon extends Table
 
     // state: playerMustDiscardCard
 
-    function discardCard()
+    function discardCard($card_id)
     {
         self::checkAction('discardCard');
-        // TODO: implement (challenge)
+        
+        $active_player_id = self::getActivePlayerId();
+
+        // ensure card is in active player's hand
+        $card = $this->cards->getCard($card_id);
+
+        if ($card['location'] != 'hand' || $card['location_arg'] != $active_player_id) {
+            throw new BgaUserException(self::_('You cannot discard a card that is not in your hand.'));
+        }
+        
+        // discard the card
+        $this->cards->moveCard($card_id, 'discard');
+
+        // notify the active player to discard the specific cards
+        self::notifyPlayer($active_player_id, 'activePlayerDiscardedCards', '', array(
+            'card_ids' => array( $card_id )
+        ));
+
+        // notify all players about the number of cards discarded (e.g. 1)
+        self::notifyAllPlayers('playerDiscardedNumberOfCards',
+            clienttranslate('${player_name} discarded ${num_cards} card(s)'),
+            array(
+                'player_name' => self::getActivePlayerName(),
+                'num_cards' => 1
+            )
+        );
+
+        $this->gamestate->nextState();
     }
     
 //////////////////////////////////////////////////////////////////////////////
@@ -923,8 +1043,12 @@ class LetterTycoon extends Table
 
     function stPlayWord()
     {
-        // TODO: implement (challenge modes)
-        $this->gamestate->nextState('automaticChallengeVariant');
+        $challenge_mode_option = $this->gamestate->table_globals[100];
+        if ($challenge_mode_option === 2) { // automatic challenge
+            $this->gamestate->nextState('automaticChallengeVariant');
+        } else { // players challenge (default)
+            $this->gamestate->nextState('playersChallengeVariant');
+        }
     }
 
     function stAutomaticChallenge()
@@ -932,48 +1056,69 @@ class LetterTycoon extends Table
         $main_word_objects = self::getWordObjects(1);
         $second_word_objects = self::getWordObjects(2);
 
-        $main_word_string = self::stringFromWordObjects($main_word_objects);
-        if (!self::isWordInDictionary($main_word_string)) {
-            self::returnAllWordCards($main_word_objects, $second_word_objects);
-            self::notifyAutomaticChallengeRejectedWord($main_word_string);
-            $this->gamestate->nextState('wordRejectedTryAgain');
-            return;
-        }
+        $rejected_word_string = self::getRejectedWordIfAny($main_word_objects, $second_word_objects);
 
-        if (count($second_word_objects) > 0) {
-            $second_word_string = self::stringFromWordObjects($second_word_objects);
-            if (!self::isWordInDictionary($second_word_string)) {
-                self::returnAllWordCards($main_word_objects, $second_word_objects);
-                self::notifyAutomaticChallengeRejectedWord($second_word_string);
-                $this->gamestate->nextState('wordRejectedTryAgain');
-                return;
-            }
+        if (isset($rejected_word_string)) {
+            self::returnAllWordCards($main_word_objects, $second_word_objects);
+            self::notifyAutomaticChallengeRejectedWord($rejected_word_string);
+            // TODO: limited retries
+            $this->gamestate->nextState('wordRejectedTryAgain');
+        } else {
+            $this->gamestate->nextState('wordAccepted');
         }
-        
-        $this->gamestate->nextState('wordAccepted');
     }
 
     function stPlayersMayChallenge()
     {
-        // TODO: implement (players challenge)
-        $this->gamestate->nextState('scoreWord');
+        self::clearPlayersChallenge();
+
+        $active_player_id = self::getActivePlayerId();
+        $other_player_ids = self::getOtherPlayerIds($active_player_id);
+
+        $this->gamestate->setPlayersMultiactive($other_player_ids, 'resolveChallenge', true);
     }
 
     function stResolveChallenge()
     {
-        // TODO: implement (players challenge)
-        $this->gamestate->nextState('wordAccepted');
+        $challenger_id = self::getChallengerId();
+        if (isset($challenger_id)) {
+            $main_word_objects = self::getWordObjects(1);
+            $second_word_objects = self::getWordObjects(2);
+
+            $rejected_word_string = self::getRejectedWordIfAny($main_word_objects, $second_word_objects);
+
+            if (isset($rejected_word_string)) {                
+                // challenge succeeded
+                self::returnAllWordCards($main_word_objects, $second_word_objects);
+                self::notifyPlayerChallengeSucceeded($challenger_id, $rejected_word_string);
+                $this->gamestate->nextState('wordRejected');
+            } else {
+                // challenge failed
+                $challenger_money = self::getPlayerMoney($challenger_id);
+                if ($challenger_money > 0) {
+                    self::updatePlayerCounters($challenger_id, -1, 0, 0);
+                }
+                self::updatePlayerCounters(self::getActivePlayerId(), 1, 0, 0);
+                self::notifyPlayerChallengeFailed($challenger_id);
+                $this->gamestate->nextState('scoreWord');
+            }
+        } else {
+            // no challenge
+            $this->gamestate->nextState('scoreWord');
+        }
     }
 
     function stChallengeFailed()
     {
-        // TODO: implement (players challenge)
+        // TODO: implement (players challenge) (maybe not needed?)
+
         $this->gamestate->nextState();
     }
 
     function stChallengeSucceeded()
     {
-        // TODO: implement (players challenge)
+        // TODO: implement (players challenge) (maybe not needed?)
+
         $this->gamestate->nextState();
     }
 

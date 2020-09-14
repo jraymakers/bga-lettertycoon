@@ -113,7 +113,7 @@ $machinestates = array(
         'type' => 'multipleactiveplayer',
         'action' => 'stPlayersMayChallenge',
         'possibleactions' => array( 'challengeWord', 'acceptWord' ),
-        'transitions' => array( 'resolveChallenge' => 41, 'scoreWord' => 45 )
+        'transitions' => array( 'resolveChallenge' => 41 )
     ),
 
     41 => array(
@@ -121,9 +121,10 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stResolveChallenge',
-        'transitions' => array( 'wordAccepted' => 42, 'wordRejected' => 43 )
+        'transitions' => array( 'scoreWord' => 45, 'wordRejected' => 70 )
     ),
 
+    // TODO: not needed?
     42 => array(
         'name' => 'challengeFailed',
         'description' => '',
@@ -132,6 +133,7 @@ $machinestates = array(
         'transitions' => array( '' => 45 )
     ),
 
+    // TODO: not needed?
     43 => array(
         'name' => 'challengeSucceeded',
         'description' => '',
@@ -197,7 +199,7 @@ $machinestates = array(
         'descriptionmyturn' => clienttranslate('${you} must discard a card'),
         'type' => 'activeplayer',
         'possibleactions' => array( 'discardCard' ),
-        'transitions' => array( 'discardCard' => 75 )
+        'transitions' => array( '' => 75 )
     ),
 
     // TODO: maybe not needed?

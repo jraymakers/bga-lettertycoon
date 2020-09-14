@@ -215,6 +215,12 @@ function (dojo, declare) {
                         dojo.addClass('discard_button', 'show');
                     }
                     break;
+                
+                case 'playerMustDiscardCard':
+                    if (this.isCurrentPlayerActive()) {
+                        this.handStock.setSelectionMode(1);
+                    }
+                    break;
 
                 case 'endTurn':
                     this.wordInfo[1] = { origins: [], types: [] };
@@ -262,7 +268,13 @@ function (dojo, declare) {
                         dojo.removeClass('discard_button', 'show');
                     }
                     break;
-            }               
+                
+                case 'playerMustDiscardCard':
+                    if (this.isCurrentPlayerActive()) {
+                        this.handStock.setSelectionMode(0);
+                    }
+                    break;
+            }
         }, 
 
         // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -279,6 +291,11 @@ function (dojo, declare) {
                     
                     case 'playerMayPlayWord':
                         this.addActionButton('skipPlayWord_button', _('Skip playing a word'), 'onSkipPlayWord', null, false, 'gray'); 
+                        break;
+                    
+                    case 'playersMayChallenge':
+                        this.addActionButton('challengeWord_button', _('Challenge word'), 'onChallengeWord', null, false, 'red');
+                        this.addActionButton('acceptWord_button', _('Accept word'), 'onAcceptWord', null, false, 'gray');
                         break;
                     
                     case 'playerMayDiscardCards':
@@ -488,6 +505,14 @@ function (dojo, declare) {
                 return dojo.string.substitute(_('Discard selected cards (${n})'), { n: numSelectedCards });
             } else {
                 return _('Select cards to discard');
+            }
+        },
+
+        discardCard: function (fromStock) {
+            var items = fromStock.getSelectedItems();
+            if (items.length === 1) {
+                var item = items[0];
+                this.action_discardCard(item.id);
             }
         },
 
@@ -785,6 +810,12 @@ function (dojo, declare) {
             this.sendAction('playWord', args);
         },
 
+        action_discardCard: function (cardId) {
+            this.sendAction('discardCard', {
+                card_id: cardId
+            });
+        },
+
         action_replaceCard: function (cardId) {
             this.sendAction('replaceCard', {
                 card_id: cardId
@@ -797,6 +828,14 @@ function (dojo, declare) {
 
         action_skipPlayWord: function () {
             this.sendAction('skipPlayWord');
+        },
+
+        action_challengeWord: function () {
+            this.sendAction('challengeWord');
+        },
+
+        action_acceptWord: function () {
+            this.sendAction('acceptWord');
         },
 
         action_buyPatent: function (letterIndex) {
@@ -838,6 +877,24 @@ function (dojo, declare) {
             dojo.stopEvent(evt);
 
             this.action_skipPlayWord();
+        },
+
+        onChallengeWord: function (evt) {
+            console.log('challenge word');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.action_challengeWord();
+        },
+
+        onAcceptWord: function (evt) {
+            console.log('accept word');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.action_acceptWord();
         },
 
         onSkipBuyPatent: function (evt) {
@@ -890,7 +947,10 @@ function (dojo, declare) {
                 case 'playerMayDiscardCards':
                     this.updateDiscardButton();
                     break;
-
+                
+                case 'playerMustDiscardCard':
+                    this.discardCard(this.handStock);
+                    break;
             }
         },
 
@@ -1033,6 +1093,12 @@ function (dojo, declare) {
             dojo.subscribe('playerPlayedWord', this, 'notif_playerPlayedWord');
             this.notifqueue.setSynchronous( 'playerPlayedWord', 3000 );
 
+            dojo.subscribe('playerChallengeSucceeded', this, 'notif_playerChallengeSucceeded');
+            this.notifqueue.setSynchronous( 'playerChallengeSucceeded', 2000 );
+
+            dojo.subscribe('playerChallengeFailed', this, 'notif_playerChallengeFailed');
+            this.notifqueue.setSynchronous( 'playerChallengeSucceeded', 2000 );
+
             dojo.subscribe('automaticChallengeRejectedWordTryAgain', this, 'notif_automaticChallengeRejectedWordTryAgain');
             this.notifqueue.setSynchronous( 'automaticChallengeRejectedWordTryAgain', 2000 );
 
@@ -1089,6 +1155,24 @@ function (dojo, declare) {
                     this.playWordFromPlayer(player_id, 2, second_word_args);
                 }
             }
+        },
+
+        notif_playerChallengeSucceeded: function (notif) {
+            console.log('player challenge succeeded');
+            console.log(notif);
+            var player_id = notif.args.player_id;
+            this.clearWordArea(player_id);
+        },
+
+        notif_playerChallengeFailed: function (notif) {
+            console.log('player challenge failed');
+            console.log(notif);
+            var challenger_id = notif.args.challenger_id;
+            var player_id = notif.args.player_id;
+            if (this.playerMoney[challenger_id].getValue() > 0) {
+                this.playerMoney[challenger_id].incValue(-1);
+            }
+            this.playerMoney[player_id].incValue(1);
         },
 
         notif_automaticChallengeRejectedWordTryAgain: function (notif) {

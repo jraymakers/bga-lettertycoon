@@ -9,8 +9,10 @@
 
 -- money: 0 to ?
 -- stock: 0 to ?
+-- challenge: 0 or 1
 ALTER TABLE `player` ADD `money` smallint(5) unsigned NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `stock` smallint(5) unsigned NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `challenge` tinyint(1) unsigned NOT NULL DEFAULT '0';
 
 
 -- card_id: 102 cards
