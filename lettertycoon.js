@@ -1093,11 +1093,19 @@ function (dojo, declare) {
             dojo.subscribe('playerPlayedWord', this, 'notif_playerPlayedWord');
             this.notifqueue.setSynchronous( 'playerPlayedWord', 3000 );
 
+            dojo.subscribe('playerChallenged', this, 'notif_playerChallenged');
+            this.notifqueue.setSynchronous( 'playerChallenged', 2000 );
+
             dojo.subscribe('playerChallengeSucceeded', this, 'notif_playerChallengeSucceeded');
             this.notifqueue.setSynchronous( 'playerChallengeSucceeded', 2000 );
 
+            dojo.subscribe('playerMustDiscard', this, 'notif_playerMustDiscard');
+
             dojo.subscribe('playerChallengeFailed', this, 'notif_playerChallengeFailed');
             this.notifqueue.setSynchronous( 'playerChallengeSucceeded', 2000 );
+
+            dojo.subscribe('challengerPaidPenalty', this, 'notif_challengerPaidPenalty');
+            dojo.subscribe('playerReceivedPayment', this, 'notif_playerReceivedPayment');
 
             dojo.subscribe('automaticChallengeRejectedWordTryAgain', this, 'notif_automaticChallengeRejectedWordTryAgain');
             this.notifqueue.setSynchronous( 'automaticChallengeRejectedWordTryAgain', 2000 );
@@ -1157,8 +1165,20 @@ function (dojo, declare) {
             }
         },
 
+        notif_playerChallenged: function (notif) {
+            console.log('player challenged');
+            console.log(notif);
+            // TODO: can/should this callback be removed?
+        },
+
         notif_playerChallengeSucceeded: function (notif) {
             console.log('player challenge succeeded');
+            console.log(notif);
+            // TODO: can/should this callback be removed?
+        },
+
+        notif_playerMustDiscard: function (notif) {
+            console.log('player must discard');
             console.log(notif);
             var player_id = notif.args.player_id;
             this.clearWordArea(player_id);
@@ -1167,11 +1187,20 @@ function (dojo, declare) {
         notif_playerChallengeFailed: function (notif) {
             console.log('player challenge failed');
             console.log(notif);
-            var challenger_id = notif.args.challenger_id;
+            // TODO: can/should this callback be removed?
+        },
+
+        notif_challengerPaidPenalty: function (notif) {
+            console.log('challenger paid penalty');
+            console.log(notif);
             var player_id = notif.args.player_id;
-            if (this.playerMoney[challenger_id].getValue() > 0) {
-                this.playerMoney[challenger_id].incValue(-1);
-            }
+            this.playerMoney[player_id].incValue(-1);
+        },
+
+        notif_playerReceivedPayment: function (notif) {
+            console.log('player received payment');
+            console.log(notif);
+            var player_id = notif.args.player_id;
             this.playerMoney[player_id].incValue(1);
         },
 

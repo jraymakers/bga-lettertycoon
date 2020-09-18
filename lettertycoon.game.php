@@ -561,27 +561,62 @@ class LetterTycoon extends Table
         );
     }
 
-    function notifyPlayerChallengeSucceeded($challenger_id, $rejected_word_string)
+    function notifyPlayerChallenged($challenger_id)
+    {
+        self::notifyAllPlayers('playerChallenged',
+            clienttranslate('${player_name} challenged!'),
+            array(
+                'player_id' => $challenger_id,
+                'player_name' => self::getPlayerName($challenger_id)
+            )
+        );
+    }
+
+    function notifyPlayerChallengeSucceeded($rejected_word_string)
     {
         self::notifyAllPlayers('playerChallengeSucceeded',
-            clienttranslate('Challenge by ${challenger_name} successful! "${rejected_word}" rejected, ${player_name} must discard a card'),
+            clienttranslate('Challenge successful! "${rejected_word}" rejected'),
             array(
-                'challenger_id' => $challenger_id,
-                'challenger_name' => self::getPlayerName($challenger_id),
-                'player_id' => self::getActivePlayerId(),
-                'player_name' => self::getActivePlayerName(),
                 'rejected_word' => $rejected_word_string
             )
         );
     }
 
-    function notifyPlayerChallengeFailed($challenger_id)
+    function notifyPlayerChallengeFailed()
     {
         self::notifyAllPlayers('playerChallengeFailed',
-            clienttranslate('Challenge by ${challenger_name} failed! ${challenger_name} must pay $1 to ${player_name}'),
+            clienttranslate('Challenge failed!'),
+            array()
+        );
+    }
+
+    function notifyPlayerMustDiscard()
+    {
+        self::notifyAllPlayers('playerMustDiscard',
+            clienttranslate('${player_name} must discard a card for being challenged correctly'),
             array(
-                'challenger_id' => $challenger_id,
-                'challenger_name' => self::getPlayerName($challenger_id),
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName()
+            )
+        );
+    }
+
+    function notifyChallengerPaidPenalty($challenger_id)
+    {
+        self::notifyAllPlayers('challengerPaidPenalty',
+            clienttranslate('${player_name} paid $1 for challenging incorrectly'),
+            array(
+                'player_id' => $challenger_id,
+                'player_name' => self::getPlayerName($challenger_id)
+            )
+        );
+    }
+
+    function notifyPlayerReceivedPayment()
+    {
+        self::notifyAllPlayers('playerReceivedPayment',
+            clienttranslate('${player_name} received $1 for being challenged incorrectly'),
+            array(
                 'player_id' => self::getActivePlayerId(),
                 'player_name' => self::getActivePlayerName()
             )
@@ -1082,24 +1117,27 @@ class LetterTycoon extends Table
     {
         $challenger_id = self::getChallengerId();
         if (isset($challenger_id)) {
+            self::notifyPlayerChallenged($challenger_id);
+
             $main_word_objects = self::getWordObjects(1);
             $second_word_objects = self::getWordObjects(2);
 
             $rejected_word_string = self::getRejectedWordIfAny($main_word_objects, $second_word_objects);
 
-            if (isset($rejected_word_string)) {                
-                // challenge succeeded
+            if (isset($rejected_word_string)) {
+                self::notifyPlayerChallengeSucceeded($rejected_word_string);
                 self::returnAllWordCards($main_word_objects, $second_word_objects);
-                self::notifyPlayerChallengeSucceeded($challenger_id, $rejected_word_string);
+                self::notifyPlayerMustDiscard();
                 $this->gamestate->nextState('wordRejected');
             } else {
-                // challenge failed
+                self::notifyPlayerChallengeFailed();
                 $challenger_money = self::getPlayerMoney($challenger_id);
                 if ($challenger_money > 0) {
                     self::updatePlayerCounters($challenger_id, -1, 0, 0);
+                    self::notifyChallengerPaidPenalty($challenger_id);
                 }
                 self::updatePlayerCounters(self::getActivePlayerId(), 1, 0, 0);
-                self::notifyPlayerChallengeFailed($challenger_id);
+                self::notifyPlayerReceivedPayment();
                 $this->gamestate->nextState('scoreWord');
             }
         } else {
