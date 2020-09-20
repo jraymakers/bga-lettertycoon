@@ -84,8 +84,18 @@ class LetterTycoon extends Table
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat('table', 'table_teststat1', 0);    // Init a table statistics
-        //self::initStat('player', 'player_teststat1', 0);  // Init a player statistics (for all players)
+
+        self::initStat('table', 'turns_number', 0);
+
+        self::initStat('table', 'cards_drawn_to_community', 0);
+
+        self::initStat('player', 'turns_number', 0);
+
+        self::initStat('player', 'cards_played_from_hand', 0);
+        self::initStat('player', 'cards_played_from_community', 0);
+        self::initStat('player', 'cards_discarded_from_hand', 0);
+        self::initStat('player', 'cards_discarded_from_community', 0);
+        self::initStat('player', 'cards_drawn_to_hand', 0);
 
         // initialize card table
         $cards = array();
@@ -108,10 +118,12 @@ class LetterTycoon extends Table
         $players = self::loadPlayersBasicInfos();
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(7, 'deck', $player_id);
+            self::incStat(7, 'cards_drawn_to_hand', $player_id);
         }
 
         // deal 3 cards to the community pool
         $this->cards->pickCardsForLocation(3, 'deck', 'community');
+        self::incStat(3, 'cards_drawn_to_community');
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -515,7 +527,9 @@ class LetterTycoon extends Table
         $num_community_cards = $this->cards->countCardsInLocation('community');
 
         if ($num_community_cards < 3) {
-            $new_community_cards = $this->cards->pickCardsForLocation(3 - $num_community_cards, 'deck', 'community');
+            $num_cards_to_draw = 3 - $num_community_cards;
+            $new_community_cards = $this->cards->pickCardsForLocation($num_cards_to_draw, 'deck', 'community');
+            self::incStat($num_cards_to_draw, 'cards_drawn_to_community');
 
             self::notifyAllPlayers('communityReceivedCards', '', array(
                 'new_cards' => $new_community_cards
@@ -529,7 +543,9 @@ class LetterTycoon extends Table
         $num_cards = $this->cards->countCardsInLocation('hand', $active_player_id);
 
         if ($num_cards < 7) {
-            $new_cards = $this->cards->pickCards(7 - $num_cards, 'deck', $active_player_id);
+            $num_cards_to_draw = 7 - $num_cards;
+            $new_cards = $this->cards->pickCards($num_cards_to_draw, 'deck', $active_player_id);
+            self::incStat($num_cards_to_draw, 'cards_drawn_to_hand', $active_player_id);
 
             self::notifyPlayer($active_player_id, 'activePlayerReceivedCards', '', array(
                 'new_cards' => $new_cards
@@ -776,6 +792,18 @@ class LetterTycoon extends Table
         return FALSE;
     }
 
+    function recordWordStats($word_objects)
+    {
+        $active_player_id = self::getActivePlayerId();
+        foreach ($word_objects as $word_object) {
+            $letter_origin = $word_object['letter_origin'];
+            if ($letter_origin == 'c') {
+                self::incStat(1, 'cards_played_from_community', $active_player_id);
+            } else if ($letter_origin == 'h') {
+                self::incStat(1, 'cards_played_from_hand', $active_player_id);
+            }
+        }
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
@@ -802,6 +830,7 @@ class LetterTycoon extends Table
         $this->cards->moveCard($card_id, 'discard');
 
         if ($card['location'] == 'community') {
+            self::incStat(1, 'cards_discarded_from_community', $active_player_id);
             self::notifyAllPlayers('playerReplacedCardFromCommunity',
                 clienttranslate('${player_name} replaced a card from the community pool'),
                 array(
@@ -810,6 +839,7 @@ class LetterTycoon extends Table
                 )
             );
         } else {
+            self::incStat(1, 'cards_discarded_from_hand', $active_player_id);
             self::notifyPlayer($active_player_id, 'activePlayerReplacedCardFromHand', '', array(
                 'card_id' => $card_id
             ));
@@ -1010,9 +1040,12 @@ class LetterTycoon extends Table
                 throw new BgaUserException(self::_('You cannot discard a card that is not in your hand.'));
             }
         }
+
+        $num_cards = count($card_ids);
         
         // discard the cards
         $this->cards->moveCards($card_ids, 'discard');
+        self::incStat($num_cards, 'cards_discarded_from_hand', $active_player_id);
 
         // notify the active player to discard the specific cards
         self::notifyPlayer($active_player_id, 'activePlayerDiscardedCards', '', array(
@@ -1024,7 +1057,7 @@ class LetterTycoon extends Table
             clienttranslate('${player_name} discarded ${num_cards} card(s)'),
             array(
                 'player_name' => self::getActivePlayerName(),
-                'num_cards' => count($card_ids)
+                'num_cards' => $num_cards
             )
         );
         
@@ -1054,6 +1087,7 @@ class LetterTycoon extends Table
         
         // discard the card
         $this->cards->moveCard($card_id, 'discard');
+        self::incStat(1, 'cards_discarded_from_hand', $active_player_id);
 
         // notify the active player to discard the specific cards
         self::notifyPlayer($active_player_id, 'activePlayerDiscardedCards', '', array(
@@ -1112,6 +1146,9 @@ class LetterTycoon extends Table
     {
         $active_player_id = self::getActivePlayerId();
         $patent_owners = self::getPatentOwners();
+
+        self::incStat(1, 'turns_number');
+        self::incStat(1, 'turns_number', $active_player_id);
 
         if (self::getGameStateValue('challenge_mode') == 2) { // automatic challenge
             self::setGameStateValue('retries_left', intval(self::getGameStateValue('automatic_challenge_retries')));
@@ -1268,6 +1305,11 @@ class LetterTycoon extends Table
                 $money += $second_word_score['money'];
                 $stock += $second_word_score['stock'];
             }
+        }
+
+        self::recordWordStats($main_word_objects);
+        if ($second_word_played) {
+            self::recordWordStats($second_word_objects);
         }
 
         self::updatePlayerCounters($active_player_id, $money, $stock, 0);

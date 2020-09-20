@@ -44,46 +44,147 @@
 $stats_type = array(
 
     // Statistics global to table
-    "table" => array(
+    'table' => array(
 
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
+        'turns_number' => array(
+            'id'=> 10,
+            'name' => totranslate('Number of turns'),
+            'type' => 'int'
+        ),
 
-/*
-        Examples:
+        // number of cards drawn to community
+        'cards_drawn_to_community' => array(
+            'id'=> 25,
+            'name' => totranslate('Cards drawn to community pool'),
+            'type' => 'int'
+        ),
 
-
-        "table_teststat1" => array("id"=> 10,
-                                "name" => totranslate("table test stat 1"), 
-                                "type" => "int" ),
-                                
-        "table_teststat2" => array("id"=> 11,
-                                "name" => totranslate("table test stat 2"), 
-                                "type" => "float" )
-*/  
     ),
     
     // Statistics existing for each player
-    "player" => array(
+    'player' => array(
 
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
-    
-/*
-        Examples:    
-        
-        
-        "player_teststat1" => array("id"=> 10,
-                                "name" => totranslate("player test stat 1"), 
-                                "type" => "int" ),
-                                
-        "player_teststat2" => array("id"=> 11,
-                                "name" => totranslate("player test stat 2"), 
-                                "type" => "float" )
+        // GENERAL
 
-*/    
+        'turns_number' => array(
+            'id'=> 10,
+            'name' => totranslate('Number of turns'),
+            'type' => 'int'
+        ),
+
+        // CARDS
+
+        // number of cards played from hand
+        'cards_played_from_hand' => array(
+            'id'=> 20,
+            'name' => totranslate('Cards played from hand'),
+            'type' => 'int'
+        ),
+        // number of cards played from community
+        'cards_played_from_community' => array(
+            'id'=> 21,
+            'name' => totranslate('Cards played from community pool'),
+            'type' => 'int'
+        ),
+        // number of cards discarded from hand
+        'cards_discarded_from_hand' => array(
+            'id'=> 22,
+            'name' => totranslate('Cards discarded from hand'),
+            'type' => 'int'
+        ),
+        // number of cards discarded from hand
+        'cards_discarded_from_community' => array(
+            'id'=> 23,
+            'name' => totranslate('Cards discarded from community pool'),
+            'type' => 'int'
+        ),
+        // number of cards drawn to hand
+        'cards_drawn_to_hand' => array(
+            'id'=> 24,
+            'name' => totranslate('Cards drawn to hand'),
+            'type' => 'int'
+        ),
+
+        // MONEY AND STOCK
+
+        // total money received from words
+        // total money received from royalties
+        // total money received from challenges
+        // total money paid for patents
+        // total money paid for challenges
+        
+        // total stock received
+
+        // PATENTS
+
+        // number of times Q doubling ability used
+        // number of times Y played as vowel
+        // number of times Y played as consonant
+
+        // number of times B patent ability used
+        // number of times J patent ability used
+        // number of times K patent ability used
+        // number of times Q patent ability used
+        // number of times V patent ability used
+        // number of times X patent ability used
+        // number of times Z patent ability used
+        
+        // WORDS
+
+        // number of 3 letter words
+        // number of 4 letter words
+        // number of 5 letter words
+        // number of 6 letter words
+        // number of 7 letter words
+        // number of 8 letter words
+        // number of 9 letter words
+        // number of 10 letter words
+        // number of 11 letter words
+        // number of 12 letter words
+        // total number of words played
+        // average word length (float)
+
+        // LETTERS
+
+        // number of A's played
+        // number of B's played
+        // number of C's played
+        // number of D's played
+        // number of E's played
+        // number of F's played
+        // number of G's played
+        // number of H's played
+        // number of I's played
+        // number of J's played
+        // number of K's played
+        // number of L's played
+        // number of M's played
+        // number of N's played
+        // number of O's played
+        // number of P's played
+        // number of Q's played
+        // number of R's played
+        // number of S's played
+        // number of T's played
+        // number of U's played
+        // number of V's played
+        // number of W's played
+        // number of X's played
+        // number of Y's played
+        // number of Z's played
+
+        // CHALLENGES
+
+        // number of successful challenges made
+        // number of failed challenges made
+
+        // number of times challenged correctly by another player
+        // number of times challenged incorrectly by another player
+
+        // number of times challenged correctly by automatic challenge
+        // number of times challenged incorretly by automatic challenge
+
+        // number of retries used
     )
 
 );
