@@ -17,7 +17,7 @@ define([
 function (dojo, declare) {
     return declare('bgagame.lettertycoon', ebg.core.gamegui, {
         constructor: function () {
-            console.log('lettertycoon constructor');
+            // console.log('lettertycoon constructor');
 
             // constants
             this.cardWidth = 120;
@@ -71,7 +71,7 @@ function (dojo, declare) {
             "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
         */
         setup: function (gamedatas) {
-            console.log('Starting game setup');
+            // console.log('Starting game setup');
 
             this.communityStock = this.createCardStock('community_pool');
             this.handStock = this.createCardStock('current_player_hand');
@@ -170,7 +170,7 @@ function (dojo, declare) {
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
-            console.log('Ending game setup');
+            // console.log('Ending game setup');
         },
        
 
@@ -181,7 +181,7 @@ function (dojo, declare) {
         //                  You can use this method to perform some user interface changes at this moment.
         //
         onEnteringState: function (stateName, args) {
-            console.log('Entering state: '+stateName);
+            // console.log('Entering state: '+stateName);
             this.currentState = stateName;
             
             switch (stateName) {
@@ -236,7 +236,7 @@ function (dojo, declare) {
         //                 You can use this method to perform some user interface changes at this moment.
         //
         onLeavingState: function(stateName) {
-            console.log('Leaving state: '+stateName);
+            // console.log('Leaving state: '+stateName);
             this.currentState = null;
             
             switch (stateName) {
@@ -283,7 +283,7 @@ function (dojo, declare) {
         //                        action status bar (ie: the HTML links in the status bar).
         //        
         onUpdateActionButtons: function (stateName, args) {
-            console.log('onUpdateActionButtons: '+stateName);
+            // console.log('onUpdateActionButtons: '+stateName);
                       
             if (this.isCurrentPlayerActive()) {            
                 switch (stateName) {
@@ -759,7 +759,6 @@ function (dojo, declare) {
 
         buySelectedPatent: function () {
             var items = this.availablePatents.getSelectedItems();
-            console.log(items);
             if (items.length === 1) {
                 var item = items[0];
                 this.action_buyPatent(item.type);
@@ -865,7 +864,7 @@ function (dojo, declare) {
         //// Player's action
 
         onSkipReplaceCard: function (evt) {
-            console.log('skip replace card');
+            // console.log('skip replace card');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -874,7 +873,7 @@ function (dojo, declare) {
         },
         
         onSkipPlayWord: function (evt) {
-            console.log('skip play word');
+            // console.log('skip play word');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -883,7 +882,7 @@ function (dojo, declare) {
         },
 
         onChallengeWord: function (evt) {
-            console.log('challenge word');
+            // console.log('challenge word');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -892,7 +891,7 @@ function (dojo, declare) {
         },
 
         onAcceptWord: function (evt) {
-            console.log('accept word');
+            // console.log('accept word');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -901,7 +900,7 @@ function (dojo, declare) {
         },
 
         onSkipBuyPatent: function (evt) {
-            console.log('skip buy patent');
+            // console.log('skip buy patent');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -910,7 +909,7 @@ function (dojo, declare) {
         },
 
         onSkipDiscardCards: function (evt) {
-            console.log('skip discard cards');
+            // console.log('skip discard cards');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -919,7 +918,7 @@ function (dojo, declare) {
         },
 
         onCommunitySelectionChanged: function () {
-            console.log('community selection changed');
+            // console.log('community selection changed');
 
             switch (this.currentState) {
 
@@ -935,7 +934,7 @@ function (dojo, declare) {
         },
 
         onHandSelectionChanged: function () {
-            console.log('hand selection changed');
+            // console.log('hand selection changed');
 
             switch (this.currentState) {
 
@@ -958,7 +957,7 @@ function (dojo, declare) {
         },
 
         onWord1SelectionChanged: function () {
-            console.log('word 1 selection changed');
+            // console.log('word 1 selection changed');
 
             switch (this.currentState) {
 
@@ -971,7 +970,7 @@ function (dojo, declare) {
         },
 
         onWord2SelectionChanged: function () {
-            console.log('word 2 selection changed');
+            // console.log('word 2 selection changed');
 
             switch (this.currentState) {
 
@@ -984,7 +983,7 @@ function (dojo, declare) {
         },
 
         onPatentSelectionChanged: function () {
-            console.log('patent selection changed');
+            // console.log('patent selection changed');
 
             switch (this.currentState) {
 
@@ -996,7 +995,7 @@ function (dojo, declare) {
         },
 
         onPlayWordButtonClicked: function (evt) {
-            console.log('play word button clicked');
+            // console.log('play word button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -1008,7 +1007,7 @@ function (dojo, declare) {
         },
 
         onChangeLetterTypeButtonClicked: function (evt) {
-            console.log('change letter type button clicked');
+            // console.log('change letter type button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -1019,7 +1018,7 @@ function (dojo, declare) {
         },
 
         onStartSecondWordButtonClicked: function (evt) {
-            console.log('start second word button clicked');
+            // console.log('start second word button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -1029,7 +1028,7 @@ function (dojo, declare) {
         },
 
         onDuplicateLetterButtonClicked: function (evt) {
-            console.log('duplicate letter button clicked');
+            // console.log('duplicate letter button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -1040,7 +1039,7 @@ function (dojo, declare) {
         },
 
         onAddAnSButtonClicked: function (evt) {
-            console.log('add an S button clicked');
+            // console.log('add an S button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -1049,7 +1048,7 @@ function (dojo, declare) {
         },
 
         onClearButtonClicked: function (evt) {
-            console.log('clear button clicked');
+            // console.log('clear button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -1058,14 +1057,12 @@ function (dojo, declare) {
         },
 
         onDiscardButtonClicked: function (evt) {
-            console.log('discard button clicked');
+            // console.log('discard button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
 
             var items = this.handStock.getSelectedItems();
-
-            console.log(items);
 
             var ids = this.getItemIds(items);
 
@@ -1085,7 +1082,7 @@ function (dojo, declare) {
         
         */
         setupNotifications: function () {
-            console.log('notifications subscriptions setup');
+            // console.log('notifications subscriptions setup');
 
             dojo.subscribe('playerReplacedCardFromCommunity', this, 'notif_playerReplacedCardFromCommunity');
             this.notifqueue.setSynchronous('playerReplacedCardFromCommunity', 2000);
@@ -1127,22 +1124,22 @@ function (dojo, declare) {
         },
 
         notif_playerReplacedCardFromCommunity: function (notif) {
-            console.log('player replaced card from community');
-            console.log(notif);
+            // console.log('player replaced card from community');
+            // console.log(notif);
             var card_id = notif.args.card_id;
             this.communityStock.removeFromStockById(card_id);
         },
 
         notif_activePlayerReplacedCardFromHand: function (notif) {
-            console.log('active player replaced card from hand');
-            console.log(notif);
+            // console.log('active player replaced card from hand');
+            // console.log(notif);
             var card_id = notif.args.card_id;
             this.handStock.removeFromStockById(card_id);
         },
 
         notif_playerPlayedWord: function (notif) {
-            console.log('player played word');
-            console.log(notif);
+            // console.log('player played word');
+            // console.log(notif);
             var player_id = notif.args.player_id;
             if (player_id !== this.getPlayerIdString()) {
                 var main_word_args = notif.args.main_word;
@@ -1156,38 +1153,38 @@ function (dojo, declare) {
         },
 
         notif_playerMustDiscard: function (notif) {
-            console.log('player must discard');
-            console.log(notif);
+            // console.log('player must discard');
+            // console.log(notif);
             var player_id = notif.args.player_id;
             this.clearWordArea(player_id);
         },
 
         notif_challengerPaidPenalty: function (notif) {
-            console.log('challenger paid penalty');
-            console.log(notif);
+            // console.log('challenger paid penalty');
+            // console.log(notif);
             var player_id = notif.args.player_id;
             this.playerMoney[player_id].incValue(-1);
             this.scoreCtrl[player_id].incValue(-1);
         },
 
         notif_playerReceivedPayment: function (notif) {
-            console.log('player received payment');
-            console.log(notif);
+            // console.log('player received payment');
+            // console.log(notif);
             var player_id = notif.args.player_id;
             this.playerMoney[player_id].incValue(1);
             this.scoreCtrl[player_id].incValue(1);
         },
 
         notif_automaticChallengeRejectedWord: function (notif) {
-            console.log('automatic challenge rejected word');
-            console.log(notif);
+            // console.log('automatic challenge rejected word');
+            // console.log(notif);
             var player_id = notif.args.player_id;
             this.clearWordArea(player_id);
         },
 
         notif_playerReceivedMoneyAndStock: function (notif) {
-            console.log('player received money and stock');
-            console.log(notif);
+            // console.log('player received money and stock');
+            // console.log(notif);
             var player_id = notif.args.player_id;
             var money = notif.args.money;
             var stock = notif.args.stock;
@@ -1197,8 +1194,8 @@ function (dojo, declare) {
         },
 
         notif_playerReceivedRoyalties: function (notif) {
-            console.log('player received royalties');
-            console.log(notif);
+            // console.log('player received royalties');
+            // console.log(notif);
             var player_id = notif.args.player_id;
             var royalties = notif.args.royalties;
             this.playerMoney[player_id].incValue(royalties);
@@ -1206,8 +1203,8 @@ function (dojo, declare) {
         },
 
         notif_playerBoughtPatent: function (notif) {
-            console.log('player bought patent');
-            console.log(notif);
+            // console.log('player bought patent');
+            // console.log(notif);
             var player_id = notif.args.player_id;
             var letter = notif.args.letter;
             var cost = notif.args.cost;
@@ -1224,8 +1221,8 @@ function (dojo, declare) {
         },
 
         notif_communityReceivedCards: function (notif) {
-            console.log('community received cards');
-            console.log(notif);
+            // console.log('community received cards');
+            // console.log(notif);
             var new_cards = notif.args.new_cards;
             for (var i in new_cards) {
                 var new_card = new_cards[i];
@@ -1235,16 +1232,16 @@ function (dojo, declare) {
         },
 
         notif_wordDiscarded: function (notif) {
-            console.log('word discarded');
-            console.log(notif);
+            // console.log('word discarded');
+            // console.log(notif);
             this.wordStock[1].removeAll();
             this.wordStock[2].removeAll();
             dojo.removeClass('second_word', 'show');
         },
 
         notif_activePlayerDiscardedCards: function (notif) {
-            console.log('active player discarded cards');
-            console.log(notif);
+            // console.log('active player discarded cards');
+            // console.log(notif);
             var card_ids = notif.args.card_ids;
             for (var i in card_ids) {
                 var card_id = card_ids[i];
@@ -1254,8 +1251,8 @@ function (dojo, declare) {
         },
 
         notif_activePlayerReceivedCards: function (notif) {
-            console.log('active player received cards');
-            console.log(notif);
+            // console.log('active player received cards');
+            // console.log(notif);
             var new_cards = notif.args.new_cards;
             for (var i in new_cards) {
                 var new_card = new_cards[i];
