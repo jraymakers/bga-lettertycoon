@@ -14,23 +14,23 @@
  */
 
 $this->goals = array(
-    2 => array( 'minimum' => 6, 'value' => 45 ),
-    3 => array( 'minimum' => 5, 'value' => 34 ),
-    4 => array( 'minimum' => 3, 'value' => 26 ),
-    5 => array( 'minimum' => 3, 'value' => 21 ),
+    2 => array('minimum' => 6, 'value' => 45),
+    3 => array('minimum' => 5, 'value' => 34),
+    4 => array('minimum' => 3, 'value' => 26),
+    5 => array('minimum' => 3, 'value' => 21),
 );
 
 $this->scores = array(
-     3 => array( 'money' => 1, 'stock' => 0 ),
-     4 => array( 'money' => 2, 'stock' => 0 ),
-     5 => array( 'money' => 3, 'stock' => 0 ),
-     6 => array( 'money' => 4, 'stock' => 1 ),
-     7 => array( 'money' => 6, 'stock' => 1 ),
-     8 => array( 'money' => 6, 'stock' => 2 ),
-     9 => array( 'money' => 6, 'stock' => 3 ),
-    10 => array( 'money' => 6, 'stock' => 4 ),
-    11 => array( 'money' => 6, 'stock' => 5 ),
-    12 => array( 'money' => 6, 'stock' => 6 ),
+     3 => array('money' => 1, 'stock' => 0),
+     4 => array('money' => 2, 'stock' => 0),
+     5 => array('money' => 3, 'stock' => 0),
+     6 => array('money' => 4, 'stock' => 1),
+     7 => array('money' => 6, 'stock' => 1),
+     8 => array('money' => 6, 'stock' => 2),
+     9 => array('money' => 6, 'stock' => 3),
+    10 => array('money' => 6, 'stock' => 4),
+    11 => array('money' => 6, 'stock' => 5),
+    12 => array('money' => 6, 'stock' => 6),
 );
 
 $this->letter_counts = array(

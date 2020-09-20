@@ -53,7 +53,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'manager',
         'action' => 'stGameSetup',
-        'transitions' => array( '' => 5 )
+        'transitions' => array('' => 5)
     ),
     
     5 => array(
@@ -61,7 +61,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stStartTurn',
-        'transitions' => array( 'hasReplaceCardOption' => 20, 'noReplaceCardOption' => 30 )
+        'transitions' => array('hasReplaceCardOption' => 20, 'noReplaceCardOption' => 30)
     ),
 
     20 => array(
@@ -69,8 +69,8 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} may replace a card'),
         'descriptionmyturn' => clienttranslate('${you} may replace a card'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'replaceCard', 'skipReplaceCard' ),
-        'transitions' => array( 'replaceCard' => 21, 'skip' => 30 )
+        'possibleactions' => array('replaceCard', 'skipReplaceCard'),
+        'transitions' => array('replaceCard' => 21, 'skip' => 30)
     ),
 
     21 => array(
@@ -78,7 +78,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stReplaceCard',
-        'transitions' => array( '' => 30 )
+        'transitions' => array('' => 30)
     ),
 
     30 => array(
@@ -86,8 +86,8 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} may play a word'),
         'descriptionmyturn' => clienttranslate('${you} may play a word'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'playWord', 'skipPlayWord' ),
-        'transitions' => array( 'playWord' => 31, 'skip' => 60 )
+        'possibleactions' => array('playWord', 'skipPlayWord'),
+        'transitions' => array('playWord' => 31, 'skip' => 60)
     ),
 
     31 => array(
@@ -95,7 +95,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stPlayWord',
-        'transitions' => array( 'automaticChallengeVariant' => 35, 'playersChallengeVariant' => 40 )
+        'transitions' => array('automaticChallengeVariant' => 35, 'playersChallengeVariant' => 40)
     ),
 
     35 => array(
@@ -103,7 +103,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stAutomaticChallenge',
-        'transitions' => array( 'wordAccepted' => 45, 'wordRejectedTryAgain' => 30, 'wordRejectedNoRetries' => 70 )
+        'transitions' => array('wordAccepted' => 45, 'wordRejectedTryAgain' => 30, 'wordRejectedNoRetries' => 70)
     ),
 
     40 => array(
@@ -112,8 +112,8 @@ $machinestates = array(
         'descriptionmyturn' => clienttranslate('${you} may challenge or accept the played word'),
         'type' => 'multipleactiveplayer',
         'action' => 'stPlayersMayChallenge',
-        'possibleactions' => array( 'challengeWord', 'acceptWord' ),
-        'transitions' => array( 'resolveChallenge' => 41 )
+        'possibleactions' => array('challengeWord', 'acceptWord'),
+        'transitions' => array('resolveChallenge' => 41)
     ),
 
     41 => array(
@@ -121,7 +121,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stResolveChallenge',
-        'transitions' => array( 'scoreWord' => 45, 'wordRejected' => 70 )
+        'transitions' => array('scoreWord' => 45, 'wordRejected' => 70)
     ),
 
     45 => array(
@@ -129,7 +129,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stScoreWord',
-        'transitions' => array( 'patentsAvailable' => 50, 'noPatentsAvailable' => 55 )
+        'transitions' => array('patentsAvailable' => 50, 'noPatentsAvailable' => 55)
     ),
 
     50 => array(
@@ -137,8 +137,8 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} may buy a patent'),
         'descriptionmyturn' => clienttranslate('${you} may buy a patent'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'buyPatent', 'skipBuyPatent' ),
-        'transitions' => array( 'buyPatent' => 51, 'skip' => 55 )
+        'possibleactions' => array('buyPatent', 'skipBuyPatent'),
+        'transitions' => array('buyPatent' => 51, 'skip' => 55)
     ),
 
     51 => array(
@@ -146,7 +146,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stBuyPatent',
-        'transitions' => array( '' => 55 )
+        'transitions' => array('' => 55)
     ),
 
     55 => array(
@@ -154,7 +154,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stRefillCommunityPool',
-        'transitions' => array( '' => 60 )
+        'transitions' => array('' => 60)
     ),
 
     60 => array(
@@ -162,8 +162,8 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} may discard cards'),
         'descriptionmyturn' => clienttranslate('${you} may discard cards'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'discardCards', 'skipDiscardCards' ),
-        'transitions' => array( '' => 75 )
+        'possibleactions' => array('discardCards', 'skipDiscardCards'),
+        'transitions' => array('' => 75)
     ),
 
     70 => array(
@@ -171,8 +171,8 @@ $machinestates = array(
         'description' => clienttranslate('${actplayer} must discard a card'),
         'descriptionmyturn' => clienttranslate('${you} must discard a card'),
         'type' => 'activeplayer',
-        'possibleactions' => array( 'discardCard' ),
-        'transitions' => array( '' => 75 )
+        'possibleactions' => array('discardCard'),
+        'transitions' => array('' => 75)
     ),
 
     75 => array(
@@ -180,7 +180,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stRefillHand',
-        'transitions' => array( '' => 76 )
+        'transitions' => array('' => 76)
     ),
 
     76 => array(
@@ -188,7 +188,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stEndTurn',
-        'transitions' => array( 'nextTurn' => 5, 'endGame' => 99 ),
+        'transitions' => array('nextTurn' => 5, 'endGame' => 99),
         'updateGameProgression' => true
     ),
    

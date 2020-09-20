@@ -9,7 +9,7 @@
  * -----
  *    
  * If you define a method "myAction" here, then you can call it from your javascript code with:
- * this.ajaxcall( "/lettertycoon/lettertycoon/myAction.html", ...)
+ * this.ajaxcall("/lettertycoon/lettertycoon/myAction.html", ...)
  *
  */
 
@@ -18,15 +18,12 @@ class action_lettertycoon extends APP_GameAction
     // Constructor: please do not modify
     public function __default()
     {
-        if( self::isArg( 'notifwindow') )
-        {
+        if (self::isArg('notifwindow')) {
             $this->view = "common_notifwindow";
-            $this->viewArgs['table'] = self::getArg( "table", AT_posint, true );
-        }
-        else
-        {
+            $this->viewArgs['table'] = self::getArg("table", AT_posint, true);
+        } else {
             $this->view = "lettertycoon_lettertycoon";
-            self::trace( "Complete reinitialization of board game" );
+            self::trace("Complete reinitialization of board game");
         }
     }
 
@@ -35,14 +32,14 @@ class action_lettertycoon extends APP_GameAction
     function parseNumberList($number_list_arg)
     {
         // Removing last ';' if exists
-        if (substr( $number_list_arg, -1 ) == ';' ) {
-            $number_list_arg = substr( $number_list_arg, 0, -1 );
+        if (substr($number_list_arg, -1) == ';' ) {
+            $number_list_arg = substr($number_list_arg, 0, -1);
         }
 
-        if( $number_list_arg == '' ) {
+        if ($number_list_arg == '') {
             return array();
         } else {
-            return explode( ';', $number_list_arg );
+            return explode(';', $number_list_arg);
         }
     }
 

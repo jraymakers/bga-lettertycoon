@@ -15,7 +15,7 @@
  * 
  */
 
-$gameinfos = array( 
+$gameinfos = array(
 
 // Name of the game in English (will serve as the basis for translation) 
 'game_name' => "Letter Tycoon",
@@ -43,14 +43,14 @@ $gameinfos = array(
 
 
 // Players configuration that can be played (ex: 2 to 4 players)
-'players' => array( 2,3,4,5 ),    
+'players' => array(2,3,4,5),    
 
 // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
 'suggest_player_number' => null,
 
 // Discourage players to play with these numbers of players. Must be null if there is no such advice.
 'not_recommend_player_number' => null,
-// 'not_recommend_player_number' => array( 2, 3 ),      // <= example: this is not recommended to play this game with 2 or 3 players
+// 'not_recommend_player_number' => array(2, 3),      // <= example: this is not recommended to play this game with 2 or 3 players
 
 
 // Estimated game duration, in minutes (used only for the launch, afterward the real duration is computed)
@@ -70,7 +70,7 @@ $gameinfos = array(
 // the tie breaker to the players.
 // Note: if you are NOT using any tie breaker, leave the empty string.
 //
-// Example: 'tie_breaker_description' => totranslate( "Number of remaining cards in hand" ),
+// Example: 'tie_breaker_description' => totranslate("Number of remaining cards in hand"),
 'tie_breaker_description' => "Highest value in patents",
 
 // If in the game, all losers are equal (no score to rank them or explicit in the rules that losers are not ranked between them), set this to true 
@@ -97,7 +97,7 @@ $gameinfos = array(
 'diplomacy' => 1,    
 
 // Colors attributed to players
-'player_colors' => array( "ff0000", "008000", "0000ff", "ffa500", "773300" ),
+'player_colors' => array("ff0000", "008000", "0000ff", "ffa500", "773300"),
 
 // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
 'favorite_colors_support' => true,
@@ -145,7 +145,7 @@ $gameinfos = array(
 //  http://en.doc.boardgamearena.com/Game_meta-information:_gameinfos.inc.php
 //  IMPORTANT: this list should be ORDERED, with the most important tag first.
 //  IMPORTANT: it is mandatory that the FIRST tag is 1, 2, 3 and 4 (= game category)
-'tags' => array( 2, 11, 20, 200 ),
+'tags' => array(2, 11, 20, 200),
 
 // Note : button label will be "Buy on <Name of the website>"
 'custom_buy_button' => array(

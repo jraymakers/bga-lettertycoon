@@ -54,11 +54,11 @@ $stats_type = array(
         Examples:
 
 
-        "table_teststat1" => array(   "id"=> 10,
+        "table_teststat1" => array("id"=> 10,
                                 "name" => totranslate("table test stat 1"), 
                                 "type" => "int" ),
                                 
-        "table_teststat2" => array(   "id"=> 11,
+        "table_teststat2" => array("id"=> 11,
                                 "name" => totranslate("table test stat 2"), 
                                 "type" => "float" )
 */  
@@ -75,11 +75,11 @@ $stats_type = array(
         Examples:    
         
         
-        "player_teststat1" => array(   "id"=> 10,
+        "player_teststat1" => array("id"=> 10,
                                 "name" => totranslate("player test stat 1"), 
                                 "type" => "int" ),
                                 
-        "player_teststat2" => array(   "id"=> 11,
+        "player_teststat2" => array("id"=> 11,
                                 "name" => totranslate("player test stat 2"), 
                                 "type" => "float" )
 

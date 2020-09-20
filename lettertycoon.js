@@ -235,7 +235,7 @@ function (dojo, declare) {
         // onLeavingState: this method is called each time we are leaving a game state.
         //                 You can use this method to perform some user interface changes at this moment.
         //
-        onLeavingState: function( stateName ) {
+        onLeavingState: function(stateName) {
             console.log('Leaving state: '+stateName);
             this.currentState = null;
             
@@ -346,10 +346,10 @@ function (dojo, declare) {
 
         createCardStock: function (element_id) {
             var cardStock = new ebg.stock();
-            cardStock.create( this, $(element_id), this.cardWidth, this.cardHeight );
+            cardStock.create(this, $(element_id), this.cardWidth, this.cardHeight);
             cardStock.image_items_per_row = 13;
             for (var letter = 0, letters = 26; letter < letters; letter++) {
-                cardStock.addItemType( letter, letter, g_gamethemeurl+'img/cards_small.jpg', letter );
+                cardStock.addItemType(letter, letter, g_gamethemeurl+'img/cards_small.jpg', letter);
             }
             cardStock.onItemCreate = dojo.hitch(this, 'createCard'); 
             cardStock.setSelectionMode(0);
@@ -369,10 +369,10 @@ function (dojo, declare) {
 
         createPatentStock: function (element_id) {
             var patentStock = new ebg.stock();
-            patentStock.create( this, $(element_id), this.patentWidth, this.patentHeight );
+            patentStock.create(this, $(element_id), this.patentWidth, this.patentHeight);
             patentStock.image_items_per_row = 2;
             for (var letter = 0, letters = 26; letter < letters; letter++) {
-                patentStock.addItemType( letter, letter, g_gamethemeurl+'img/patents_small.jpg', letter );
+                patentStock.addItemType(letter, letter, g_gamethemeurl+'img/patents_small.jpg', letter);
             }
             patentStock.onItemCreate = dojo.hitch(this, 'createPatent'); 
             patentStock.setSelectionMode(0);
@@ -1088,40 +1088,40 @@ function (dojo, declare) {
             console.log('notifications subscriptions setup');
 
             dojo.subscribe('playerReplacedCardFromCommunity', this, 'notif_playerReplacedCardFromCommunity');
-            this.notifqueue.setSynchronous( 'playerReplacedCardFromCommunity', 2000 );
+            this.notifqueue.setSynchronous('playerReplacedCardFromCommunity', 2000);
             dojo.subscribe('activePlayerReplacedCardFromHand', this, 'notif_activePlayerReplacedCardFromHand');
-            this.notifqueue.setSynchronous( 'activePlayerReplacedCardFromHand', 2000 );
+            this.notifqueue.setSynchronous('activePlayerReplacedCardFromHand', 2000);
 
             dojo.subscribe('playerPlayedWord', this, 'notif_playerPlayedWord');
-            this.notifqueue.setSynchronous( 'playerPlayedWord', 3000 );
+            this.notifqueue.setSynchronous('playerPlayedWord', 3000);
 
-            this.notifqueue.setSynchronous( 'playerChallenged', 2000 );
-            this.notifqueue.setSynchronous( 'playerChallengeSucceeded', 2000 );
+            this.notifqueue.setSynchronous('playerChallenged', 2000);
+            this.notifqueue.setSynchronous('playerChallengeSucceeded', 2000);
 
             dojo.subscribe('playerMustDiscard', this, 'notif_playerMustDiscard');
 
-            this.notifqueue.setSynchronous( 'playerChallengeFailed', 2000 );
+            this.notifqueue.setSynchronous('playerChallengeFailed', 2000);
 
             dojo.subscribe('challengerPaidPenalty', this, 'notif_challengerPaidPenalty');
             dojo.subscribe('playerReceivedPayment', this, 'notif_playerReceivedPayment');
 
             dojo.subscribe('automaticChallengeRejectedWord', this, 'notif_automaticChallengeRejectedWord');
-            this.notifqueue.setSynchronous( 'automaticChallengeRejectedWord', 2000 );
+            this.notifqueue.setSynchronous('automaticChallengeRejectedWord', 2000);
 
             dojo.subscribe('playerReceivedMoneyAndStock', this, 'notif_playerReceivedMoneyAndStock');
-            this.notifqueue.setSynchronous( 'playerReceivedMoneyAndStock', 2000 );
+            this.notifqueue.setSynchronous('playerReceivedMoneyAndStock', 2000);
 
             dojo.subscribe('playerReceivedRoyalties', this, 'notif_playerReceivedRoyalties');
 
             dojo.subscribe('playerBoughtPatent', this, 'notif_playerBoughtPatent');
 
             dojo.subscribe('communityReceivedCards', this, 'notif_communityReceivedCards');
-            this.notifqueue.setSynchronous( 'communityReceivedCards', 2000 );
+            this.notifqueue.setSynchronous('communityReceivedCards', 2000);
 
             dojo.subscribe('wordDiscarded', this, 'notif_wordDiscarded');
 
             dojo.subscribe('activePlayerDiscardedCards', this, 'notif_activePlayerDiscardedCards');
-            this.notifqueue.setSynchronous( 'activePlayerDiscardedCards', 2000 );
+            this.notifqueue.setSynchronous('activePlayerDiscardedCards', 2000);
             
             dojo.subscribe('activePlayerReceivedCards', this, 'notif_activePlayerReceivedCards');
         },
