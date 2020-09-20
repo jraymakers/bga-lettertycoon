@@ -1167,6 +1167,7 @@ function (dojo, declare) {
             console.log(notif);
             var player_id = notif.args.player_id;
             this.playerMoney[player_id].incValue(-1);
+            this.scoreCtrl[player_id].incValue(-1);
         },
 
         notif_playerReceivedPayment: function (notif) {
@@ -1174,6 +1175,7 @@ function (dojo, declare) {
             console.log(notif);
             var player_id = notif.args.player_id;
             this.playerMoney[player_id].incValue(1);
+            this.scoreCtrl[player_id].incValue(1);
         },
 
         notif_automaticChallengeRejectedWord: function (notif) {
@@ -1200,6 +1202,7 @@ function (dojo, declare) {
             var player_id = notif.args.player_id;
             var royalties = notif.args.royalties;
             this.playerMoney[player_id].incValue(royalties);
+            this.scoreCtrl[player_id].incValue(royalties);
         },
 
         notif_playerBoughtPatent: function (notif) {
