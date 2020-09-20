@@ -1078,8 +1078,7 @@ class LetterTycoon extends Table
 
     function stPlayWord()
     {
-        $challenge_mode_option = $this->gamestate->table_globals[100];
-        if ($challenge_mode_option == '2') { // automatic challenge
+        if (self::getGameStateValue('challenge_mode') == 2) { // automatic challenge
             $this->gamestate->nextState('automaticChallengeVariant');
         } else { // players challenge (default)
             $this->gamestate->nextState('playersChallengeVariant');
