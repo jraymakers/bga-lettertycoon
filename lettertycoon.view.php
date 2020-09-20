@@ -18,18 +18,18 @@
  *
  */
 
-require_once( APP_BASE_PATH."view/common/game.view.php" );
+require_once(APP_BASE_PATH."view/common/game.view.php");
 
 class view_lettertycoon_lettertycoon extends game_view
 {
     function getGameName() {
         return "lettertycoon";
     }    
-    function build_page( $viewArgs )
+    function build_page($viewArgs)
     {		
         // Get players & players number
         $players = $this->game->loadPlayersBasicInfos();
-        $players_nbr = count( $players );
+        $players_nbr = count($players);
 
         /*********** Place your code below:  ************/
 
@@ -53,20 +53,19 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['CURRENT_PLAYER_ID'] = $current_player_id;
         $this->tpl['CURRENT_PLAYER_COLOR'] = $current_player_color;
 
-        $this->page->begin_block( 'lettertycoon_lettertycoon', 'player' );
-        $this->page->insert_block( 'player', array(
+        $this->page->begin_block('lettertycoon_lettertycoon', 'player');
+        $this->page->insert_block('player', array(
             'PLAYER_ID' => $current_player_id,
             'PLAYER_NAME' => self::_("Your Patents"),
             'PLAYER_COLOR' => $current_player_color,
-        ) );
-        foreach( $players as $player_id => $player )
-        {
-            if( $player_id != $current_player_id ) {
-                $this->page->insert_block( 'player', array(
+        ));
+        foreach ($players as $player_id => $player) {
+            if ($player_id != $current_player_id) {
+                $this->page->insert_block('player', array(
                     'PLAYER_ID' => $player_id,
                     'PLAYER_NAME' => $player['player_name'],
                     'PLAYER_COLOR' => $player['player_color'],
-                ) );
+                ));
             }
         }
 
