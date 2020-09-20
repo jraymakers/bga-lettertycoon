@@ -9,11 +9,11 @@
  * -----
  */
 
-require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
+require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
 
 class LetterTycoon extends Table
 {
-    function __construct( )
+    function __construct()
     {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
@@ -35,12 +35,12 @@ class LetterTycoon extends Table
             )
         );
 
-        $this->cards = self::getNew( 'module.common.deck' );
-        $this->cards->init( 'card' );
+        $this->cards = self::getNew('module.common.deck');
+        $this->cards->init('card');
         $this->cards->autoreshuffle = true;
     }
     
-    protected function getGameName( )
+    protected function getGameName()
     {
         // Used for translations and stuff. Please do not modify.
         return "lettertycoon";
@@ -53,7 +53,7 @@ class LetterTycoon extends Table
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame( $players, $options = array() )
+    protected function setupNewGame($players, $options = array())
     {    
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
@@ -65,56 +65,53 @@ class LetterTycoon extends Table
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
         $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
         $values = array();
-        foreach( $players as $player_id => $player )
-        {
-            $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+        foreach ($players as $player_id => $player) {
+            $color = array_shift($default_colors);
+            $values[] = "('".$player_id."','$color','".$player['player_canal']."','"
+                .addslashes($player['player_name'])."','"
+                .addslashes($player['player_avatar'])."')";
         }
-        $sql .= implode( ',', $values );
-        self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
+        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
 
         self::setGameStateInitialValue('last_round', 0);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+        //self::initStat('table', 'table_teststat1', 0);    // Init a table statistics
+        //self::initStat('player', 'player_teststat1', 0);  // Init a player statistics (for all players)
 
         // initialize card table
         $cards = array();
-        foreach( $this->letter_counts as $letter => $count )
-        {
-            $cards[] = array( 'type' => $letter, 'type_arg' => 0, 'nbr' => $count );
+        foreach ($this->letter_counts as $letter => $count) {
+            $cards[] = array('type' => $letter, 'type_arg' => 0, 'nbr' => $count);
         }
-        $this->cards->createCards( $cards, 'deck' );
-        $this->cards->shuffle( 'deck' );
+        $this->cards->createCards($cards, 'deck');
+        $this->cards->shuffle('deck');
 
         // initialize patent table
         $sql = 'INSERT INTO patent (patent_id, owning_player_id) VALUES ';
         $values = array();
-        foreach ( $this->patent_costs as $letter => $cost )
-        {
+        foreach ($this->patent_costs as $letter => $cost) {
             $values[] = "('$letter', NULL)";
         }
-        $sql .= implode( ',', $values );
-        self::DbQuery( $sql );
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
 
         // deal 7 cards to each player
         $players = self::loadPlayersBasicInfos();
-        foreach( $players as $player_id => $player )
-        {
-            $this->cards->pickCards( 7, 'deck', $player_id );
+        foreach ($players as $player_id => $player) {
+            $this->cards->pickCards(7, 'deck', $player_id);
         }
 
         // deal 3 cards to the community pool
-        $this->cards->pickCardsForLocation( 3, 'deck', 'community' );
+        $this->cards->pickCardsForLocation(3, 'deck', 'community');
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -142,11 +139,11 @@ class LetterTycoon extends Table
         $sql = 'SELECT player_id as `id`, player_no as `order`,
                 player_score as `score`, player_score_aux as `patents_value`,
                 `money`, `stock` FROM player ';
-        $result['players'] = self::getCollectionFromDb( $sql );
+        $result['players'] = self::getCollectionFromDb($sql);
   
-        $result['community'] = $this->cards->getCardsInLocation( 'community' );
+        $result['community'] = $this->cards->getCardsInLocation('community');
 
-        $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
+        $result['hand'] = $this->cards->getCardsInLocation('hand', $current_player_id);
 
         $result['patent_owners'] = self::getPatentOwners();
 
@@ -251,7 +248,7 @@ class LetterTycoon extends Table
     function setPatentOwner($patent_id, $player_id)
     {
         $sql = "UPDATE patent SET owning_player_id = $player_id WHERE patent_id = '$patent_id' ";
-        self::DbQuery( $sql );
+        self::DbQuery($sql);
     }
 
     function updatePlayerCounters($player_id, $money_change, $stock_change, $patents_value_change)
@@ -262,19 +259,19 @@ class LetterTycoon extends Table
                     player_score_aux = player_score_aux + $patents_value_change,
                     player_score = player_score + $money_change + $stock_change + $patents_value_change
                 WHERE player_id = $player_id ";
-        self::DbQuery( $sql );
+        self::DbQuery($sql);
     }
 
     function setPlayerChallenge($player_id, $challenge /* 0 or 1 */)
     {
         $sql = "UPDATE player SET challenge = $challenge WHERE player_id = $player_id ";
-        self::DbQuery( $sql );
+        self::DbQuery($sql);
     }
 
     function clearPlayersChallenge()
     {
         $sql = "UPDATE player SET challenge = 0 ";
-        self::DbQuery( $sql );
+        self::DbQuery($sql);
     }
 
     function saveWord($word_num /* 1 or 2 */, $word_args)
@@ -288,22 +285,21 @@ class LetterTycoon extends Table
 
         $sql = 'INSERT INTO word (word_num, word_pos, letter, letter_origin, letter_type, card_id) VALUES ';
         $values = array();
-        for ( $word_pos = 0; $word_pos < $length; $word_pos++ )
-        {
+        for ($word_pos = 0; $word_pos < $length; $word_pos++) {
             $letter = $letters[$word_pos];
             $letter_origin = $letter_origins[$word_pos];
             $letter_type = $letter_types[$word_pos];
             $card_id = $card_ids[$word_pos];
             $values[] = "($word_num, $word_pos, '$letter', '$letter_origin', '$letter_type', $card_id)";
         }
-        $sql .= implode( ',', $values );
-        self::DbQuery( $sql );
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
     }
 
     function clearWord()
     {
         $sql = 'DELETE FROM word ';
-        self::DbQuery( $sql );
+        self::DbQuery($sql);
     }
 
     // $word_num = 1 for main word, 2 for second word
@@ -440,8 +436,7 @@ class LetterTycoon extends Table
     function stringFromWordObjects($word_objects)
     {
         $letters = '';
-        foreach ( $word_objects as $word_object )
-        {
+        foreach ($word_objects as $word_object) {
             $letters .= $word_object['letter'];
         }
         return $letters;
@@ -463,9 +458,8 @@ class LetterTycoon extends Table
     {
         $low = 0;
         $high = count($list) - 1;
-        while ( $low <= $high )
-        {
-            $mid = floor( ($low + $high) / 2 );
+        while ($low <= $high) {
+            $mid = floor(($low + $high) / 2);
             $comp = strcmp($list[$mid], $word);
             if ($comp < 0) $low = $mid + 1;
             elseif ($comp > 0) $high = $mid - 1;
@@ -729,7 +723,7 @@ class LetterTycoon extends Table
                 $stock *= 2;
             }
         }
-        return array( 'money' => $money, 'stock' => $stock );
+        return array('money' => $money, 'stock' => $stock);
     }
 
     function countRoyaltiesAndPurchasablePatentsForWord(
@@ -773,8 +767,7 @@ class LetterTycoon extends Table
     function isLastTurnOfLastRound()
     {
         // is this the last round?
-        if (self::getGameStateValue('last_round') == 1)
-        {
+        if (self::getGameStateValue('last_round') == 1) {
             $active_player_id = self::getActivePlayerId();
             $next_player_table = self::getNextPlayerTable();
             // is the next player the first player?
@@ -802,8 +795,8 @@ class LetterTycoon extends Table
         $active_player_id = self::getActivePlayerId();
         $card = $this->cards->getCard($card_id);
 
-        if ( !($card['location'] == 'hand' && $card['location_arg'] == $active_player_id || $card['location'] == 'community') ) {
-            throw new BgaUserException( self::_('You cannot replace a card that is not in your hand or the community pool.') );
+        if (!($card['location'] == 'hand' && $card['location_arg'] == $active_player_id || $card['location'] == 'community')) {
+            throw new BgaUserException(self::_('You cannot replace a card that is not in your hand or the community pool.'));
         }
 
         $this->cards->moveCard($card_id, 'discard');
@@ -957,7 +950,7 @@ class LetterTycoon extends Table
         self::checkAction('buyPatent');
 
         if ($letter_index < 0 || $letter_index > 25) {
-            throw new BgaVisibleSystemException( "letter_index out of range: $letter_index" );
+            throw new BgaVisibleSystemException("letter_index out of range: $letter_index");
         }
 
         $letter = chr(65 + $letter_index);
@@ -1012,11 +1005,9 @@ class LetterTycoon extends Table
 
         // ensure cards are in active player's hand
         $cards = $this->cards->getCards($card_ids);
-        foreach( $cards as $card )
-        {
-            if( $card['location'] != 'hand' || $card['location_arg'] != $active_player_id )
-            {
-                throw new BgaUserException( self::_('You cannot discard a card that is not in your hand.') );
+        foreach ($cards as $card) {
+            if($card['location'] != 'hand' || $card['location_arg'] != $active_player_id) {
+                throw new BgaUserException(self::_('You cannot discard a card that is not in your hand.'));
             }
         }
         
@@ -1066,7 +1057,7 @@ class LetterTycoon extends Table
 
         // notify the active player to discard the specific cards
         self::notifyPlayer($active_player_id, 'activePlayerDiscardedCards', '', array(
-            'card_ids' => array( $card_id )
+            'card_ids' => array($card_id)
         ));
 
         // notify all players about the number of cards discarded (e.g. 1)
@@ -1366,7 +1357,7 @@ class LetterTycoon extends Table
         self::clearWord();
 
         // discard all word cards
-        $this->cards->moveAllCardsInLocation( 'word', 'discard' );
+        $this->cards->moveAllCardsInLocation('word', 'discard');
 
         self::notifyAllPlayers('wordDiscarded', '', array());
 
@@ -1386,7 +1377,7 @@ class LetterTycoon extends Table
             $this->gamestate->nextState('endGame');
         } else {
             $player_id = self::activeNextPlayer();
-            self::giveExtraTime( $player_id );
+            self::giveExtraTime($player_id);
 
             $this->gamestate->nextState('nextTurn');
         }
@@ -1409,14 +1400,14 @@ class LetterTycoon extends Table
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn( $state, $active_player )
+    function zombieTurn($state, $active_player)
     {
         $statename = $state['name'];
         
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
                 default:
-                    $this->gamestate->nextState( "zombiePass" );
+                    $this->gamestate->nextState("zombiePass");
                     break;
             }
 
@@ -1425,12 +1416,12 @@ class LetterTycoon extends Table
 
         if ($state['type'] === "multipleactiveplayer") {
             // Make sure player is in a non blocking status for role turn
-            $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
+            $this->gamestate->setPlayerNonMultiactive($active_player, '');
             
             return;
         }
 
-        throw new feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new feException("Zombie mode not supported at this game state: ".$statename);
     }
     
 ///////////////////////////////////////////////////////////////////////////////////:
@@ -1448,26 +1439,26 @@ class LetterTycoon extends Table
     
     */
     
-    function upgradeTableDb( $from_version )
+    function upgradeTableDb($from_version)
     {
         // $from_version is the current version of this game database, in numerical form.
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
         
         // Example:
-//        if( $from_version <= 1404301345 )
+//        if ($from_version <= 1404301345)
 //        {
 //            // ! important ! Use DBPREFIX_<table_name> for all tables
 //
 //            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
+//            self::applyDbUpgradeToAllDB($sql);
 //        }
-//        if( $from_version <= 1405061421 )
+//        if ($from_version <= 1405061421)
 //        {
 //            // ! important ! Use DBPREFIX_<table_name> for all tables
 //
 //            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
+//            self::applyDbUpgradeToAllDB($sql);
 //        }
 //        // Please add your future database scheme changes here
 //
