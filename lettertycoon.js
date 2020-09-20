@@ -349,7 +349,7 @@ function (dojo, declare) {
             cardStock.create(this, $(element_id), this.cardWidth, this.cardHeight);
             cardStock.image_items_per_row = 13;
             for (var letter = 0, letters = 26; letter < letters; letter++) {
-                cardStock.addItemType(letter, letter, g_gamethemeurl+'img/cards_small.jpg', letter);
+                cardStock.addItemType(letter, letter, g_gamethemeurl+'img/cards.jpg', letter);
             }
             cardStock.onItemCreate = dojo.hitch(this, 'createCard'); 
             cardStock.setSelectionMode(0);
@@ -365,6 +365,9 @@ function (dojo, declare) {
             if (/208$/.test(id)) { // 208 = duplicate card id
                 dojo.addClass(element, 'duplicate');
             }
+            this.addTooltipHtml(id, this.format_block('jstpl_card_tooltip', {
+                letter: this.getLetterFromIndex(type)
+            }));
         },
 
         createPatentStock: function (element_id) {
@@ -372,7 +375,7 @@ function (dojo, declare) {
             patentStock.create(this, $(element_id), this.patentWidth, this.patentHeight);
             patentStock.image_items_per_row = 2;
             for (var letter = 0, letters = 26; letter < letters; letter++) {
-                patentStock.addItemType(letter, letter, g_gamethemeurl+'img/patents_small.jpg', letter);
+                patentStock.addItemType(letter, letter, g_gamethemeurl+'img/patents.jpg', letter);
             }
             patentStock.onItemCreate = dojo.hitch(this, 'createPatent'); 
             patentStock.setSelectionMode(0);
@@ -382,6 +385,9 @@ function (dojo, declare) {
 
         createPatent: function (element, type, id) {
             dojo.addClass(element, 'patent');
+            this.addTooltipHtml(id, this.format_block('jstpl_patent_tooltip', {
+                letter: this.getLetterFromIndex(type)
+            }));
         },
 
         createCounter: function (element_id, value) {

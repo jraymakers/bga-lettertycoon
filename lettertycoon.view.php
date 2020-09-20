@@ -48,6 +48,8 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['ADD_AN_S'] = self::_("Add an S");
         $this->tpl['CLEAR'] = self::_("Clear");
         $this->tpl['YOUR_HAND'] = self::_("Your Hand");
+        $this->tpl['CARD'] = self::_("Card");
+        $this->tpl['PATENT'] = self::_("Patent");
 
         $this->tpl['PLAYER_COUNT'] = $players_nbr;
         $this->tpl['CURRENT_PLAYER_ID'] = $current_player_id;

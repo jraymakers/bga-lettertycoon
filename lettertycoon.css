@@ -207,6 +207,7 @@
 }
 
 .card {
+    background-size: auto 200%;
     border-radius: 8px;
 }
 .card.added_s {
@@ -306,6 +307,7 @@
 }
 
 .patent {
+    background-size: 200% auto;
     border-radius: 8px;
 }
 .patent.unpurchasable {

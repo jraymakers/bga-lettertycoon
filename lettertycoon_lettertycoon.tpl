@@ -84,6 +84,14 @@ var jstpl_player_board_info='<div class="player_board_info">\
 </span>\
 </div>';
 
-</script>  
+var jstpl_card_tooltip='<div>\
+<div>{CARD}: ${letter}</div>\
+</div>';
+
+var jstpl_patent_tooltip='<div>\
+<div>{PATENT}: ${letter}</div>\
+</div>';
+
+</script>
 
 {OVERALL_GAME_FOOTER}
