@@ -27,6 +27,7 @@ class LetterTycoon extends Table
             array(
                 // globals
                 'last_round' => 10, // 0 is no, 1 is yes
+                'retries_left' => 11,
 
                 // game options
                 'challenge_mode' => 100,
@@ -551,12 +552,45 @@ class LetterTycoon extends Table
 
     function notifyAutomaticChallengeRejectedWord($rejected_word_string)
     {
-        self::notifyAllPlayers('automaticChallengeRejectedWordTryAgain',
-            clienttranslate('Automatic challenge rejected "${rejected_word}", ${player_name} may try again'),
+        self::notifyAllPlayers('automaticChallengeRejectedWord',
+            clienttranslate('Automatic challenge rejected "${rejected_word}"'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'rejected_word' => $rejected_word_string
+            )
+        );
+    }
+
+    function notifyPlayerMayTryAgain()
+    {
+        self::notifyAllPlayers('playerMayTryAgain',
+            clienttranslate('${player_name} may try again'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName()
+            )
+        );
+    }
+
+    function notifyPlayerMayTryAgainRetriesLeft($retries_left)
+    {
+        self::notifyAllPlayers('playerMayTryAgainRetriesLeft',
+            clienttranslate('${player_name} may try again (retries left: ${retries_left})'),
             array(
                 'player_id' => self::getActivePlayerId(),
                 'player_name' => self::getActivePlayerName(),
-                'rejected_word' => $rejected_word_string
+                'retries_left' => $retries_left
+            )
+        );
+    }
+
+    function notifyPlayerMustDiscardNoRetries()
+    {
+        self::notifyAllPlayers('playerMustDiscardNoRetries',
+            clienttranslate('${player_name} ran out of retries and must discard a card'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName()
             )
         );
     }
@@ -1062,6 +1096,14 @@ class LetterTycoon extends Table
         $active_player_id = self::getActivePlayerId();
         $patent_owners = self::getPatentOwners();
 
+        if (self::getGameStateValue('challenge_mode') == 2) { // automatic challenge
+            self::setGameStateValue('retries_left', intval(self::getGameStateValue('automatic_challenge_retries')));
+        } else {
+            // no retries allowed in players challenge mode
+            self::setGameStateValue('retries_left', 0);
+        }
+        
+
         if ($patent_owners['Q'] == $active_player_id) {
             $this->gamestate->nextState('hasReplaceCardOption');
         } else {
@@ -1095,8 +1137,20 @@ class LetterTycoon extends Table
         if (isset($rejected_word_string)) {
             self::returnAllWordCards($main_word_objects, $second_word_objects);
             self::notifyAutomaticChallengeRejectedWord($rejected_word_string);
-            // TODO: limited retries
-            $this->gamestate->nextState('wordRejectedTryAgain');
+
+            $retries_left = intval(self::getGameStateValue('retries_left'));
+            if ($retries_left > 0) {
+                self::setGameStateValue('retries_left', $retries_left - 1);
+                self::notifyPlayerMayTryAgainRetriesLeft($retries_left);
+                $this->gamestate->nextState('wordRejectedTryAgain');
+            } else if ($retries_left === 0) {
+                self::notifyPlayerMustDiscardNoRetries();
+                $this->gamestate->nextState('wordRejectedNoRetries');
+            } else { // unlimited
+                self::notifyPlayerMayTryAgain();
+                $this->gamestate->nextState('wordRejectedTryAgain');
+            }
+            
         } else {
             $this->gamestate->nextState('wordAccepted');
         }

@@ -58,7 +58,7 @@ $game_options = array(
                 'name' => totranslate( '5' ),
                 'description' => totranslate('If automatically challenged, player gets 5 retries.'),
             ),
-            99 => array(
+            -1 => array(
                 'name' => totranslate( 'Unlimited' ),
                 'description' => totranslate('If automatically challenged, player gets unlimited retries.'),
             ),

@@ -1088,27 +1088,22 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous( 'playerReplacedCardFromCommunity', 2000 );
             dojo.subscribe('activePlayerReplacedCardFromHand', this, 'notif_activePlayerReplacedCardFromHand');
             this.notifqueue.setSynchronous( 'activePlayerReplacedCardFromHand', 2000 );
-            dojo.subscribe('playerReplacedCardFromHand', this, 'notif_playerReplacedCardFromHand');
 
             dojo.subscribe('playerPlayedWord', this, 'notif_playerPlayedWord');
             this.notifqueue.setSynchronous( 'playerPlayedWord', 3000 );
 
-            dojo.subscribe('playerChallenged', this, 'notif_playerChallenged');
             this.notifqueue.setSynchronous( 'playerChallenged', 2000 );
-
-            dojo.subscribe('playerChallengeSucceeded', this, 'notif_playerChallengeSucceeded');
             this.notifqueue.setSynchronous( 'playerChallengeSucceeded', 2000 );
 
             dojo.subscribe('playerMustDiscard', this, 'notif_playerMustDiscard');
 
-            dojo.subscribe('playerChallengeFailed', this, 'notif_playerChallengeFailed');
-            this.notifqueue.setSynchronous( 'playerChallengeSucceeded', 2000 );
+            this.notifqueue.setSynchronous( 'playerChallengeFailed', 2000 );
 
             dojo.subscribe('challengerPaidPenalty', this, 'notif_challengerPaidPenalty');
             dojo.subscribe('playerReceivedPayment', this, 'notif_playerReceivedPayment');
 
-            dojo.subscribe('automaticChallengeRejectedWordTryAgain', this, 'notif_automaticChallengeRejectedWordTryAgain');
-            this.notifqueue.setSynchronous( 'automaticChallengeRejectedWordTryAgain', 2000 );
+            dojo.subscribe('automaticChallengeRejectedWord', this, 'notif_automaticChallengeRejectedWord');
+            this.notifqueue.setSynchronous( 'automaticChallengeRejectedWord', 2000 );
 
             dojo.subscribe('playerReceivedMoneyAndStock', this, 'notif_playerReceivedMoneyAndStock');
             this.notifqueue.setSynchronous( 'playerReceivedMoneyAndStock', 2000 );
@@ -1126,8 +1121,6 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous( 'activePlayerDiscardedCards', 2000 );
             
             dojo.subscribe('activePlayerReceivedCards', this, 'notif_activePlayerReceivedCards');
-
-            dojo.subscribe('playerDiscardedNumberOfCards', this, 'notif_playerDiscardedNumberOfCards');
         },
 
         notif_playerReplacedCardFromCommunity: function (notif) {
@@ -1142,12 +1135,6 @@ function (dojo, declare) {
             console.log(notif);
             var card_id = notif.args.card_id;
             this.handStock.removeFromStockById(card_id);
-        },
-
-        notif_playerReplacedCardFromHand: function (notif) {
-            console.log('player replaced card from hand');
-            console.log(notif);
-            // TODO: can/should this callback be removed?
         },
 
         notif_playerPlayedWord: function (notif) {
@@ -1165,29 +1152,11 @@ function (dojo, declare) {
             }
         },
 
-        notif_playerChallenged: function (notif) {
-            console.log('player challenged');
-            console.log(notif);
-            // TODO: can/should this callback be removed?
-        },
-
-        notif_playerChallengeSucceeded: function (notif) {
-            console.log('player challenge succeeded');
-            console.log(notif);
-            // TODO: can/should this callback be removed?
-        },
-
         notif_playerMustDiscard: function (notif) {
             console.log('player must discard');
             console.log(notif);
             var player_id = notif.args.player_id;
             this.clearWordArea(player_id);
-        },
-
-        notif_playerChallengeFailed: function (notif) {
-            console.log('player challenge failed');
-            console.log(notif);
-            // TODO: can/should this callback be removed?
         },
 
         notif_challengerPaidPenalty: function (notif) {
@@ -1204,8 +1173,8 @@ function (dojo, declare) {
             this.playerMoney[player_id].incValue(1);
         },
 
-        notif_automaticChallengeRejectedWordTryAgain: function (notif) {
-            console.log('automatic challenge rejected word try again');
+        notif_automaticChallengeRejectedWord: function (notif) {
+            console.log('automatic challenge rejected word');
             console.log(notif);
             var player_id = notif.args.player_id;
             this.clearWordArea(player_id);
@@ -1287,12 +1256,7 @@ function (dojo, declare) {
                 this.handStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
                     $('current_player_hand_area_header'));
             }
-        },
-
-        notif_playerDiscardedNumberOfCards: function (notif) {
-            console.log('player discarded number of cards');
-            console.log(notif);
-            // TODO: can/should this callback be removed?
         }
+        
    });             
 });
