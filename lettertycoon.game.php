@@ -171,9 +171,20 @@ class LetterTycoon extends Table
     */
     function getGameProgression()
     {
-        // TODO: compute and return the game progression
+        $goal = $this->goals[self::getPlayersNumber()];
+        $goal_value = intval($goal['value']);
 
-        return 0;
+        $max_player_patents_value = intval(self::getMaxPlayerPatentsValue());
+
+        $fraction_towards_goal = min($max_player_patents_value / $goal_value, 1.0);
+
+        if (self::getGameStateValue('last_round') == 1) {
+            // If it's the last round, return 100%.
+            return 100;
+        } else {
+            // If it's not the last round, max out at 95%.
+            return round(95 * $fraction_towards_goal);
+        }
     }
 
 
@@ -208,6 +219,12 @@ class LetterTycoon extends Table
     function getPlayerPatentsValue($player_id)
     {
         $sql = "SELECT player_score_aux FROM player WHERE player_id = '$player_id' ";
+        return self::getUniqueValueFromDB($sql);
+    }
+
+    function getMaxPlayerPatentsValue()
+    {
+        $sql = "SELECT MAX(player_score_aux) FROM player ";
         return self::getUniqueValueFromDB($sql);
     }
 
