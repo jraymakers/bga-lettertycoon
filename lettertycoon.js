@@ -143,6 +143,8 @@ function (dojo, declare) {
                 this.wordInfo[2].types[i] = part.letter_type;
             }
 
+            this.patent_costs = gamedatas.patent_costs;
+
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
             dojo.connect(this.wordStock[1], 'onChangeSelection', this, 'onWord1SelectionChanged');
@@ -712,6 +714,7 @@ function (dojo, declare) {
         },
 
         markPurchasableLetters: function (word /* 1 or 2 */, purchasable) {
+            var playerMoney = this.playerMoney[this.getActivePlayerId()].getValue();
             var wordStock = this.wordStock[word];
             var wordInfo = this.wordInfo[word];
             var items = wordStock.getAllItems();
@@ -721,9 +724,9 @@ function (dojo, declare) {
                 if (!this.patentOwners[letter]) {
                     var origin = wordInfo.origins[i];
                     if (origin === 'c' || origin === 'h') {
-                        // TODO: Don't mark purchasable letters that cost more than the player has.
-                        // Should this be done server-side so buying can be skipped if there are none?
-                        purchasable[letter] = true;
+                        if (this.patent_costs[letter] <= playerMoney) {
+                            purchasable[letter] = true;
+                        }
                     }
                 }
             }
@@ -1257,6 +1260,6 @@ function (dojo, declare) {
                     $('current_player_hand_area_header'));
             }
         }
-        
+
    });             
 });

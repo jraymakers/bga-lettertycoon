@@ -153,6 +153,8 @@ class LetterTycoon extends Table
         $result['main_word'] = self::getWordObjects(1);
 
         $result['second_word'] = self::getWordObjects(2);
+
+        $result['patent_costs'] = $this->patent_costs;
   
         return $result;
     }
@@ -713,19 +715,26 @@ class LetterTycoon extends Table
         return array( 'money' => $money, 'stock' => $stock );
     }
 
-    function countRoyaltiesForWord($word_objects, $patent_owners, &$royalties_by_player)
-    {
+    function countRoyaltiesAndPurchasablePatentsForWord(
+        $word_objects, $patent_owners, $player_money, &$royalties_by_player, &$purchasable_patents
+    ) {
         $active_player_id = self::getActivePlayerId();
         foreach ($word_objects as $word_object) {
             $letter_origin = $word_object['letter_origin'];
             if ($letter_origin == 'c' || $letter_origin == 'h') {
                 $letter = $word_object['letter'];
                 $patent_owner = $patent_owners[$letter];
-                if (isset($patent_owner) && $patent_owner != $active_player_id) {
-                    if (array_key_exists($patent_owner, $royalties_by_player)) {
-                        $royalties_by_player[$patent_owner] += 1;
-                    } else {
-                        $royalties_by_player[$patent_owner] = 1;
+                if (isset($patent_owner)) {
+                    if ($patent_owner != $active_player_id) {
+                        if (array_key_exists($patent_owner, $royalties_by_player)) {
+                            $royalties_by_player[$patent_owner] += 1;
+                        } else {
+                            $royalties_by_player[$patent_owner] = 1;
+                        }
+                    }
+                } else {
+                    if ($this->patent_costs[$letter] <= $player_money) {
+                        $purchasable_patents[$letter] = TRUE;
                     }
                 }
             }
@@ -1011,13 +1020,13 @@ class LetterTycoon extends Table
             )
         );
         
-        $this->gamestate->nextState('discardCards');
+        $this->gamestate->nextState();
     }
 
     function skipDiscardCards()
     {
         self::checkAction('skipDiscardCards');
-        $this->gamestate->nextState('skip');
+        $this->gamestate->nextState();
     }
 
     // state: playerMustDiscardCard
@@ -1199,20 +1208,6 @@ class LetterTycoon extends Table
         }
     }
 
-    function stChallengeFailed()
-    {
-        // TODO: implement (players challenge) (maybe not needed?)
-
-        $this->gamestate->nextState();
-    }
-
-    function stChallengeSucceeded()
-    {
-        // TODO: implement (players challenge) (maybe not needed?)
-
-        $this->gamestate->nextState();
-    }
-
     function stScoreWord()
     {
         $active_player_id = self::getActivePlayerId();
@@ -1289,11 +1284,18 @@ class LetterTycoon extends Table
         // pay royalties
 
         $patent_owners = self::getPatentOwners();
+        
+        $player_money = self::getPlayerMoney($active_player_id);
 
         $royalties_by_player = array();
+        $purchasable_patents = array();
 
-        self::countRoyaltiesForWord($main_word_objects, $patent_owners, $royalties_by_player);
-        self::countRoyaltiesForWord($second_word_objects, $patent_owners, $royalties_by_player);
+        self::countRoyaltiesAndPurchasablePatentsForWord(
+            $main_word_objects, $patent_owners, $player_money, $royalties_by_player, $purchasable_patents
+        );
+        self::countRoyaltiesAndPurchasablePatentsForWord(
+            $second_word_objects, $patent_owners, $player_money, $royalties_by_player, $purchasable_patents
+        );
 
         $players = self::loadPlayersBasicInfos();
 
@@ -1310,16 +1312,11 @@ class LetterTycoon extends Table
             );
         }
 
-        // TODO: skip playerMayBuyPatent if no purchases are possible?
-
-        $this->gamestate->nextState();
-    }
-
-    // TODO: maybe not needed?
-    function stPayRoyalties()
-    {
-        // TODO: implement (if needed)
-        $this->gamestate->nextState();
+        if (count($purchasable_patents) > 0) {
+            $this->gamestate->nextState('patentsAvailable');
+        } else {
+            $this->gamestate->nextState('noPatentsAvailable');
+        }
     }
 
     function stBuyPatent()
@@ -1356,13 +1353,6 @@ class LetterTycoon extends Table
 
         self::notifyAllPlayers('wordDiscarded', '', array());
 
-        $this->gamestate->nextState();
-    }
-
-    // TODO: maybe not needed?
-    function stDiscardCards()
-    {
-        // TODO: implement (if needed)
         $this->gamestate->nextState();
     }
 

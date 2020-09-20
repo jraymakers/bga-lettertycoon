@@ -95,7 +95,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stPlayWord',
-        'transitions' => array( 'playersChallengeVariant' => 40, 'automaticChallengeVariant' => 35 )
+        'transitions' => array( 'automaticChallengeVariant' => 35, 'playersChallengeVariant' => 40 )
     ),
 
     35 => array(
@@ -124,39 +124,12 @@ $machinestates = array(
         'transitions' => array( 'scoreWord' => 45, 'wordRejected' => 70 )
     ),
 
-    // TODO: not needed?
-    42 => array(
-        'name' => 'challengeFailed',
-        'description' => '',
-        'type' => 'game',
-        'action' => 'stChallengeFailed',
-        'transitions' => array( '' => 45 )
-    ),
-
-    // TODO: not needed?
-    43 => array(
-        'name' => 'challengeSucceeded',
-        'description' => '',
-        'type' => 'game',
-        'action' => 'stChallengeSucceeded',
-        'transitions' => array( '' => 70 )
-    ),
-
     45 => array(
         'name' => 'scoreWord',
         'description' => '',
         'type' => 'game',
         'action' => 'stScoreWord',
-        'transitions' => array( '' => 46 )
-    ),
-
-    // TODO: maybe not needed?
-    46 => array(
-        'name' => 'payRoyalties',
-        'description' => '',
-        'type' => 'game',
-        'action' => 'stPayRoyalties',
-        'transitions' => array( '' => 50 )
+        'transitions' => array( 'patentsAvailable' => 50, 'noPatentsAvailable' => 55 )
     ),
 
     50 => array(
@@ -165,7 +138,7 @@ $machinestates = array(
         'descriptionmyturn' => clienttranslate('${you} may buy a patent'),
         'type' => 'activeplayer',
         'possibleactions' => array( 'buyPatent', 'skipBuyPatent' ),
-        'transitions' => array( 'buyPatent' => 51, 'skip' => 52 )
+        'transitions' => array( 'buyPatent' => 51, 'skip' => 55 )
     ),
 
     51 => array(
@@ -173,10 +146,10 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stBuyPatent',
-        'transitions' => array( '' => 52 )
+        'transitions' => array( '' => 55 )
     ),
 
-    52 => array(
+    55 => array(
         'name' => 'refillCommunityPool',
         'description' => '',
         'type' => 'game',
@@ -190,7 +163,7 @@ $machinestates = array(
         'descriptionmyturn' => clienttranslate('${you} may discard cards'),
         'type' => 'activeplayer',
         'possibleactions' => array( 'discardCards', 'skipDiscardCards' ),
-        'transitions' => array( 'discardCards' => 75, 'skip' => 76 )
+        'transitions' => array( '' => 75 )
     ),
 
     70 => array(
@@ -202,24 +175,15 @@ $machinestates = array(
         'transitions' => array( '' => 75 )
     ),
 
-    // TODO: maybe not needed?
     75 => array(
-        'name' => 'discardCards',
-        'description' => '',
-        'type' => 'game',
-        'action' => 'stDiscardCards',
-        'transitions' => array( '' => 76 )
-    ),
-
-    76 => array(
         'name' => 'refillHand',
         'description' => '',
         'type' => 'game',
         'action' => 'stRefillHand',
-        'transitions' => array( '' => 77 )
+        'transitions' => array( '' => 76 )
     ),
 
-    77 => array(
+    76 => array(
         'name' => 'endTurn',
         'description' => '',
         'type' => 'game',
