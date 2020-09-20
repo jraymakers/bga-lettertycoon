@@ -1028,13 +1028,13 @@ class LetterTycoon extends Table
             )
         );
         
-        $this->gamestate->nextState();
+        $this->gamestate->nextState('done');
     }
 
     function skipDiscardCards()
     {
         self::checkAction('skipDiscardCards');
-        $this->gamestate->nextState();
+        $this->gamestate->nextState('done');
     }
 
     // state: playerMustDiscardCard
@@ -1069,7 +1069,7 @@ class LetterTycoon extends Table
             )
         );
 
-        $this->gamestate->nextState();
+        $this->gamestate->nextState('done');
     }
     
 //////////////////////////////////////////////////////////////////////////////
