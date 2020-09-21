@@ -89,9 +89,11 @@ function (dojo, declare) {
             this.patent_costs = gamedatas.patent_costs;
             this.patent_text = gamedatas.patent_text;
 
+            var player_count = 0;
             var players = gamedatas.players;
             for (var player_id in players) {
                 var player = players[player_id];
+                player_count++;
                 dojo.place(
                     this.format_block('jstpl_player_board_info', { player_id: player_id }),
                     $('player_board_'+player_id)
@@ -171,6 +173,16 @@ function (dojo, declare) {
             this.addTooltipHtmlToClass('player_board_stock', '<span>'+_('Stock')+'</span>');
             this.addTooltipHtmlToClass('player_board_patents', '<span>'+_('Value of Patents')+'</span>');
             this.addTooltipHtmlToClass('player_board_zeppelin', '<span>'+_('Start Player')+'</span>');
+
+            this.addTooltipHtml('scoring_card', this.createScoringTooltipContents());
+
+            this.addTooltipHtml('frequencies_card', this.createLetterFrequencyTooltipContents());
+
+            this.addTooltipHtml('goal_card', this.format_block('jstpl_goal_card_tooltip', {
+                player_count: player_count,
+                minimum: this.goal.minimum,
+                value: this.goal.value
+            }));
             
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -432,6 +444,74 @@ function (dojo, declare) {
             counter.create(element_id);
             counter.setValue(value);
             return counter;
+        },
+
+        createScoringTooltipContents: function () {
+            var html = '<div class="scoring_card_tooltip_contents">'; // contents
+
+            html += '<div class="scoring_card_tooltip_header">'+_('Scoring')+'</div>';
+
+            html += '<div class="scoring_card_tooltip_columns">';
+
+            var lengthColumn = '<div class="scoring_card_tooltip_column_length">';
+            var moneyColumn = '<div class="scoring_card_tooltip_column_money">';
+            var stockColumn = '<div class="scoring_card_tooltip_column_stock">';
+
+            lengthColumn += '<div class="scoring_card_tooltip_column_header">' + _('Word') + '</div>';
+            moneyColumn += '<div class="scoring_card_tooltip_column_header">' + _('Money') + '</div>';
+            stockColumn += '<div class="scoring_card_tooltip_column_header">' + _('Stock') + '</div>';
+
+            for (var length = 3; length <= 12; length++) {
+                var score = this.scores[length];
+                var money = score.money;
+                var stock = score.stock;
+                lengthColumn += '<div class="scoring_card_tooltip_item_length">' + length + ' ' + _('letters') + '</div>';
+                moneyColumn += '<div class="scoring_card_tooltip_item_money">$' + money + '</div>';
+                stockColumn += '<div class="scoring_card_tooltip_item_stock">' + (stock > 0 ? stock : '-') + '</div>';
+            }
+
+            lengthColumn += '</div>';
+            moneyColumn += '</div>';
+            stockColumn += '</div>';
+
+            html += lengthColumn + moneyColumn + stockColumn;
+
+            html += '</div>'; // columns
+
+            html += '</div>'; // contents
+
+            return html;
+        },
+
+        createLetterFrequencyTooltipContents: function () {
+            var html = '<div class="frequencies_card_tooltip_contents">';
+
+            html += '<div class="frequencies_card_tooltip_header">'+_('Letter Frequency')+'</div>';
+
+            html += '<div class="frequencies_card_tooltip_columns">';
+            html += this.createLetterFrequencyTooltipColumnPair(0, 7);
+            html += this.createLetterFrequencyTooltipColumnPair(7, 13);
+            html += this.createLetterFrequencyTooltipColumnPair(13, 20);
+            html += this.createLetterFrequencyTooltipColumnPair(20, 26);
+            html += '</div>'; // columns
+
+            html += '</div>'; // contents
+
+            return html;
+        },
+
+        createLetterFrequencyTooltipColumnPair: function (start, end) {
+            var left = '<div class="frequencies_card_tooltip_column_left">';
+            var right = '<div class="frequencies_card_tooltip_column_right">';
+            for (var i = start; i < end; i++) {
+                var letter = this.getLetterFromIndex(i);
+                var count = this.letter_counts[letter];
+                left += '<div class="frequencies_card_tooltip_letter">'+letter+'</div>';
+                right += '<div class="frequencies_card_tooltip_count">'+count+'</div>';
+            }
+            left += '</div>';
+            right += '</div>';
+            return left + right;
         },
 
         setClassIf: function (condition, id, cls) {

@@ -39,7 +39,7 @@
         <div id="game_cards">
             <div class="card game_card" id="scoring_card"></div>
             <div class="card game_card" id="frequencies_card"></div>
-            <div class="card game_card" id="goal{PLAYER_COUNT}_card"></div>
+            <div class="card game_card goal{PLAYER_COUNT}_card" id="goal_card"></div>
         </div>
     </div>
 </div>
@@ -114,6 +114,12 @@ var jstpl_patent_tooltip='<div class="lettertycoon_tooltip_contents">\
 </div>\
 </div>\
 <div class="lettertycoon_tooltip_footer_160">${text}</div>\
+</div>';
+
+var jstpl_goal_card_tooltip='<div class="goal_card_tooltip_contents">\
+<div class="goal_card_tooltip_header">${player_count} Player Goal</div>\
+<div><b>$${value}</b> in patents owned by any player</div>\
+<div>Requires a minimum of <b>${minimum}</b> patents</div>\
 </div>';
 
 </script>

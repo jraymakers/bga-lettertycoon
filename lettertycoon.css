@@ -278,28 +278,28 @@
     background-size: 120px 165px;
 }
 
-#goal2_card {
+.goal2_card {
     background-image: url('img/goal2.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-#goal3_card {
+.goal3_card {
     background-image: url('img/goal3.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-#goal4_card {
+.goal4_card {
     background-image: url('img/goal4.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-#goal5_card {
+.goal5_card {
     background-image: url('img/goal5.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
@@ -350,4 +350,117 @@
     padding-top: 5px;
     max-width: 160px;
     font-style: italic;
+}
+
+
+
+.scoring_card_tooltip_contents {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+}
+
+.scoring_card_tooltip_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 5px;
+}
+
+.scoring_card_tooltip_columns {
+    display: flex;
+    flex-direction: row;
+}
+
+.scoring_card_tooltip_column_length {
+    display: flex;
+    flex-direction: column;
+}
+
+.scoring_card_tooltip_column_money {
+    display: flex;
+    flex-direction: column;
+    padding-left: 5px;
+}
+
+.scoring_card_tooltip_column_stock {
+    display: flex;
+    flex-direction: column;
+    padding-left: 5px;
+}
+
+.scoring_card_tooltip_column_header {
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+.scoring_card_tooltip_item_length {
+    text-align: center;
+}
+
+.scoring_card_tooltip_item_money {
+    text-align: left;
+    font-weight: bold;
+    text-align: center;
+}
+
+.scoring_card_tooltip_item_stock {
+    text-align: left;
+    font-weight: bold;
+    text-align: center;
+}
+
+
+
+.frequencies_card_tooltip_contents {
+    display: flex;
+    flex-direction: column;
+}
+
+.frequencies_card_tooltip_header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.frequencies_card_tooltip_columns {
+    display: flex;
+    flex-direction: row;
+}
+
+.frequencies_card_tooltip_column_left {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 5px 5px 10px;
+}
+
+.frequencies_card_tooltip_column_right {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 10px 5px 5px;
+}
+
+.frequencies_card_tooltip_letter {
+    text-align: left;
+}
+
+.frequencies_card_tooltip_count {
+    font-weight: bold;
+    text-align: right;
+}
+
+
+
+.goal_card_tooltip_contents {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 5px;
+}
+
+.goal_card_tooltip_header {
+    padding-bottom: 5px;
 }
