@@ -163,7 +163,12 @@ class LetterTycoon extends Table
 
         $result['second_word'] = self::getWordObjects(2);
 
+        $result['goal'] = $this->goals[self::getPlayersNumber()];
+        $result['scores'] = $this->scores;
+        $result['letter_counts'] = $this->letter_counts;
+        $result['letter_types'] = $this->letter_types;
         $result['patent_costs'] = $this->patent_costs;
+        
   
         return $result;
     }

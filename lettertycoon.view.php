@@ -37,19 +37,27 @@ class view_lettertycoon_lettertycoon extends game_view
         $current_player_id = $g_user->get_id();
         $current_player_color = $players[$current_player_id]['player_color'];
 
-        $this->tpl['AVAILABLE_PATENTS'] = self::_("Available Patents");
+        $this->tpl['YOUR_HAND'] = self::_("Your Hand");
+        $this->tpl['WORD_AREA'] = self::_("Word Area");
         $this->tpl['COMMUNITY_POOL'] = self::_("Community Pool");
         $this->tpl['GAME_CARDS'] = self::_("Game Cards");
-        $this->tpl['WORD_AREA'] = self::_("Word Area");
+        $this->tpl['AVAILABLE_PATENTS'] = self::_("Available Patents");
+        
         $this->tpl['PLAY_WORD'] = self::_("Play Word");
+        $this->tpl['CLEAR'] = self::_("Clear");
         $this->tpl['CHANGE_LETTER_TYPE'] = self::_("Change Letter Type");
         $this->tpl['START_SECOND_WORD'] = self::_("Start Second Word");
         $this->tpl['DUPLICATE_LETTER'] = self::_("Duplicate Letter");
         $this->tpl['ADD_AN_S'] = self::_("Add an S");
-        $this->tpl['CLEAR'] = self::_("Clear");
-        $this->tpl['YOUR_HAND'] = self::_("Your Hand");
-        $this->tpl['CARD'] = self::_("Card");
-        $this->tpl['PATENT'] = self::_("Patent");
+
+        $this->tpl['FACTORY_CARD'] = self::_("Factory Card");
+        $this->tpl['LETTER'] = self::_("Letter");
+        $this->tpl['TYPE'] = self::_("Type");
+        $this->tpl['FREQUENCY'] = self::_("Frequency");
+        $this->tpl['PATENT_COST'] = self::_("Patent Cost");
+
+        $this->tpl['LETTER_PATENT'] = self::_("Letter Patent");
+        $this->tpl['COST'] = self::_("Cost");
 
         $this->tpl['PLAYER_COUNT'] = $players_nbr;
         $this->tpl['CURRENT_PLAYER_ID'] = $current_player_id;

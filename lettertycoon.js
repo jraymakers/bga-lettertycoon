@@ -82,6 +82,12 @@ function (dojo, declare) {
             
             this.availablePatents = this.createPatentStock('available_patents');
 
+            this.goal = gamedatas.goal;
+            this.scores = gamedatas.scores;
+            this.letter_counts = gamedatas.letter_counts;
+            this.letter_types = gamedatas.letter_types;
+            this.patent_costs = gamedatas.patent_costs;
+
             var players = gamedatas.players;
             for (var player_id in players) {
                 var player = players[player_id];
@@ -142,8 +148,6 @@ function (dojo, declare) {
                 this.wordInfo[2].origins[i] = part.letter_origin;
                 this.wordInfo[2].types[i] = part.letter_type;
             }
-
-            this.patent_costs = gamedatas.patent_costs;
 
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
@@ -359,14 +363,32 @@ function (dojo, declare) {
 
         createCard: function (element, type, id) {
             dojo.addClass(element, 'card');
+
             if (/205$/.test(id)) { // 205 = added S card id
                 dojo.addClass(element, 'added_s');
             }
             if (/208$/.test(id)) { // 208 = duplicate card id
                 dojo.addClass(element, 'duplicate');
             }
+
+            var letter = this.getLetterFromIndex(type);
+            var letter_count = this.letter_counts[letter];
+            var letter_type_raw = this.letter_types[letter];
+            var letter_type_display =
+                letter_type_raw === 'vowel'
+                    ? _('vowel')
+                    : letter_type_raw === 'consonant'
+                        ? _('consonant')
+                        : letter_type_raw === 'consonant_or_vowel'
+                            ? _('consonant/vowel')
+                            : '';
+            var patent_cost = this.patent_costs[letter];
+
             this.addTooltipHtml(id, this.format_block('jstpl_card_tooltip', {
-                letter: this.getLetterFromIndex(type)
+                letter: letter,
+                letter_count: letter_count,
+                letter_type: letter_type_display,
+                patent_cost: patent_cost
             }));
         },
 
@@ -385,8 +407,13 @@ function (dojo, declare) {
 
         createPatent: function (element, type, id) {
             dojo.addClass(element, 'patent');
+
+            var letter = this.getLetterFromIndex(type);
+            var patent_cost = this.patent_costs[letter];
+
             this.addTooltipHtml(id, this.format_block('jstpl_patent_tooltip', {
-                letter: this.getLetterFromIndex(type)
+                letter: letter,
+                cost: patent_cost
             }));
         },
 

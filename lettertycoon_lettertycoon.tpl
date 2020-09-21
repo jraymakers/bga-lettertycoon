@@ -84,12 +84,34 @@ var jstpl_player_board_info='<div class="player_board_info">\
 </span>\
 </div>';
 
-var jstpl_card_tooltip='<div>\
-<div>{CARD}: ${letter}</div>\
+var jstpl_card_tooltip='<div class="lettertycoon_tooltip_contents">\
+<div class="lettertycoon_tooltip_body">\
+<div class="lettertycoon_tooltip_body_left">\
+<div>{LETTER}</div>\
+<div>{TYPE}</div>\
+<div>{FREQUENCY}</div>\
+<div>{PATENT_COST}</div>\
+</div>\
+<div class="lettertycoon_tooltip_body_right">\
+<div>${letter}</div>\
+<div>${letter_type}</div>\
+<div>${letter_count}</div>\
+<div>$${patent_cost}</div>\
+</div>\
+</div>\
 </div>';
 
-var jstpl_patent_tooltip='<div>\
-<div>{PATENT}: ${letter}</div>\
+var jstpl_patent_tooltip='<div class="lettertycoon_tooltip_contents">\
+<div class="lettertycoon_tooltip_body">\
+<div class="lettertycoon_tooltip_body_left">\
+<div>{LETTER}</div>\
+<div>{COST}</div>\
+</div>\
+<div class="lettertycoon_tooltip_body_right">\
+<div>${letter}</div>\
+<div>$${cost}</div>\
+</div>\
+</div>\
 </div>';
 
 </script>

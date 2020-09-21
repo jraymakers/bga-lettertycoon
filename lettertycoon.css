@@ -318,3 +318,25 @@
     background-color: rgba(26,26,26,0.25);
     color: rgb(240,228,182);
 }
+
+
+.lettertycoon_tooltip_contents {
+    display: flex;
+    flex-direction: column;
+}
+
+.lettertycoon_tooltip_body {
+    display: flex;
+}
+
+.lettertycoon_tooltip_body_left {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.lettertycoon_tooltip_body_right {
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: right;
+    font-weight: bold;
+}
