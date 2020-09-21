@@ -87,7 +87,7 @@ var jstpl_player_board_info='<div class="player_board_info">\
 var jstpl_card_tooltip='<div class="lettertycoon_tooltip_contents">\
 <div class="lettertycoon_tooltip_body">\
 <div class="lettertycoon_tooltip_body_left">\
-<div>{LETTER}</div>\
+<div>{CARD}</div>\
 <div>{TYPE}</div>\
 <div>{FREQUENCY}</div>\
 <div>{PATENT_COST}</div>\
@@ -99,12 +99,13 @@ var jstpl_card_tooltip='<div class="lettertycoon_tooltip_contents">\
 <div>$${patent_cost}</div>\
 </div>\
 </div>\
+<div class="lettertycoon_tooltip_footer_175">${text}</div>\
 </div>';
 
 var jstpl_patent_tooltip='<div class="lettertycoon_tooltip_contents">\
 <div class="lettertycoon_tooltip_body">\
 <div class="lettertycoon_tooltip_body_left">\
-<div>{LETTER}</div>\
+<div>{PATENT}</div>\
 <div>{COST}</div>\
 </div>\
 <div class="lettertycoon_tooltip_body_right">\
@@ -112,6 +113,7 @@ var jstpl_patent_tooltip='<div class="lettertycoon_tooltip_contents">\
 <div>$${cost}</div>\
 </div>\
 </div>\
+<div class="lettertycoon_tooltip_footer_160">${text}</div>\
 </div>';
 
 </script>

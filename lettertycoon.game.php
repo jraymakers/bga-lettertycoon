@@ -168,6 +168,7 @@ class LetterTycoon extends Table
         $result['letter_counts'] = $this->letter_counts;
         $result['letter_types'] = $this->letter_types;
         $result['patent_costs'] = $this->patent_costs;
+        $result['patent_text'] = $this->patent_text;
         
   
         return $result;
@@ -587,7 +588,7 @@ class LetterTycoon extends Table
     function notifyAutomaticChallengeRejectedWord($rejected_word_string)
     {
         self::notifyAllPlayers('automaticChallengeRejectedWord',
-            clienttranslate('Automatic challenge rejected "${rejected_word}"'),
+            clienttranslate('Automatic challenge rejected ‘${rejected_word}’'),
             array(
                 'player_id' => self::getActivePlayerId(),
                 'rejected_word' => $rejected_word_string
@@ -643,7 +644,7 @@ class LetterTycoon extends Table
     function notifyPlayerChallengeSucceeded($rejected_word_string)
     {
         self::notifyAllPlayers('playerChallengeSucceeded',
-            clienttranslate('Challenge successful! "${rejected_word}" rejected'),
+            clienttranslate('Challenge successful! ‘${rejected_word}’ rejected'),
             array(
                 'rejected_word' => $rejected_word_string
             )
@@ -937,9 +938,9 @@ class LetterTycoon extends Table
         }
 
         if (isset($second_word)) {
-            $message = clienttranslate('${player_name} played "${main_word.letters}" and "${second_word.letters}"');
+            $message = clienttranslate('${player_name} played ‘${main_word.letters}’ and ‘${second_word.letters}’');
         } else {
-            $message = clienttranslate('${player_name} played "${main_word.letters}"');
+            $message = clienttranslate('${player_name} played ‘${main_word.letters}’');
         }
         
         self::notifyAllPlayers('playerPlayedWord',
@@ -1012,7 +1013,7 @@ class LetterTycoon extends Table
         self::updatePlayerCounters($active_player_id, -$cost, 0, $cost);
 
         self::notifyAllPlayers('playerBoughtPatent',
-            clienttranslate('${player_name} bought the "${letter}" patent for $${cost}'),
+            clienttranslate('${player_name} bought the ‘${letter}’ patent for $${cost}'),
             array(
                 'player_id' => $active_player_id,
                 'player_name' => self::getActivePlayerName(),

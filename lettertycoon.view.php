@@ -50,13 +50,12 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['DUPLICATE_LETTER'] = self::_("Duplicate Letter");
         $this->tpl['ADD_AN_S'] = self::_("Add an S");
 
-        $this->tpl['FACTORY_CARD'] = self::_("Factory Card");
-        $this->tpl['LETTER'] = self::_("Letter");
+        $this->tpl['CARD'] = self::_("Card");
         $this->tpl['TYPE'] = self::_("Type");
         $this->tpl['FREQUENCY'] = self::_("Frequency");
         $this->tpl['PATENT_COST'] = self::_("Patent Cost");
 
-        $this->tpl['LETTER_PATENT'] = self::_("Letter Patent");
+        $this->tpl['PATENT'] = self::_("Patent");
         $this->tpl['COST'] = self::_("Cost");
 
         $this->tpl['PLAYER_COUNT'] = $players_nbr;

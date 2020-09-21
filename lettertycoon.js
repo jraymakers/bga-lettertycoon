@@ -87,6 +87,7 @@ function (dojo, declare) {
             this.letter_counts = gamedatas.letter_counts;
             this.letter_types = gamedatas.letter_types;
             this.patent_costs = gamedatas.patent_costs;
+            this.patent_text = gamedatas.patent_text;
 
             var players = gamedatas.players;
             for (var player_id in players) {
@@ -383,12 +384,19 @@ function (dojo, declare) {
                             ? _('consonant/vowel')
                             : '';
             var patent_cost = this.patent_costs[letter];
+            var text =
+                letter === 'Q'
+                    ? _('Words with ‘Q’ earn double.')
+                    : letter === 'Y'
+                        ? _('Player decides whether each ‘Y’ is treated as a consonant or a vowel for patent abilities.')
+                        : '';
 
             this.addTooltipHtml(id, this.format_block('jstpl_card_tooltip', {
                 letter: letter,
                 letter_count: letter_count,
                 letter_type: letter_type_display,
-                patent_cost: patent_cost
+                patent_cost: patent_cost,
+                text: text
             }));
         },
 
@@ -410,10 +418,12 @@ function (dojo, declare) {
 
             var letter = this.getLetterFromIndex(type);
             var patent_cost = this.patent_costs[letter];
+            var patent_text = this.patent_text[letter];
 
             this.addTooltipHtml(id, this.format_block('jstpl_patent_tooltip', {
                 letter: letter,
-                cost: patent_cost
+                cost: patent_cost,
+                text: patent_text
             }));
         },
 
