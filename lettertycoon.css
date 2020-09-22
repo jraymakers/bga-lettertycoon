@@ -186,6 +186,10 @@
     display: block;
 }
 
+.spectatorMode #current_player_hand_area {
+    display: none;
+}
+
 #current_player_hand_area_header {
     display: flex;
     align-items: center;

@@ -35,7 +35,11 @@ class view_lettertycoon_lettertycoon extends game_view
 
         global $g_user;
         $current_player_id = $g_user->get_id();
-        $current_player_color = $players[$current_player_id]['player_color'];
+        if (array_key_exists($current_player_id, $players)) {
+            $current_player_color = $players[$current_player_id]['player_color'];
+        } else {
+            $current_player_color = "000000";
+        }
 
         $this->tpl['YOUR_HAND'] = self::_("Your Hand");
         $this->tpl['WORD_AREA'] = self::_("Word Area");
@@ -63,11 +67,13 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['CURRENT_PLAYER_COLOR'] = $current_player_color;
 
         $this->page->begin_block('lettertycoon_lettertycoon', 'player');
-        $this->page->insert_block('player', array(
-            'PLAYER_ID' => $current_player_id,
-            'PLAYER_NAME' => self::_("Your Patents"),
-            'PLAYER_COLOR' => $current_player_color,
-        ));
+        if (array_key_exists($current_player_id, $players)) {
+            $this->page->insert_block('player', array(
+                'PLAYER_ID' => $current_player_id,
+                'PLAYER_NAME' => self::_("Your Patents"),
+                'PLAYER_COLOR' => $current_player_color,
+            ));
+        }
         foreach ($players as $player_id => $player) {
             if ($player_id != $current_player_id) {
                 $this->page->insert_block('player', array(
