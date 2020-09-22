@@ -733,7 +733,7 @@ class LetterTycoon extends Table
         }
         if ($scoring_patents_owned['J']) {
             $numVowels = self::countVowels($word_objects);
-            if ($numVowels > $word_len / 2) {
+            if ($numVowels >= $word_len / 2) {
                 $money *= 2;
                 $stock *= 2;
             }
@@ -1409,6 +1409,7 @@ class LetterTycoon extends Table
 
         self::notifyAllPlayers('wordDiscarded', '', array());
 
+        // TODO: skip to refill hand if player has no cards to discard
         $this->gamestate->nextState();
     }
 
