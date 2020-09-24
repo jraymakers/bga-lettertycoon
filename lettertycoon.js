@@ -561,8 +561,8 @@ function (dojo, declare) {
                 this.setClassIf(
                     this.duplicatePlayed()
                         || (mainWordSelectedItems.length === 0 && secondWordSelectedItems.length === 0)
-                        || this.itemsContainsLetter(mainWordSelectedItems, 'S')
-                        || this.itemsContainsLetter(secondWordSelectedItems, 'S')
+                        || this.itemsContainsId(mainWordSelectedItems, 205)
+                        || this.itemsContainsId(secondWordSelectedItems, 205)
                         || this.currentWordComplete(),
                     'duplicate_letter_button', 'disabled'
                 );
@@ -737,6 +737,16 @@ function (dojo, declare) {
             for (var i = 0, l = items.length; i < l; i++) {
                 var item = items[i];
                 if (item.type === type) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        itemsContainsId: function (items, id) {
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i];
+                if (item.id == id) {
                     return true;
                 }
             }
