@@ -809,11 +809,20 @@ function (dojo, declare) {
                     elementId = this.communityStock.getItemDivId(card_id);
                 }
                 if (letter_origin === 'h') {
-                    elementId = $('overall_player_board_'+player_id);
+                    if (player_id === this.getPlayerIdString()) {
+                        elementId = this.handStock.getItemDivId(card_id);
+                    } else {
+                        elementId = $('overall_player_board_'+player_id);
+                    }
                 }
                 wordStock.addToStockWithId(this.getLetterIndex(letter), card_id, elementId);
                 if (letter_origin === 'c') {
                     this.communityStock.removeFromStockById(card_id);
+                }
+                if (letter_origin === 'h') {
+                    if (player_id === this.getPlayerIdString()) {
+                        this.handStock.removeFromStockById(card_id);
+                    }
                 }
             }
 
@@ -1274,7 +1283,7 @@ function (dojo, declare) {
             // console.log('player played word');
             // console.log(notif);
             var player_id = notif.args.player_id;
-            if (player_id !== this.getPlayerIdString()) {
+            if (this.wordStock[1].count() === 0) {
                 var main_word_args = notif.args.main_word;
                 var second_word_args = notif.args.second_word;
                 this.playWordFromPlayer(player_id, 1, main_word_args);
