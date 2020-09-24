@@ -154,7 +154,7 @@ $machinestates = array(
         'description' => '',
         'type' => 'game',
         'action' => 'stRefillCommunityPool',
-        'transitions' => array('' => 60)
+        'transitions' => array('discardCards' => 60, 'refillHand' => 75)
     ),
 
     60 => array(

@@ -1409,8 +1409,12 @@ class LetterTycoon extends Table
 
         self::notifyAllPlayers('wordDiscarded', '', array());
 
-        // TODO: skip to refill hand if player has no cards to discard
-        $this->gamestate->nextState();
+        $num_cards = $this->cards->countCardsInLocation('hand', self::getActivePlayerId());
+        if ($num_cards > 0) {
+            $this->gamestate->nextState('discardCards');
+        } else {
+            $this->gamestate->nextState('refillHand');
+        }
     }
 
     function stRefillHand()
