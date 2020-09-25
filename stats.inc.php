@@ -107,13 +107,43 @@ $stats_type = array(
 
         // MONEY AND STOCK
 
-        // total money received from words
-        // total money received from royalties
-        // total money received from challenges
-        // total money paid for patents
-        // total money paid for challenges
+        // money received from words
+        'money_received_from_words' => array(
+            'id'=> 30,
+            'name' => totranslate('Money received from words'),
+            'type' => 'int'
+        ),
+        // money received from royalties
+        'money_received_from_royalties' => array(
+            'id'=> 31,
+            'name' => totranslate('Money received from royalties'),
+            'type' => 'int'
+        ),
+        // money received from challenges
+        'money_received_from_challenges' => array(
+            'id'=> 32,
+            'name' => totranslate('Money received from challenges'),
+            'type' => 'int'
+        ),
+        // money paid for patents
+        'money_paid_for_patents' => array(
+            'id'=> 33,
+            'name' => totranslate('Money paid for patents'),
+            'type' => 'int'
+        ),
+        // money paid for challenges
+        'money_paid_for_challenges' => array(
+            'id'=> 34,
+            'name' => totranslate('Money paid for challenges'),
+            'type' => 'int'
+        ),
         
-        // total stock received
+        // stock received
+        'stock_received' => array(
+            'id'=> 35,
+            'name' => totranslate('Stock received'),
+            'type' => 'int'
+        ),
 
         // PATENTS
 

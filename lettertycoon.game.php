@@ -97,6 +97,14 @@ class LetterTycoon extends Table
         self::initStat('player', 'cards_discarded_from_community', 0);
         self::initStat('player', 'cards_drawn_to_hand', 0);
 
+        self::initStat('player', 'money_received_from_words', 0);
+        self::initStat('player', 'money_received_from_royalties', 0);
+        self::initStat('player', 'money_received_from_challenges', 0);
+        self::initStat('player', 'money_paid_for_patents', 0);
+        self::initStat('player', 'money_paid_for_challenges', 0);
+
+        self::initStat('player', 'stock_received', 0);
+
         // initialize card table
         $cards = array();
         foreach ($this->letter_counts as $letter => $count) {
@@ -1011,6 +1019,7 @@ class LetterTycoon extends Table
         self::setPatentOwner($letter, $active_player_id);
 
         self::updatePlayerCounters($active_player_id, -$cost, 0, $cost);
+        self::incStat($cost, 'money_paid_for_patents', $active_player_id);
 
         self::notifyAllPlayers('playerBoughtPatent',
             clienttranslate('${player_name} bought the ‘${letter}’ patent for $${cost}'),
@@ -1247,9 +1256,12 @@ class LetterTycoon extends Table
                 $challenger_money = self::getPlayerMoney($challenger_id);
                 if ($challenger_money > 0) {
                     self::updatePlayerCounters($challenger_id, -1, 0, 0);
+                    self::incStat(1, 'money_paid_for_challenges', $challenger_id);
                     self::notifyChallengerPaidPenalty($challenger_id);
                 }
-                self::updatePlayerCounters(self::getActivePlayerId(), 1, 0, 0);
+                $active_player_id = self::getActivePlayerId();
+                self::updatePlayerCounters($active_player_id, 1, 0, 0);
+                self::incStat(1, 'money_received_from_challenges', $active_player_id);
                 self::notifyPlayerReceivedPayment();
                 $this->gamestate->nextState('scoreWord');
             }
@@ -1319,6 +1331,8 @@ class LetterTycoon extends Table
         }
 
         self::updatePlayerCounters($active_player_id, $money, $stock, 0);
+        self::incStat($money, 'money_received_from_words', $active_player_id);
+        self::incStat($stock, 'stock_received', $active_player_id);
 
         if ($stock > 0) {
             $message = clienttranslate('${player_name} received $${money} and ${stock} stock');
@@ -1357,6 +1371,7 @@ class LetterTycoon extends Table
 
         foreach ($royalties_by_player as $player_id => $royalties) {
             self::updatePlayerCounters($player_id, $royalties, 0, 0);
+            self::incStat($royalties, 'money_received_from_royalties', $player_id);
 
             self::notifyAllPlayers('playerReceivedRoyalties',
             clienttranslate('${player_name} received $${royalties} in royalties'),
