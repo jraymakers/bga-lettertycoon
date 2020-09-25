@@ -14,25 +14,25 @@
     box-shadow: none;
 }
 
-.player_board_info {
+.lettertycoon_player_board_info {
     display: flex;
     align-items: center;
     margin: 5px;
 }
 
-.player_board_info_item {
+.lettertycoon_player_board_info_item {
     display: flex;
     align-items: center;
     margin-right: 10px;
 }
 
-.player_board_counter {
+.lettertycoon_player_board_counter {
     padding-right: 5px;
     width: 20px;
     text-align: right;
 }
 
-.coin_icon {
+.lettertycoon_coin_icon {
     display: inline-block;
     background-image: url('img/coin_large.png');
     background-repeat: no-repeat;
@@ -42,7 +42,7 @@
     height: 25px;
 }
 
-.stock_icon {
+.lettertycoon_stock_icon {
     display: inline-block;
     background-image: url('img/stock_large.png');
     background-repeat: no-repeat;
@@ -52,7 +52,7 @@
     height: 25px;
 }
 
-.patents_icon {
+.lettertycoon_patents_icon {
     display: inline-block;
     background-image: url('img/patents_icon_large.png');
     background-repeat: no-repeat;
@@ -62,7 +62,7 @@
     height: 25px;
 }
 
-.zeppelin_icon {
+.lettertycoon_zeppelin_icon {
     display: inline-block;
     background-image: url('img/zeppelin_large.png');
     background-repeat: no-repeat;
@@ -72,24 +72,24 @@
     height: 25px;
 }
 
-.dark_area {
+.lettertycoon_dark_area {
     background-color: rgba(26,26,26,0.25);
     padding: 5px 10px;
     margin: 5px;
     border-radius: 8px;
 }
 
-.area_label {
+.lettertycoon_area_label {
     font-weight: bold;
     color: rgb(240,228,182);
     padding: 5px 0;
 }
 
-#community_pool_and_game_cards_area {
+#lettertycoon_community_pool_and_game_cards_area {
     display: flex;
 }
 
-#community_pool_area {
+#lettertycoon_community_pool_area {
     flex: 1;
     min-width: 0;
     margin-top: 0;
@@ -97,130 +97,130 @@
     margin-right: 0;
 }
 
-#game_cards_area {
+#lettertycoon_game_cards_area {
     flex: 1;
     min-width: 0;
     margin-top: 0;
     margin-bottom: 0;
 }
 
-.player_area_name {
+.lettertycoon_player_area_name {
     font-weight: bold;
 }
 
-#word_area_header {
+#lettertycoon_word_area_header {
     display: flex;
     align-items: center;
     height: 50px;
 }
-#word_area_footer {
+#lettertycoon_word_area_footer {
     display: flex;
     align-items: center;
     height: 50px;
 }
 
-#play_word_button {
+#lettertycoon_play_word_button {
     display: none;
     margin-left: 10px;
 }
-#play_word_button.show {
+#lettertycoon_play_word_button.show {
     display: inline;
 }
 
-#clear_button {
+#lettertycoon_clear_button {
     display: none;
     margin-left: 10px;
 }
-#clear_button.show {
+#lettertycoon_clear_button.show {
     display: inline;
 }
 
-#change_letter_type_button {
+#lettertycoon_change_letter_type_button {
     display: none;
     margin-left: 10px;
 }
-#change_letter_type_button.show {
+#lettertycoon_change_letter_type_button.show {
     display: inline;
 }
-#change_letter_type_button.disabled {
+#lettertycoon_change_letter_type_button.disabled {
     opacity: 0.5;
 }
 
-#start_second_word_button {
+#lettertycoon_start_second_word_button {
     display: none;
     margin-left: 10px;
 }
-#start_second_word_button.show {
+#lettertycoon_start_second_word_button.show {
     display: inline;
 }
-#start_second_word_button.disabled {
+#lettertycoon_start_second_word_button.disabled {
     opacity: 0.5;
 }
 
-#duplicate_letter_button {
+#lettertycoon_duplicate_letter_button {
     display: none;
     margin-left: 10px;
 }
-#duplicate_letter_button.show {
+#lettertycoon_duplicate_letter_button.show {
     display: inline;
 }
-#duplicate_letter_button.disabled {
+#lettertycoon_duplicate_letter_button.disabled {
     opacity: 0.5;
 }
 
-#add_an_s_button {
+#lettertycoon_add_an_s_button {
     display: none;
     margin-left: 10px;
 }
-#add_an_s_button.show {
+#lettertycoon_add_an_s_button.show {
     display: inline;
 }
-#add_an_s_button.disabled {
+#lettertycoon_add_an_s_button.disabled {
     opacity: 0.5;
 }
 
-#second_word {
+#lettertycoon_second_word {
     display: none;
 }
-#second_word.show {
+#lettertycoon_second_word.show {
     display: block;
 }
 
-.spectatorMode #current_player_hand_area {
+.spectatorMode #lettertycoon_current_player_hand_area {
     display: none;
 }
 
-#current_player_hand_area_header {
+#lettertycoon_current_player_hand_area_header {
     display: flex;
     align-items: center;
     height: 50px;
 }
 
-#discard_button {
+#lettertycoon_discard_button {
     display: none;
     margin-left: 10px;
 }
-#discard_button.show {
+#lettertycoon_discard_button.show {
     display: inline;
 }
 
-.player_patents_area_header {
+.lettertycoon_player_patents_area_header {
     display: flex;
     align-items: center;
     height: 30px;
 }
 
-.card {
+.lettertycoon_card {
     background-size: auto 200%;
     border-radius: 8px;
 }
-.card.added_s {
+.lettertycoon_card.added_s {
     opacity: 0.5 !important;
 }
-.card.duplicate {
+.lettertycoon_card.duplicate {
     opacity: 0.5 !important;
 }
-.card.consonant::after {
+.lettertycoon_card.consonant::after {
     position: absolute;
     top: 10px;
     left: 47px;
@@ -236,7 +236,7 @@
     background-color: rgb(22,148,110);
     box-shadow: 0 0 2px 2px rgba(26,26,26,0.8);
 }
-.card.vowel::after {
+.lettertycoon_card.vowel::after {
     position: absolute;
     bottom: 10px;
     left: 47px;
@@ -258,63 +258,63 @@
     box-shadow: 0 0 5px 3px rgba(26,26,26,0.8);
 }
 
-#game_cards {
+#lettertycoon_game_cards {
     display: flex;
 }
 
-.game_card {
+.lettertycoon_game_card {
     width: 120px;
     height: 165px;
     margin-right: 5px;
 }
 
-#frequencies_card {
+#lettertycoon_frequencies_card {
     background-image: url('img/frequencies.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-#scoring_card {
+#lettertycoon_scoring_card {
     background-image: url('img/scoring.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-.goal2_card {
+.lettertycoon_goal2_card {
     background-image: url('img/goal2.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-.goal3_card {
+.lettertycoon_goal3_card {
     background-image: url('img/goal3.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-.goal4_card {
+.lettertycoon_goal4_card {
     background-image: url('img/goal4.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-.goal5_card {
+.lettertycoon_goal5_card {
     background-image: url('img/goal5.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px;
 }
 
-.patent {
+.lettertycoon_patent {
     background-size: 200% auto;
     border-radius: 8px;
 }
-.patent.unpurchasable {
+.lettertycoon_patent.unpurchasable {
     opacity: 0.3 !important;
 }
 
@@ -358,57 +358,57 @@
 
 
 
-.scoring_card_tooltip_contents {
+.lettertycoon_scoring_card_tooltip_contents {
     display: flex;
     flex-direction: column;
     padding: 5px;
 }
 
-.scoring_card_tooltip_header {
+.lettertycoon_scoring_card_tooltip_header {
     display: flex;
     flex-direction: row;
     justify-content: center;
     padding-bottom: 5px;
 }
 
-.scoring_card_tooltip_columns {
+.lettertycoon_scoring_card_tooltip_columns {
     display: flex;
     flex-direction: row;
 }
 
-.scoring_card_tooltip_column_length {
+.lettertycoon_scoring_card_tooltip_column_length {
     display: flex;
     flex-direction: column;
 }
 
-.scoring_card_tooltip_column_money {
-    display: flex;
-    flex-direction: column;
-    padding-left: 5px;
-}
-
-.scoring_card_tooltip_column_stock {
+.lettertycoon_scoring_card_tooltip_column_money {
     display: flex;
     flex-direction: column;
     padding-left: 5px;
 }
 
-.scoring_card_tooltip_column_header {
+.lettertycoon_scoring_card_tooltip_column_stock {
+    display: flex;
+    flex-direction: column;
+    padding-left: 5px;
+}
+
+.lettertycoon_scoring_card_tooltip_column_header {
     text-align: center;
     padding-bottom: 5px;
 }
 
-.scoring_card_tooltip_item_length {
+.lettertycoon_scoring_card_tooltip_item_length {
     text-align: center;
 }
 
-.scoring_card_tooltip_item_money {
+.lettertycoon_scoring_card_tooltip_item_money {
     text-align: left;
     font-weight: bold;
     text-align: center;
 }
 
-.scoring_card_tooltip_item_stock {
+.lettertycoon_scoring_card_tooltip_item_stock {
     text-align: left;
     font-weight: bold;
     text-align: center;
@@ -416,12 +416,12 @@
 
 
 
-.frequencies_card_tooltip_contents {
+.lettertycoon_frequencies_card_tooltip_contents {
     display: flex;
     flex-direction: column;
 }
 
-.frequencies_card_tooltip_header {
+.lettertycoon_frequencies_card_tooltip_header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -430,41 +430,41 @@
     padding-bottom: 5px;
 }
 
-.frequencies_card_tooltip_columns {
+.lettertycoon_frequencies_card_tooltip_columns {
     display: flex;
     flex-direction: row;
 }
 
-.frequencies_card_tooltip_column_left {
+.lettertycoon_frequencies_card_tooltip_column_left {
     display: flex;
     flex-direction: column;
     margin: 5px 5px 5px 10px;
 }
 
-.frequencies_card_tooltip_column_right {
+.lettertycoon_frequencies_card_tooltip_column_right {
     display: flex;
     flex-direction: column;
     margin: 5px 10px 5px 5px;
 }
 
-.frequencies_card_tooltip_letter {
+.lettertycoon_frequencies_card_tooltip_letter {
     text-align: left;
 }
 
-.frequencies_card_tooltip_count {
+.lettertycoon_frequencies_card_tooltip_count {
     font-weight: bold;
     text-align: right;
 }
 
 
 
-.goal_card_tooltip_contents {
+.lettertycoon_goal_card_tooltip_contents {
     display: flex;
     flex-direction: column;
     text-align: center;
     padding: 5px;
 }
 
-.goal_card_tooltip_header {
+.lettertycoon_goal_card_tooltip_header {
     padding-bottom: 5px;
 }

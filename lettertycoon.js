@@ -73,14 +73,14 @@ function (dojo, declare) {
         setup: function (gamedatas) {
             // console.log('Starting game setup');
 
-            this.communityStock = this.createCardStock('community_pool');
-            this.handStock = this.createCardStock('current_player_hand');
-            this.wordStock[1] = this.createCardStock('main_word');
+            this.communityStock = this.createCardStock('lettertycoon_community_pool');
+            this.handStock = this.createCardStock('lettertycoon_current_player_hand');
+            this.wordStock[1] = this.createCardStock('lettertycoon_main_word');
             this.wordStock[1].order_items = false;
-            this.wordStock[2] = this.createCardStock('second_word');
+            this.wordStock[2] = this.createCardStock('lettertycoon_second_word');
             this.wordStock[2].order_items = false;
             
-            this.availablePatents = this.createPatentStock('available_patents');
+            this.availablePatents = this.createPatentStock('lettertycoon_available_patents');
 
             this.goal = gamedatas.goal;
             this.scores = gamedatas.scores;
@@ -99,15 +99,15 @@ function (dojo, declare) {
                     $('player_board_'+player_id)
                 );
                 this.playerMoney[player_id] =
-                    this.createCounter('player_board_coins_counter_'+player_id, player.money);
+                    this.createCounter('lettertycoon_player_board_coins_counter_'+player_id, player.money);
                 this.playerStock[player_id] =
-                    this.createCounter('player_board_stock_counter_'+player_id, player.stock);
+                    this.createCounter('lettertycoon_player_board_stock_counter_'+player_id, player.stock);
                 this.playerPatentsValue[player_id] =
-                    this.createCounter('player_board_patents_counter_'+player_id, player.patents_value);
+                    this.createCounter('lettertycoon_player_board_patents_counter_'+player_id, player.patents_value);
                 if (player.order !== '1') {
-                    dojo.style($('player_board_zeppelin_'+player_id), 'display', 'none');
+                    dojo.style($('lettertycoon_player_board_zeppelin_'+player_id), 'display', 'none');
                 }
-                this.patentStocksByPlayer[player_id] = this.createPatentStock('player_patents_'+player_id);
+                this.patentStocksByPlayer[player_id] = this.createPatentStock('lettertycoon_player_patents_'+player_id);
             }
 
             this.patentOwners = gamedatas.patent_owners;
@@ -143,7 +143,7 @@ function (dojo, declare) {
 
             var second_word = gamedatas.second_word;
             if (second_word.length > 0) {
-                dojo.addClass('second_word', 'show');
+                dojo.addClass('lettertycoon_second_word', 'show');
             }
             for (var i in second_word) {
                 var part = second_word[i];
@@ -157,13 +157,13 @@ function (dojo, declare) {
             dojo.connect(this.wordStock[1], 'onChangeSelection', this, 'onWord1SelectionChanged');
             dojo.connect(this.wordStock[2], 'onChangeSelection', this, 'onWord2SelectionChanged');
             dojo.connect(this.availablePatents, 'onChangeSelection', this, 'onPatentSelectionChanged');
-            dojo.connect($('play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');
-            dojo.connect($('change_letter_type_button'), 'onclick', this, 'onChangeLetterTypeButtonClicked');
-            dojo.connect($('start_second_word_button'), 'onclick', this, 'onStartSecondWordButtonClicked');
-            dojo.connect($('duplicate_letter_button'), 'onclick', this, 'onDuplicateLetterButtonClicked');
-            dojo.connect($('add_an_s_button'), 'onclick', this, 'onAddAnSButtonClicked');
-            dojo.connect($('clear_button'), 'onclick', this, 'onClearButtonClicked');
-            dojo.connect($('discard_button'), 'onclick', this, 'onDiscardButtonClicked');
+            dojo.connect($('lettertycoon_play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');
+            dojo.connect($('lettertycoon_change_letter_type_button'), 'onclick', this, 'onChangeLetterTypeButtonClicked');
+            dojo.connect($('lettertycoon_start_second_word_button'), 'onclick', this, 'onStartSecondWordButtonClicked');
+            dojo.connect($('lettertycoon_duplicate_letter_button'), 'onclick', this, 'onDuplicateLetterButtonClicked');
+            dojo.connect($('lettertycoon_add_an_s_button'), 'onclick', this, 'onAddAnSButtonClicked');
+            dojo.connect($('lettertycoon_clear_button'), 'onclick', this, 'onClearButtonClicked');
+            dojo.connect($('lettertycoon_discard_button'), 'onclick', this, 'onDiscardButtonClicked');
 
             var score = _('Score (Money + Stock + Value of Patents)');
             var scoreHtml = '<span>'+score+'</span>';
@@ -174,11 +174,11 @@ function (dojo, declare) {
             this.addTooltipHtmlToClass('player_board_patents', '<span>'+_('Value of Patents')+'</span>');
             this.addTooltipHtmlToClass('player_board_zeppelin', '<span>'+_('Start Player')+'</span>');
 
-            this.addTooltipHtml('scoring_card', this.createScoringTooltipContents());
+            this.addTooltipHtml('lettertycoon_scoring_card', this.createScoringTooltipContents());
 
-            this.addTooltipHtml('frequencies_card', this.createLetterFrequencyTooltipContents());
+            this.addTooltipHtml('lettertycoon_frequencies_card', this.createLetterFrequencyTooltipContents());
 
-            this.addTooltipHtml('goal_card', this.format_block('jstpl_goal_card_tooltip', {
+            this.addTooltipHtml('lettertycoon_goal_card', this.format_block('jstpl_goal_card_tooltip', {
                 player_count: player_count,
                 minimum: this.goal.minimum,
                 value: this.goal.value
@@ -231,7 +231,7 @@ function (dojo, declare) {
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(2);
                         this.updateDiscardButton();
-                        dojo.addClass('discard_button', 'show');
+                        dojo.addClass('lettertycoon_discard_button', 'show');
                     }
                     break;
                 
@@ -284,7 +284,7 @@ function (dojo, declare) {
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(0);
-                        dojo.removeClass('discard_button', 'show');
+                        dojo.removeClass('lettertycoon_discard_button', 'show');
                     }
                     break;
                 
@@ -305,24 +305,24 @@ function (dojo, declare) {
             if (this.isCurrentPlayerActive()) {            
                 switch (stateName) {
                     case 'playerMayReplaceCard':
-                        this.addActionButton('skipReplaceCard_button', _('Skip replacing a card'), 'onSkipReplaceCard', null, false, 'gray'); 
+                        this.addActionButton('lettertycoon_skipReplaceCard_button', _('Skip replacing a card'), 'onSkipReplaceCard', null, false, 'gray'); 
                         break;
                     
                     case 'playerMayPlayWord':
-                        this.addActionButton('skipPlayWord_button', _('Skip playing a word'), 'onSkipPlayWord', null, false, 'gray'); 
+                        this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing a word'), 'onSkipPlayWord', null, false, 'gray'); 
                         break;
                     
                     case 'playersMayChallenge':
-                        this.addActionButton('challengeWord_button', _('Challenge word'), 'onChallengeWord', null, false, 'red');
-                        this.addActionButton('acceptWord_button', _('Accept word'), 'onAcceptWord', null, false, 'gray');
+                        this.addActionButton('lettertycoon_challengeWord_button', _('Challenge word'), 'onChallengeWord', null, false, 'red');
+                        this.addActionButton('lettertycoon_acceptWord_button', _('Accept word'), 'onAcceptWord', null, false, 'gray');
                         break;
                     
                     case 'playerMayDiscardCards':
-                        this.addActionButton('skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray'); 
+                        this.addActionButton('lettertycoon_skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray'); 
                         break;
                     
                     case 'playerMayBuyPatent':
-                        this.addActionButton('skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'gray'); 
+                        this.addActionButton('lettertycoon_skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'gray'); 
                         break;
                 }
             }
@@ -375,7 +375,7 @@ function (dojo, declare) {
         },
 
         createCard: function (element, type, id) {
-            dojo.addClass(element, 'card');
+            dojo.addClass(element, 'lettertycoon_card');
 
             if (/205$/.test(id)) { // 205 = added S card id
                 dojo.addClass(element, 'added_s');
@@ -426,7 +426,7 @@ function (dojo, declare) {
         },
 
         createPatent: function (element, type, id) {
-            dojo.addClass(element, 'patent');
+            dojo.addClass(element, 'lettertycoon_patent');
 
             var letter = this.getLetterFromIndex(type);
             var patent_cost = this.patent_costs[letter];
@@ -447,27 +447,27 @@ function (dojo, declare) {
         },
 
         createScoringTooltipContents: function () {
-            var html = '<div class="scoring_card_tooltip_contents">'; // contents
+            var html = '<div class="lettertycoon_scoring_card_tooltip_contents">'; // contents
 
-            html += '<div class="scoring_card_tooltip_header">'+_('Scoring')+'</div>';
+            html += '<div class="lettertycoon_scoring_card_tooltip_header">'+_('Scoring')+'</div>';
 
-            html += '<div class="scoring_card_tooltip_columns">';
+            html += '<div class="lettertycoon_scoring_card_tooltip_columns">';
 
-            var lengthColumn = '<div class="scoring_card_tooltip_column_length">';
-            var moneyColumn = '<div class="scoring_card_tooltip_column_money">';
-            var stockColumn = '<div class="scoring_card_tooltip_column_stock">';
+            var lengthColumn = '<div class="lettertycoon_scoring_card_tooltip_column_length">';
+            var moneyColumn = '<div class="lettertycoon_scoring_card_tooltip_column_money">';
+            var stockColumn = '<div class="lettertycoon_scoring_card_tooltip_column_stock">';
 
-            lengthColumn += '<div class="scoring_card_tooltip_column_header">' + _('Word') + '</div>';
-            moneyColumn += '<div class="scoring_card_tooltip_column_header">' + _('Money') + '</div>';
-            stockColumn += '<div class="scoring_card_tooltip_column_header">' + _('Stock') + '</div>';
+            lengthColumn += '<div class="lettertycoon_scoring_card_tooltip_column_header">' + _('Word') + '</div>';
+            moneyColumn += '<div class="lettertycoon_scoring_card_tooltip_column_header">' + _('Money') + '</div>';
+            stockColumn += '<div class="lettertycoon_scoring_card_tooltip_column_header">' + _('Stock') + '</div>';
 
             for (var length = 3; length <= 12; length++) {
                 var score = this.scores[length];
                 var money = score.money;
                 var stock = score.stock;
-                lengthColumn += '<div class="scoring_card_tooltip_item_length">' + length + ' ' + _('letters') + '</div>';
-                moneyColumn += '<div class="scoring_card_tooltip_item_money">$' + money + '</div>';
-                stockColumn += '<div class="scoring_card_tooltip_item_stock">' + (stock > 0 ? stock : '-') + '</div>';
+                lengthColumn += '<div class="lettertycoon_scoring_card_tooltip_item_length">' + length + ' ' + _('letters') + '</div>';
+                moneyColumn += '<div class="lettertycoon_scoring_card_tooltip_item_money">$' + money + '</div>';
+                stockColumn += '<div class="lettertycoon_scoring_card_tooltip_item_stock">' + (stock > 0 ? stock : '-') + '</div>';
             }
 
             lengthColumn += '</div>';
@@ -484,11 +484,11 @@ function (dojo, declare) {
         },
 
         createLetterFrequencyTooltipContents: function () {
-            var html = '<div class="frequencies_card_tooltip_contents">';
+            var html = '<div class="lettertycoon_frequencies_card_tooltip_contents">';
 
-            html += '<div class="frequencies_card_tooltip_header">'+_('Letter Frequency')+'</div>';
+            html += '<div class="lettertycoon_frequencies_card_tooltip_header">'+_('Letter Frequency')+'</div>';
 
-            html += '<div class="frequencies_card_tooltip_columns">';
+            html += '<div class="lettertycoon_frequencies_card_tooltip_columns">';
             html += this.createLetterFrequencyTooltipColumnPair(0, 7);
             html += this.createLetterFrequencyTooltipColumnPair(7, 13);
             html += this.createLetterFrequencyTooltipColumnPair(13, 20);
@@ -501,13 +501,13 @@ function (dojo, declare) {
         },
 
         createLetterFrequencyTooltipColumnPair: function (start, end) {
-            var left = '<div class="frequencies_card_tooltip_column_left">';
-            var right = '<div class="frequencies_card_tooltip_column_right">';
+            var left = '<div class="lettertycoon_frequencies_card_tooltip_column_left">';
+            var right = '<div class="lettertycoon_frequencies_card_tooltip_column_right">';
             for (var i = start; i < end; i++) {
                 var letter = this.getLetterFromIndex(i);
                 var count = this.letter_counts[letter];
-                left += '<div class="frequencies_card_tooltip_letter">'+letter+'</div>';
-                right += '<div class="frequencies_card_tooltip_count">'+count+'</div>';
+                left += '<div class="lettertycoon_frequencies_card_tooltip_letter">'+letter+'</div>';
+                right += '<div class="lettertycoon_frequencies_card_tooltip_count">'+count+'</div>';
             }
             left += '</div>';
             right += '</div>';
@@ -534,26 +534,26 @@ function (dojo, declare) {
 
             this.setClassIf(
                 mainWordItems.length < 3 || (this.secondWordStarted && secondWordItems.length < 3),
-                'play_word_button', 'disabled'
+                'lettertycoon_play_word_button', 'disabled'
             );
 
             this.setClassIf(
                 mainWordItems.length < 1,
-                'clear_button', 'disabled'
+                'lettertycoon_clear_button', 'disabled'
             );
 
             // only show change letter type button if player owns a relevant patent
             if (this.vowelsCanAffectPlayerScore()) {
                 this.setClassIf(
                     !(this.itemsContainsLetter(mainWordSelectedItems, 'Y') || this.itemsContainsLetter(secondWordSelectedItems, 'Y')),
-                    'change_letter_type_button', 'disabled'
+                    'lettertycoon_change_letter_type_button', 'disabled'
                 );
             }
 
             if (this.patentOwners['V'] === this.getPlayerIdString()) {
                 this.setClassIf(
                     mainWordItems.length < 3 || this.secondWordStarted,
-                    'start_second_word_button', 'disabled'
+                    'lettertycoon_start_second_word_button', 'disabled'
                 );
             }
 
@@ -564,7 +564,7 @@ function (dojo, declare) {
                         || this.itemsContainsId(mainWordSelectedItems, 205)
                         || this.itemsContainsId(secondWordSelectedItems, 205)
                         || this.currentWordComplete(),
-                    'duplicate_letter_button', 'disabled'
+                    'lettertycoon_duplicate_letter_button', 'disabled'
                 );
             }
 
@@ -572,11 +572,11 @@ function (dojo, declare) {
                 this.setClassIf(
                     this.addAnSPlayed()
                         || mainWordItems.length < 2 || (this.secondWordStarted && secondWordItems.length < 2),
-                    'add_an_s_button', 'disabled'
+                    'lettertycoon_add_an_s_button', 'disabled'
                 );
             }
 
-            this.setClassIf(this.secondWordStarted || secondWordItems.length > 0, 'second_word', 'show');
+            this.setClassIf(this.secondWordStarted || secondWordItems.length > 0, 'lettertycoon_second_word', 'show');
             
             // only show Y types if player owns a relevant patent
             if (this.vowelsCanAffectPlayerScore()) {
@@ -602,27 +602,27 @@ function (dojo, declare) {
         },
 
         showWordAreaButtons: function () {
-            dojo.addClass('play_word_button', 'show');
-            dojo.addClass('clear_button', 'show');
-            this.setClassIf(this.vowelsCanAffectPlayerScore(), 'change_letter_type_button', 'show');
-            this.setClassIf(this.patentOwners['V'] === this.getPlayerIdString(), 'start_second_word_button', 'show');
-            this.setClassIf(this.patentOwners['X'] === this.getPlayerIdString(), 'duplicate_letter_button', 'show');
-            this.setClassIf(this.patentOwners['Z'] === this.getPlayerIdString(), 'add_an_s_button', 'show');
+            dojo.addClass('lettertycoon_play_word_button', 'show');
+            dojo.addClass('lettertycoon_clear_button', 'show');
+            this.setClassIf(this.vowelsCanAffectPlayerScore(), 'lettertycoon_change_letter_type_button', 'show');
+            this.setClassIf(this.patentOwners['V'] === this.getPlayerIdString(), 'lettertycoon_start_second_word_button', 'show');
+            this.setClassIf(this.patentOwners['X'] === this.getPlayerIdString(), 'lettertycoon_duplicate_letter_button', 'show');
+            this.setClassIf(this.patentOwners['Z'] === this.getPlayerIdString(), 'lettertycoon_add_an_s_button', 'show');
         },
 
         hideWordAreaButtons: function () {
-            dojo.removeClass('play_word_button', 'show');
-            dojo.removeClass('clear_button', 'show');
-            dojo.removeClass('change_letter_type_button', 'show');
-            dojo.removeClass('start_second_word_button', 'show');
-            dojo.removeClass('duplicate_letter_button', 'show');
-            dojo.removeClass('add_an_s_button', 'show');
+            dojo.removeClass('lettertycoon_play_word_button', 'show');
+            dojo.removeClass('lettertycoon_clear_button', 'show');
+            dojo.removeClass('lettertycoon_change_letter_type_button', 'show');
+            dojo.removeClass('lettertycoon_start_second_word_button', 'show');
+            dojo.removeClass('lettertycoon_duplicate_letter_button', 'show');
+            dojo.removeClass('lettertycoon_add_an_s_button', 'show');
         },
 
         updateDiscardButton: function () {
             var selectedItems = this.handStock.getSelectedItems();
-            dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'discard_button', 'only');
-            this.setClassIf(selectedItems.length === 0, 'discard_button', 'disabled');
+            dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'lettertycoon_discard_button', 'only');
+            this.setClassIf(selectedItems.length === 0, 'lettertycoon_discard_button', 'disabled');
         },
 
         getDiscardButtonLabel: function (numSelectedCards) {
@@ -1288,7 +1288,7 @@ function (dojo, declare) {
                 var second_word_args = notif.args.second_word;
                 this.playWordFromPlayer(player_id, 1, main_word_args);
                 if (second_word_args) {
-                    dojo.addClass('second_word', 'show');
+                    dojo.addClass('lettertycoon_second_word', 'show');
                     this.playWordFromPlayer(player_id, 2, second_word_args);
                 }
             }
@@ -1369,7 +1369,7 @@ function (dojo, declare) {
             for (var i in new_cards) {
                 var new_card = new_cards[i];
                 this.communityStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
-                    $('community_pool_area_header'));
+                    $('lettertycoon_community_pool_area_header'));
             }
         },
 
@@ -1378,7 +1378,7 @@ function (dojo, declare) {
             // console.log(notif);
             this.wordStock[1].removeAll();
             this.wordStock[2].removeAll();
-            dojo.removeClass('second_word', 'show');
+            dojo.removeClass('lettertycoon_second_word', 'show');
         },
 
         notif_activePlayerDiscardedCards: function (notif) {
@@ -1399,7 +1399,7 @@ function (dojo, declare) {
             for (var i in new_cards) {
                 var new_card = new_cards[i];
                 this.handStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
-                    $('current_player_hand_area_header'));
+                    $('lettertycoon_current_player_hand_area_header'));
             }
         }
 
