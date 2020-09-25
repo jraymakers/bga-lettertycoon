@@ -107,19 +107,11 @@
 #lettertycoon_current_player_hand_area_header {
     display: flex;
     align-items: center;
-    height: 50px;
 }
 
 .lettertycoon_player_area_name {
     font-weight: bold;
-}
-
-#lettertycoon_discard_button {
-    display: none;
-    margin-left: 10px;
-}
-#lettertycoon_discard_button.show {
-    display: inline;
+    padding: 5px 0;
 }
 
 
@@ -251,28 +243,28 @@
     background-image: url('img/goal2.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
-    background-size: 120px 165px;
+    background-size: 120px 165px !important; 
 }
 
 .lettertycoon_goal3_card {
     background-image: url('img/goal3.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
-    background-size: 120px 165px;
+    background-size: 120px 165px !important;
 }
 
 .lettertycoon_goal4_card {
     background-image: url('img/goal4.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
-    background-size: 120px 165px;
+    background-size: 120px 165px !important;
 }
 
 .lettertycoon_goal5_card {
     background-image: url('img/goal5.jpg');
     background-repeat: no-repeat;
     background-position: 0 0;
-    background-size: 120px 165px;
+    background-size: 120px 165px !important;
 }
 
 
@@ -280,7 +272,6 @@
 .lettertycoon_player_patents_area_header {
     display: flex;
     align-items: center;
-    height: 30px;
 }
 
 

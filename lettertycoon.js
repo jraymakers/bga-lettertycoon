@@ -163,7 +163,6 @@ function (dojo, declare) {
             dojo.connect($('lettertycoon_duplicate_letter_button'), 'onclick', this, 'onDuplicateLetterButtonClicked');
             dojo.connect($('lettertycoon_add_an_s_button'), 'onclick', this, 'onAddAnSButtonClicked');
             dojo.connect($('lettertycoon_clear_button'), 'onclick', this, 'onClearButtonClicked');
-            dojo.connect($('lettertycoon_discard_button'), 'onclick', this, 'onDiscardButtonClicked');
 
             var score = _('Score (Money + Stock + Value of Patents)');
             var scoreHtml = '<span>'+score+'</span>';
@@ -230,8 +229,6 @@ function (dojo, declare) {
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(2);
-                        this.updateDiscardButton();
-                        dojo.addClass('lettertycoon_discard_button', 'show');
                     }
                     break;
                 
@@ -284,7 +281,6 @@ function (dojo, declare) {
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
                         this.handStock.setSelectionMode(0);
-                        dojo.removeClass('lettertycoon_discard_button', 'show');
                     }
                     break;
                 
@@ -301,15 +297,15 @@ function (dojo, declare) {
         //        
         onUpdateActionButtons: function (stateName, args) {
             // console.log('onUpdateActionButtons: '+stateName);
-                      
-            if (this.isCurrentPlayerActive()) {            
+            
+            if (this.isCurrentPlayerActive()) {
                 switch (stateName) {
                     case 'playerMayReplaceCard':
-                        this.addActionButton('lettertycoon_skipReplaceCard_button', _('Skip replacing a card'), 'onSkipReplaceCard', null, false, 'gray'); 
+                        this.addActionButton('lettertycoon_skipReplaceCard_button', _('Skip replacing a card'), 'onSkipReplaceCard', null, false, 'gray');
                         break;
                     
                     case 'playerMayPlayWord':
-                        this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing a word'), 'onSkipPlayWord', null, false, 'gray'); 
+                        this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing a word'), 'onSkipPlayWord', null, false, 'gray');
                         break;
                     
                     case 'playersMayChallenge':
@@ -318,15 +314,17 @@ function (dojo, declare) {
                         break;
                     
                     case 'playerMayDiscardCards':
-                        this.addActionButton('lettertycoon_skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray'); 
+                        this.addActionButton('lettertycoon_discardSelectedCards_button', this.getDiscardButtonLabel(0), 'onDiscardButtonClicked', null, false, 'blue');
+                        this.addActionButton('lettertycoon_skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray');
+                        this.updateDiscardButton();
                         break;
                     
                     case 'playerMayBuyPatent':
-                        this.addActionButton('lettertycoon_skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'gray'); 
+                        this.addActionButton('lettertycoon_skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'gray');
                         break;
                 }
             }
-        },        
+        },
 
         ///////////////////////////////////////////////////
         //// Utility methods
@@ -621,15 +619,15 @@ function (dojo, declare) {
 
         updateDiscardButton: function () {
             var selectedItems = this.handStock.getSelectedItems();
-            dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'lettertycoon_discard_button', 'only');
-            this.setClassIf(selectedItems.length === 0, 'lettertycoon_discard_button', 'disabled');
+            dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'lettertycoon_discardSelectedCards_button', 'only');
+            this.setClassIf(selectedItems.length === 0, 'lettertycoon_discardSelectedCards_button', 'disabled');
         },
 
         getDiscardButtonLabel: function (numSelectedCards) {
             if (numSelectedCards > 0) {
                 return dojo.string.substitute(_('Discard selected cards (${n})'), { n: numSelectedCards });
             } else {
-                return _('Select cards to discard');
+                return _('Discard selected cards');
             }
         },
 

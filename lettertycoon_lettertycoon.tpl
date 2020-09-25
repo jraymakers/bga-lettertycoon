@@ -3,7 +3,6 @@
 <div class="lettertycoon_dark_area" id="lettertycoon_current_player_hand_area">
     <div id="lettertycoon_current_player_hand_area_header">
         <span class="lettertycoon_player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOUR_HAND}</span>
-        <a href="#" id="lettertycoon_discard_button" class="bgabutton bgabutton_blue"></a>
     </div>
     <div id="lettertycoon_current_player_hand"></div>
 </div>
