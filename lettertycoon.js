@@ -1227,40 +1227,40 @@ function (dojo, declare) {
             // console.log('notifications subscriptions setup');
 
             dojo.subscribe('playerReplacedCardFromCommunity', this, 'notif_playerReplacedCardFromCommunity');
-            this.notifqueue.setSynchronous('playerReplacedCardFromCommunity', 2000);
+            this.notifqueue.setSynchronous('playerReplacedCardFromCommunity', 1000);
             dojo.subscribe('activePlayerReplacedCardFromHand', this, 'notif_activePlayerReplacedCardFromHand');
-            this.notifqueue.setSynchronous('activePlayerReplacedCardFromHand', 2000);
+            this.notifqueue.setSynchronous('activePlayerReplacedCardFromHand', 1000);
 
             dojo.subscribe('playerPlayedWord', this, 'notif_playerPlayedWord');
-            this.notifqueue.setSynchronous('playerPlayedWord', 3000);
+            this.notifqueue.setSynchronous('playerPlayedWord', 1000);
 
-            this.notifqueue.setSynchronous('playerChallenged', 2000);
-            this.notifqueue.setSynchronous('playerChallengeSucceeded', 2000);
+            this.notifqueue.setSynchronous('playerChallenged', 1000);
+            this.notifqueue.setSynchronous('playerChallengeSucceeded', 1000);
 
             dojo.subscribe('playerMustDiscard', this, 'notif_playerMustDiscard');
 
-            this.notifqueue.setSynchronous('playerChallengeFailed', 2000);
+            this.notifqueue.setSynchronous('playerChallengeFailed', 1000);
 
             dojo.subscribe('challengerPaidPenalty', this, 'notif_challengerPaidPenalty');
             dojo.subscribe('playerReceivedPayment', this, 'notif_playerReceivedPayment');
 
             dojo.subscribe('automaticChallengeRejectedWord', this, 'notif_automaticChallengeRejectedWord');
-            this.notifqueue.setSynchronous('automaticChallengeRejectedWord', 2000);
+            this.notifqueue.setSynchronous('automaticChallengeRejectedWord', 1000);
 
             dojo.subscribe('playerReceivedMoneyAndStock', this, 'notif_playerReceivedMoneyAndStock');
-            this.notifqueue.setSynchronous('playerReceivedMoneyAndStock', 2000);
+            this.notifqueue.setSynchronous('playerReceivedMoneyAndStock', 1000);
 
             dojo.subscribe('playerReceivedRoyalties', this, 'notif_playerReceivedRoyalties');
 
             dojo.subscribe('playerBoughtPatent', this, 'notif_playerBoughtPatent');
 
             dojo.subscribe('communityReceivedCards', this, 'notif_communityReceivedCards');
-            this.notifqueue.setSynchronous('communityReceivedCards', 2000);
+            this.notifqueue.setSynchronous('communityReceivedCards', 1000);
 
             dojo.subscribe('wordDiscarded', this, 'notif_wordDiscarded');
 
             dojo.subscribe('activePlayerDiscardedCards', this, 'notif_activePlayerDiscardedCards');
-            this.notifqueue.setSynchronous('activePlayerDiscardedCards', 2000);
+            this.notifqueue.setSynchronous('activePlayerDiscardedCards', 1000);
             
             dojo.subscribe('activePlayerReceivedCards', this, 'notif_activePlayerReceivedCards');
         },
