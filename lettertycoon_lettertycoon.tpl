@@ -1,36 +1,30 @@
 {OVERALL_GAME_HEADER}
 
 <div class="lettertycoon_dark_area" id="lettertycoon_current_player_hand_area">
-    <div id="lettertycoon_current_player_hand_area_header">
+    <div id="lettertycoon_current_player_hand_area_header" class="lettertycoon_area_header">
         <span class="lettertycoon_player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOUR_HAND}</span>
     </div>
     <div id="lettertycoon_current_player_hand"></div>
 </div>
 
 <div class="lettertycoon_dark_area">
-    <div id="lettertycoon_word_area_header">
+    <div class="lettertycoon_area_header">
         <span class="lettertycoon_area_label"">{WORD_AREA}</span>
     </div>
     <div id="lettertycoon_main_word"></div>
     <div id="lettertycoon_second_word"></div>
-    <div id="lettertycoon_word_area_footer">
-        <a href="#" id="lettertycoon_change_letter_type_button" class="bgabutton bgabutton_gray">{CHANGE_LETTER_TYPE}</a>
-        <a href="#" id="lettertycoon_start_second_word_button" class="bgabutton bgabutton_gray">{START_SECOND_WORD}</a>
-        <a href="#" id="lettertycoon_duplicate_letter_button" class="bgabutton bgabutton_gray">{DUPLICATE_LETTER}</a>
-        <a href="#" id="lettertycoon_add_an_s_button" class="bgabutton bgabutton_gray">{ADD_AN_S}</a>
-    </div>
 </div>
 
 <div id="lettertycoon_community_pool_and_game_cards_area">
     <div class="lettertycoon_dark_area" id="lettertycoon_community_pool_area">
-        <div id="lettertycoon_community_pool_area_header">
+        <div id="lettertycoon_community_pool_area_header" class="lettertycoon_area_header">
             <div class="lettertycoon_area_label">{COMMUNITY_POOL}</div>
         </div>
         <div id="lettertycoon_community_pool"></div>
     </div>
 
     <div class="lettertycoon_dark_area" id="lettertycoon_game_cards_area">
-        <div id="lettertycoon_game_cards_area_header">
+        <div class="lettertycoon_area_header">
             <div class="lettertycoon_area_label">{GAME_CARDS}</div>
         </div>
         <div id="lettertycoon_game_cards">
@@ -42,7 +36,7 @@
 </div>
 
 <div class="lettertycoon_dark_area">
-    <div id="lettertycoon_available_patents_area_header">
+    <div class="lettertycoon_area_header">
         <div class="lettertycoon_area_label">{AVAILABLE_PATENTS}</div>
     </div>
     <div id="lettertycoon_available_patents"></div>
@@ -52,7 +46,7 @@
 
     <!-- BEGIN player -->
     <div class="lettertycoon_dark_area player_patents_area" id="lettertycoon_player_patents_area_{PLAYER_ID}">
-        <div class="lettertycoon_player_patents_area_header">
+        <div class="lettertycoon_area_header">
             <span class="lettertycoon_player_area_name" style="color:#{PLAYER_COLOR}">{PLAYER_NAME}</span>
         </div>
         <div class="lettertycoon_player_patents" id="lettertycoon_player_patents_{PLAYER_ID}"></div>

@@ -56,6 +56,13 @@ function (dojo, declare) {
             ];
             
             this.secondWordStarted = false;
+
+            // button visibility
+
+            this.startSecondWordButtonVisible = false;
+            this.duplicateLetterButtonVisible = false;
+            this.toggleYButtonVisible = false;
+            this.addAnSButtonVisible = false;
         },
         
         /*
@@ -158,11 +165,6 @@ function (dojo, declare) {
             dojo.connect(this.wordStock[2], 'onChangeSelection', this, 'onWord2SelectionChanged');
             dojo.connect(this.availablePatents, 'onChangeSelection', this, 'onPatentSelectionChanged');
 
-            dojo.connect($('lettertycoon_change_letter_type_button'), 'onclick', this, 'onChangeLetterTypeButtonClicked');
-            dojo.connect($('lettertycoon_start_second_word_button'), 'onclick', this, 'onStartSecondWordButtonClicked');
-            dojo.connect($('lettertycoon_duplicate_letter_button'), 'onclick', this, 'onDuplicateLetterButtonClicked');
-            dojo.connect($('lettertycoon_add_an_s_button'), 'onclick', this, 'onAddAnSButtonClicked');
-
             var score = _('Score (Money + Stock + Value of Patents)');
             var scoreHtml = '<span>'+score+'</span>';
             this.addTooltipHtmlToClass('player_score_value', scoreHtml);
@@ -213,8 +215,6 @@ function (dojo, declare) {
                         this.communityStock.setSelectionMode(1);
                         this.wordStock[1].setSelectionMode(1);
                         this.wordStock[2].setSelectionMode(1);
-                        this.showWordAreaButtons();
-                        this.updateWordAreaButtons();
                     }
                     break;
                 
@@ -266,7 +266,10 @@ function (dojo, declare) {
                         this.communityStock.setSelectionMode(0);
                         this.wordStock[1].setSelectionMode(0);
                         this.wordStock[2].setSelectionMode(0);
-                        this.hideWordAreaButtons();
+                        this.startSecondWordButtonVisible = false;
+                        this.duplicateLetterButtonVisible = false;
+                        this.toggleYButtonVisible = false;
+                        this.addAnSButtonVisible = false;
                     }
                     break;
                 
@@ -304,7 +307,23 @@ function (dojo, declare) {
                         break;
                     
                     case 'playerMayPlayWord':
+                        this.startSecondWordButtonVisible = this.playerOwnsPatent('V');
+                        this.duplicateLetterButtonVisible = this.playerOwnsPatent('X');
+                        this.toggleYButtonVisible = this.handOrCommunityContainsY() && this.vowelsCanAffectPlayerScore();
+                        this.addAnSButtonVisible = this.playerOwnsPatent('Z');
                         this.addActionButton('lettertycoon_playWord_button', _('Play word(s)'), 'onPlayWordButtonClicked', null, false, 'blue');
+                        if (this.startSecondWordButtonVisible) {
+                            this.addActionButton('lettertycoon_startSecondWord_button', _('Start second word'), 'onStartSecondWordButtonClicked', null, false, 'gray');
+                        }
+                        if (this.duplicateLetterButtonVisible) {
+                            this.addActionButton('lettertycoon_duplicateLetter_button', _('Duplicate letter'), 'onDuplicateLetterButtonClicked', null, false, 'gray');
+                        }
+                        if (this.toggleYButtonVisible) {
+                            this.addActionButton('lettertycoon_toggleY_button', _('Toggle ‘Y’'), 'onToggleYButtonClicked', null, false, 'gray');
+                        }
+                        if (this.addAnSButtonVisible) {
+                            this.addActionButton('lettertycoon_addAnS_button', _('Add an ‘S’'), 'onAddAnSButtonClicked', null, false, 'gray');
+                        }
                         this.addActionButton('lettertycoon_resetWordArea_button', _('Reset word area'), 'onResetWordAreaButtonClicked', null, false, 'gray');
                         this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing word(s)'), 'onSkipPlayWord', null, false, 'gray');
                         this.updateWordAreaButtons();
@@ -532,57 +551,52 @@ function (dojo, declare) {
             var secondWordItems = this.wordStock[2].getAllItems();
             var secondWordSelectedItems = this.wordStock[2].getSelectedItems();
 
+            this.setClassIf(this.secondWordStarted || secondWordItems.length > 0, 'lettertycoon_second_word', 'show');
+
             this.setClassIf(
                 mainWordItems.length < 3 || (this.secondWordStarted && secondWordItems.length < 3),
                 'lettertycoon_playWord_button', 'disabled'
             );
 
+            if (this.startSecondWordButtonVisible) {
+                this.setClassIf(
+                    mainWordItems.length < 3 || this.secondWordStarted,
+                    'lettertycoon_startSecondWord_button', 'disabled'
+                );
+            }
+
+            if (this.duplicateLetterButtonVisible) {
+                this.setClassIf(
+                    this.duplicatePlayed()
+                        || (mainWordSelectedItems.length === 0 && secondWordSelectedItems.length === 0)
+                        || this.itemsContainsId(mainWordSelectedItems, 205) // can't duplicate generated S
+                        || this.itemsContainsId(secondWordSelectedItems, 205)
+                        || this.currentWordComplete(),
+                    'lettertycoon_duplicateLetter_button', 'disabled'
+                );
+            }
+
+            if (this.toggleYButtonVisible) {
+                this.updateYTypes(1);
+                this.updateYTypes(2);
+                this.setClassIf(
+                    !(this.itemsContainsLetter(mainWordSelectedItems, 'Y') || this.itemsContainsLetter(secondWordSelectedItems, 'Y')),
+                    'lettertycoon_toggleY_button', 'disabled'
+                );
+            }
+
+            if (this.addAnSButtonVisible) {
+                this.setClassIf(
+                    this.addAnSPlayed()
+                        || mainWordItems.length < 2 || (this.secondWordStarted && secondWordItems.length < 2),
+                    'lettertycoon_addAnS_button', 'disabled'
+                );
+            }
+
             this.setClassIf(
                 mainWordItems.length < 1,
                 'lettertycoon_resetWordArea_button', 'disabled'
             );
-
-            // only show change letter type button if player owns a relevant patent
-            if (this.vowelsCanAffectPlayerScore()) {
-                this.setClassIf(
-                    !(this.itemsContainsLetter(mainWordSelectedItems, 'Y') || this.itemsContainsLetter(secondWordSelectedItems, 'Y')),
-                    'lettertycoon_change_letter_type_button', 'disabled'
-                );
-            }
-
-            if (this.patentOwners['V'] === this.getPlayerIdString()) {
-                this.setClassIf(
-                    mainWordItems.length < 3 || this.secondWordStarted,
-                    'lettertycoon_start_second_word_button', 'disabled'
-                );
-            }
-
-            if (this.patentOwners['X'] === this.getPlayerIdString()) {
-                this.setClassIf(
-                    this.duplicatePlayed()
-                        || (mainWordSelectedItems.length === 0 && secondWordSelectedItems.length === 0)
-                        || this.itemsContainsId(mainWordSelectedItems, 205)
-                        || this.itemsContainsId(secondWordSelectedItems, 205)
-                        || this.currentWordComplete(),
-                    'lettertycoon_duplicate_letter_button', 'disabled'
-                );
-            }
-
-            if (this.patentOwners['Z'] === this.getPlayerIdString()) {
-                this.setClassIf(
-                    this.addAnSPlayed()
-                        || mainWordItems.length < 2 || (this.secondWordStarted && secondWordItems.length < 2),
-                    'lettertycoon_add_an_s_button', 'disabled'
-                );
-            }
-
-            this.setClassIf(this.secondWordStarted || secondWordItems.length > 0, 'lettertycoon_second_word', 'show');
-            
-            // only show Y types if player owns a relevant patent
-            if (this.vowelsCanAffectPlayerScore()) {
-                this.updateYTypes(1);
-                this.updateYTypes(2);
-            }
         },
 
         updateYTypes: function (word /* 1 or 2 */) {
@@ -601,18 +615,13 @@ function (dojo, declare) {
             }
         },
 
-        showWordAreaButtons: function () {
-            this.setClassIf(this.vowelsCanAffectPlayerScore(), 'lettertycoon_change_letter_type_button', 'show');
-            this.setClassIf(this.patentOwners['V'] === this.getPlayerIdString(), 'lettertycoon_start_second_word_button', 'show');
-            this.setClassIf(this.patentOwners['X'] === this.getPlayerIdString(), 'lettertycoon_duplicate_letter_button', 'show');
-            this.setClassIf(this.patentOwners['Z'] === this.getPlayerIdString(), 'lettertycoon_add_an_s_button', 'show');
+        handOrCommunityContainsY: function () {
+            return this.itemsContainsLetter(this.handStock.getAllItems(), 'Y')
+                || this.itemsContainsLetter(this.communityStock.getAllItems(), 'Y');
         },
 
-        hideWordAreaButtons: function () {
-            dojo.removeClass('lettertycoon_change_letter_type_button', 'show');
-            dojo.removeClass('lettertycoon_start_second_word_button', 'show');
-            dojo.removeClass('lettertycoon_duplicate_letter_button', 'show');
-            dojo.removeClass('lettertycoon_add_an_s_button', 'show');
+        playerOwnsPatent: function (letter) {
+            return this.patentOwners[letter] === this.getPlayerIdString();
         },
 
         updateDiscardButton: function () {
@@ -692,14 +701,14 @@ function (dojo, declare) {
             this.updateWordAreaButtons();
         },
 
-        changeLetterType: function (stock, word /* 1 or 2 */) {
+        toggleSelectedY: function (word /* 1 or 2 */) {
             var typeY = this.getLetterIndex('Y');
             var wordStock = this.wordStock[word];
             var wordInfo = this.wordInfo[word];
-            var items = stock.getAllItems();
+            var items = wordStock.getAllItems();
             for (var i = 0, l = items.length; i < l; i++) {
                 var item = items[i];
-                if (stock.isSelected(item.id) && item.type === typeY) {
+                if (wordStock.isSelected(item.id) && item.type === typeY) {
                     var currentType = wordInfo.types[i];
                     if (currentType === 'c') {
                         wordInfo.types[i] = 'v';
@@ -775,9 +784,7 @@ function (dojo, declare) {
         },
 
         vowelsCanAffectPlayerScore: function () {
-            return this.patentOwners['B'] === this.getPlayerIdString()
-                || this.patentOwners['J'] === this.getPlayerIdString()
-                || this.patentOwners['K'] === this.getPlayerIdString();
+            return this.playerOwnsPatent('B') || this.playerOwnsPatent('J') || this.playerOwnsPatent('K');
         },
 
         unselectAllItems: function (stock) {
@@ -1016,6 +1023,7 @@ function (dojo, declare) {
             evt.preventDefault();
             dojo.stopEvent(evt);
 
+            this.clearWordArea(this.getPlayerIdString());
             this.action_skipPlayWord();
         },
 
@@ -1144,15 +1152,21 @@ function (dojo, declare) {
             this.action_playWord(mainWordParams, secondWordParams);
         },
 
-        onChangeLetterTypeButtonClicked: function (evt) {
-            // console.log('change letter type button clicked');
+        onToggleYButtonClicked: function (evt) {
+            // console.log('toggle Y button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
 
-            var secondWordLetterSelected = this.secondWordStarted && this.wordStock[2].getSelectedItems().length > 0;
-            var wordStock = this.wordStock[secondWordLetterSelected ? 2 : 1];
-            this.changeLetterType(wordStock, this.secondWordStarted ? 2 : 1);
+            var mainWordSelectedItems = this.wordStock[1].getSelectedItems();
+            if (mainWordSelectedItems.length > 0) {
+                this.toggleSelectedY(1);
+            } else {
+                var secondWordSelectedItems = this.wordStock[2].getSelectedItems();
+                if (secondWordSelectedItems.length > 0) {
+                    this.toggleSelectedY(2);
+                }
+            }
         },
 
         onStartSecondWordButtonClicked: function (evt) {

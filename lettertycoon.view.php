@@ -47,10 +47,7 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['GAME_CARDS'] = self::_("Game Cards");
         $this->tpl['AVAILABLE_PATENTS'] = self::_("Available Patents");
         
-        $this->tpl['CHANGE_LETTER_TYPE'] = self::_("Change Letter Type");
-        $this->tpl['START_SECOND_WORD'] = self::_("Start Second Word");
-        $this->tpl['DUPLICATE_LETTER'] = self::_("Duplicate Letter");
-        $this->tpl['ADD_AN_S'] = self::_("Add an S");
+        // $this->tpl['ADD_AN_S'] = self::_("Add an S");
 
         $this->tpl['CARD'] = self::_("Card");
         $this->tpl['TYPE'] = self::_("Type");

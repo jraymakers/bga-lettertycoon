@@ -19,10 +19,15 @@
     color: rgb(240,228,182);
 }
 
+.action-button.disabled {
+    opacity: 0.5;
+}
+
 .stockitem_selected {
     border: 0 !important;
     box-shadow: 0 0 5px 3px rgba(26,26,26,0.8);
 }
+
 
 
 .lettertycoon_player_board_info {
@@ -92,6 +97,11 @@
     border-radius: 8px;
 }
 
+.lettertycoon_area_header {
+    display: flex;
+    align-items: center;
+}
+
 .lettertycoon_area_label {
     font-weight: bold;
     color: rgb(240,228,182);
@@ -104,73 +114,12 @@
     display: none;
 }
 
-#lettertycoon_current_player_hand_area_header {
-    display: flex;
-    align-items: center;
-}
-
 .lettertycoon_player_area_name {
     font-weight: bold;
     padding: 5px 0;
 }
 
 
-
-#lettertycoon_word_area_header {
-    display: flex;
-    align-items: center;
-}
-#lettertycoon_word_area_footer {
-    display: flex;
-    align-items: center;
-    height: 50px;
-}
-
-
-
-#lettertycoon_change_letter_type_button {
-    display: none;
-    margin-left: 10px;
-}
-#lettertycoon_change_letter_type_button.show {
-    display: inline;
-}
-#lettertycoon_change_letter_type_button.disabled {
-    opacity: 0.5;
-}
-
-#lettertycoon_start_second_word_button {
-    display: none;
-    margin-left: 10px;
-}
-#lettertycoon_start_second_word_button.show {
-    display: inline;
-}
-#lettertycoon_start_second_word_button.disabled {
-    opacity: 0.5;
-}
-
-#lettertycoon_duplicate_letter_button {
-    display: none;
-    margin-left: 10px;
-}
-#lettertycoon_duplicate_letter_button.show {
-    display: inline;
-}
-#lettertycoon_duplicate_letter_button.disabled {
-    opacity: 0.5;
-}
-
-#lettertycoon_add_an_s_button {
-    display: none;
-    margin-left: 10px;
-}
-#lettertycoon_add_an_s_button.show {
-    display: inline;
-}
-#lettertycoon_add_an_s_button.disabled {
-    opacity: 0.5;
-}
 
 #lettertycoon_second_word {
     display: none;
@@ -250,13 +199,6 @@
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 120px 165px !important;
-}
-
-
-
-.lettertycoon_player_patents_area_header {
-    display: flex;
-    align-items: center;
 }
 
 
