@@ -10,8 +10,6 @@
 <div class="lettertycoon_dark_area">
     <div id="lettertycoon_word_area_header">
         <span class="lettertycoon_area_label"">{WORD_AREA}</span>
-        <a href="#" id="lettertycoon_play_word_button" class="bgabutton bgabutton_blue">{PLAY_WORD}</a>
-        <a href="#" id="lettertycoon_clear_button" class="bgabutton bgabutton_gray">{CLEAR}</a>
     </div>
     <div id="lettertycoon_main_word"></div>
     <div id="lettertycoon_second_word"></div>

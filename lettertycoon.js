@@ -157,12 +157,11 @@ function (dojo, declare) {
             dojo.connect(this.wordStock[1], 'onChangeSelection', this, 'onWord1SelectionChanged');
             dojo.connect(this.wordStock[2], 'onChangeSelection', this, 'onWord2SelectionChanged');
             dojo.connect(this.availablePatents, 'onChangeSelection', this, 'onPatentSelectionChanged');
-            dojo.connect($('lettertycoon_play_word_button'), 'onclick', this, 'onPlayWordButtonClicked');
+
             dojo.connect($('lettertycoon_change_letter_type_button'), 'onclick', this, 'onChangeLetterTypeButtonClicked');
             dojo.connect($('lettertycoon_start_second_word_button'), 'onclick', this, 'onStartSecondWordButtonClicked');
             dojo.connect($('lettertycoon_duplicate_letter_button'), 'onclick', this, 'onDuplicateLetterButtonClicked');
             dojo.connect($('lettertycoon_add_an_s_button'), 'onclick', this, 'onAddAnSButtonClicked');
-            dojo.connect($('lettertycoon_clear_button'), 'onclick', this, 'onClearButtonClicked');
 
             var score = _('Score (Money + Stock + Value of Patents)');
             var scoreHtml = '<span>'+score+'</span>';
@@ -305,7 +304,10 @@ function (dojo, declare) {
                         break;
                     
                     case 'playerMayPlayWord':
-                        this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing a word'), 'onSkipPlayWord', null, false, 'gray');
+                        this.addActionButton('lettertycoon_playWord_button', _('Play word(s)'), 'onPlayWordButtonClicked', null, false, 'blue');
+                        this.addActionButton('lettertycoon_resetWordArea_button', _('Reset word area'), 'onResetWordAreaButtonClicked', null, false, 'gray');
+                        this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing word(s)'), 'onSkipPlayWord', null, false, 'gray');
+                        this.updateWordAreaButtons();
                         break;
                     
                     case 'playersMayChallenge':
@@ -532,12 +534,12 @@ function (dojo, declare) {
 
             this.setClassIf(
                 mainWordItems.length < 3 || (this.secondWordStarted && secondWordItems.length < 3),
-                'lettertycoon_play_word_button', 'disabled'
+                'lettertycoon_playWord_button', 'disabled'
             );
 
             this.setClassIf(
                 mainWordItems.length < 1,
-                'lettertycoon_clear_button', 'disabled'
+                'lettertycoon_resetWordArea_button', 'disabled'
             );
 
             // only show change letter type button if player owns a relevant patent
@@ -600,8 +602,6 @@ function (dojo, declare) {
         },
 
         showWordAreaButtons: function () {
-            dojo.addClass('lettertycoon_play_word_button', 'show');
-            dojo.addClass('lettertycoon_clear_button', 'show');
             this.setClassIf(this.vowelsCanAffectPlayerScore(), 'lettertycoon_change_letter_type_button', 'show');
             this.setClassIf(this.patentOwners['V'] === this.getPlayerIdString(), 'lettertycoon_start_second_word_button', 'show');
             this.setClassIf(this.patentOwners['X'] === this.getPlayerIdString(), 'lettertycoon_duplicate_letter_button', 'show');
@@ -609,8 +609,6 @@ function (dojo, declare) {
         },
 
         hideWordAreaButtons: function () {
-            dojo.removeClass('lettertycoon_play_word_button', 'show');
-            dojo.removeClass('lettertycoon_clear_button', 'show');
             dojo.removeClass('lettertycoon_change_letter_type_button', 'show');
             dojo.removeClass('lettertycoon_start_second_word_button', 'show');
             dojo.removeClass('lettertycoon_duplicate_letter_button', 'show');
@@ -1187,8 +1185,8 @@ function (dojo, declare) {
             this.addAnS(this.secondWordStarted ? 2 : 1);
         },
 
-        onClearButtonClicked: function (evt) {
-            // console.log('clear button clicked');
+        onResetWordAreaButtonClicked: function (evt) {
+            // console.log('reset word area button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);

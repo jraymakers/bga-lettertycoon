@@ -119,7 +119,6 @@
 #lettertycoon_word_area_header {
     display: flex;
     align-items: center;
-    height: 50px;
 }
 #lettertycoon_word_area_footer {
     display: flex;
@@ -127,21 +126,7 @@
     height: 50px;
 }
 
-#lettertycoon_play_word_button {
-    display: none;
-    margin-left: 10px;
-}
-#lettertycoon_play_word_button.show {
-    display: inline;
-}
 
-#lettertycoon_clear_button {
-    display: none;
-    margin-left: 10px;
-}
-#lettertycoon_clear_button.show {
-    display: inline;
-}
 
 #lettertycoon_change_letter_type_button {
     display: none;
