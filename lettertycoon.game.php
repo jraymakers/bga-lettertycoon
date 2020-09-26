@@ -105,6 +105,17 @@ class LetterTycoon extends Table
 
         self::initStat('player', 'stock_received', 0);
 
+        self::initStat('player', 'q_doubling_used', 0);
+        self::initStat('player', 'y_played_as_vowel', 0);
+        self::initStat('player', 'y_played_as_consonant', 0);
+        self::initStat('player', 'b_patent_ability_used', 0);
+        self::initStat('player', 'j_patent_ability_used', 0);
+        self::initStat('player', 'k_patent_ability_used', 0);
+        self::initStat('player', 'q_patent_ability_used', 0);
+        self::initStat('player', 'v_patent_ability_used', 0);
+        self::initStat('player', 'x_patent_ability_used', 0);
+        self::initStat('player', 'z_patent_ability_used', 0);
+
         // initialize card table
         $cards = array();
         foreach ($this->letter_counts as $letter => $count) {
@@ -786,11 +797,24 @@ class LetterTycoon extends Table
     {
         $active_player_id = self::getActivePlayerId();
         foreach ($word_objects as $word_object) {
+            $letter = $word_object['letter'];
+            if ($letter == 'Y') {
+                $letter_type = $word_object['letter_type'];
+                if ($letter_type == 'v') {
+                    self::incStat(1, 'y_played_as_vowel', $active_player_id);
+                } else if ($letter_type == 'c') {
+                    self::incStat(1, 'y_played_as_consonant', $active_player_id);
+                }
+            }
             $letter_origin = $word_object['letter_origin'];
             if ($letter_origin == 'c') {
                 self::incStat(1, 'cards_played_from_community', $active_player_id);
             } else if ($letter_origin == 'h') {
                 self::incStat(1, 'cards_played_from_hand', $active_player_id);
+            } else if ($letter_origin == 'd') {
+                self::incStat(1, 'x_patent_ability_used', $active_player_id);
+            } else if ($letter_origin == 's') {
+                self::incStat(1, 'z_patent_ability_used', $active_player_id);
             }
         }
     }
@@ -818,6 +842,8 @@ class LetterTycoon extends Table
         }
 
         $this->cards->moveCard($card_id, 'discard');
+
+        self::incStat(1, 'q_patent_ability_used', $active_player_id);
 
         if ($card['location'] == 'community') {
             self::incStat(1, 'cards_discarded_from_community', $active_player_id);
@@ -1258,30 +1284,47 @@ class LetterTycoon extends Table
             'K' => $patent_owners['K'] == $active_player_id,
         );
 
+        $q_uses = 0;
+        $patents_used = array(
+            'B' => FALSE,
+            'J' => FALSE,
+            'K' => FALSE,
+        );
+
         $main_word_objects = self::getWordObjects(1);
+        self::recordWordStats($main_word_objects);
+
         $main_word_scoring_info = self::getScoringInfoForWord($main_word_objects);
         $main_word_length = $main_word_scoring_info['length'];
+
         $main_word_scores = $this->scores[$main_word_length];
         $main_word_money = $main_word_scores['money'];
         $main_word_stock = $main_word_scores['stock'];
+
         if ($main_word_scoring_info['Q']) {
             $main_word_money *= 2;
             $main_word_stock *= 2;
+            $q_uses++;
         }
 
         $second_word_objects = self::getWordObjects(2);
         $second_word_played = count($second_word_objects) > 0;        
 
         if ($second_word_played) {
+            self::incStat(1, 'v_patent_ability_used', $active_player_id);
+            self::recordWordStats($second_word_objects);
 
             $second_word_scoring_info = self::getScoringInfoForWord($second_word_objects);
             $second_word_length = $second_word_scoring_info['length'];
+
             $second_word_scores = $this->scores[$second_word_length];
             $second_word_money = $second_word_scores['money'];
             $second_word_stock = $second_word_scores['stock'];
+
             if ($second_word_scoring_info['Q']) {
                 $second_word_money *= 2;
                 $second_word_stock *= 2;
+                $q_uses++;
             }
 
             $contested_doublers = 0;
@@ -1290,12 +1333,15 @@ class LetterTycoon extends Table
                 if ($owned) {
                     if ($main_word_scoring_info[$letter] && $second_word_scoring_info[$letter]) {
                         $contested_doublers++;
+                        $patents_used[$letter] = TRUE;
                     } else if ($main_word_scoring_info[$letter]) {
                         $main_word_money *= 2;
                         $main_word_stock *= 2;
+                        $patents_used[$letter] = TRUE;
                     } else if ($second_word_scoring_info[$letter]) {
                         $second_word_money *= 2;
                         $second_word_stock *= 2;
+                        $patents_used[$letter] = TRUE;
                     }
                 }
             }
@@ -1325,6 +1371,7 @@ class LetterTycoon extends Table
                 if ($owned && $main_word_scoring_info[$letter]) {
                     $main_word_money *= 2;
                     $main_word_stock *= 2;
+                    $patents_used[$letter] = TRUE;
                 }
             }
 
@@ -1332,9 +1379,18 @@ class LetterTycoon extends Table
             $stock = $main_word_stock;
         }
 
-        self::recordWordStats($main_word_objects);
-        if ($second_word_played) {
-            self::recordWordStats($second_word_objects);
+        // Q & scoring patent stats
+        if ($q_uses > 0) {
+            self::incStat($q_uses, 'q_doubling_used', $active_player_id);
+        }
+        if ($patents_used['B']) {
+            self::incStat(1, 'b_patent_ability_used', $active_player_id);
+        }
+        if ($patents_used['J']) {
+            self::incStat(1, 'j_patent_ability_used', $active_player_id);
+        }
+        if ($patents_used['K']) {
+            self::incStat(1, 'k_patent_ability_used', $active_player_id);
         }
 
         self::updatePlayerCounters($active_player_id, $money, $stock, 0);

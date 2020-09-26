@@ -148,16 +148,66 @@ $stats_type = array(
         // PATENTS
 
         // number of times Q doubling ability used
+        'q_doubling_used' => array(
+            'id'=> 40,
+            'name' => totranslate('‘Q’ doubling ability used'),
+            'type' => 'int'
+        ),
         // number of times Y played as vowel
+        'y_played_as_vowel' => array(
+            'id'=> 41,
+            'name' => totranslate('‘Y’ played as vowel'),
+            'type' => 'int'
+        ),
         // number of times Y played as consonant
+        'y_played_as_consonant' => array(
+            'id'=> 42,
+            'name' => totranslate('‘Y’ played as consonant'),
+            'type' => 'int'
+        ),
 
         // number of times B patent ability used
+        'b_patent_ability_used' => array(
+            'id'=> 43,
+            'name' => totranslate('‘B’ patent ability used'),
+            'type' => 'int'
+        ),
         // number of times J patent ability used
+        'j_patent_ability_used' => array(
+            'id'=> 44,
+            'name' => totranslate('‘J’ patent ability used'),
+            'type' => 'int'
+        ),
         // number of times K patent ability used
+        'k_patent_ability_used' => array(
+            'id'=> 45,
+            'name' => totranslate('‘K’ patent ability used'),
+            'type' => 'int'
+        ),
         // number of times Q patent ability used
+        'q_patent_ability_used' => array(
+            'id'=> 46,
+            'name' => totranslate('‘Q’ patent ability used'),
+            'type' => 'int'
+        ),
         // number of times V patent ability used
+        'v_patent_ability_used' => array(
+            'id'=> 47,
+            'name' => totranslate('‘V’ patent ability used'),
+            'type' => 'int'
+        ),
         // number of times X patent ability used
+        'x_patent_ability_used' => array(
+            'id'=> 48,
+            'name' => totranslate('‘X’ patent ability used'),
+            'type' => 'int'
+        ),
         // number of times Z patent ability used
+        'z_patent_ability_used' => array(
+            'id'=> 49,
+            'name' => totranslate('‘Z’ patent ability used'),
+            'type' => 'int'
+        ),
         
         // WORDS
 
