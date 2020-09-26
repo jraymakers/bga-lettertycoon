@@ -534,12 +534,10 @@ function (dojo, declare) {
         },
 
         setClassIf: function (condition, id, cls) {
-            if (condition) {
-                if (!dojo.hasClass(id, cls)) {
+            if ($(id)) {
+                if (condition) {
                     dojo.addClass(id, cls);
-                }
-            } else {
-                if (dojo.hasClass(id, cls)) {
+                } else {
                     dojo.removeClass(id, cls);
                 }
             }
