@@ -212,59 +212,290 @@ $stats_type = array(
         // WORDS
 
         // number of 3 letter words
+        'words_played_length_3' => array(
+            'id'=> 103,
+            'name' => totranslate('3 letter words played'),
+            'type' => 'int'
+        ),
         // number of 4 letter words
+        'words_played_length_4' => array(
+            'id'=> 104,
+            'name' => totranslate('4 letter words played'),
+            'type' => 'int'
+        ),
         // number of 5 letter words
+        'words_played_length_5' => array(
+            'id'=> 105,
+            'name' => totranslate('5 letter words played'),
+            'type' => 'int'
+        ),
         // number of 6 letter words
+        'words_played_length_6' => array(
+            'id'=> 106,
+            'name' => totranslate('6 letter words played'),
+            'type' => 'int'
+        ),
         // number of 7 letter words
+        'words_played_length_7' => array(
+            'id'=> 107,
+            'name' => totranslate('7 letter words played'),
+            'type' => 'int'
+        ),
         // number of 8 letter words
+        'words_played_length_8' => array(
+            'id'=> 108,
+            'name' => totranslate('8 letter words played'),
+            'type' => 'int'
+        ),
         // number of 9 letter words
+        'words_played_length_9' => array(
+            'id'=> 109,
+            'name' => totranslate('9 letter words played'),
+            'type' => 'int'
+        ),
         // number of 10 letter words
+        'words_played_length_10' => array(
+            'id'=> 110,
+            'name' => totranslate('10 letter words played'),
+            'type' => 'int'
+        ),
         // number of 11 letter words
+        'words_played_length_11' => array(
+            'id'=> 111,
+            'name' => totranslate('11 letter words played'),
+            'type' => 'int'
+        ),
         // number of 12 letter words
+        'words_played_length_12' => array(
+            'id'=> 112,
+            'name' => totranslate('12 letter words played'),
+            'type' => 'int'
+        ),
+        // total number of letters played
+        'letters_played_total' => array(
+            'id'=> 120,
+            'name' => totranslate('Total letters played'),
+            'type' => 'int'
+        ),
         // total number of words played
+        'words_played_total' => array(
+            'id'=> 121,
+            'name' => totranslate('Total words played'),
+            'type' => 'int'
+        ),
         // average word length (float)
+        'word_length_average' => array(
+            'id'=> 122,
+            'name' => totranslate('Average word length'),
+            'type' => 'float'
+        ),
 
         // LETTERS
 
         // number of A's played
+        'letters_played_A' => array(
+            'id'=> 200,
+            'name' => totranslate('‘A’s played'),
+            'type' => 'int'
+        ),
         // number of B's played
+        'letters_played_B' => array(
+            'id'=> 201,
+            'name' => totranslate('‘B’s played'),
+            'type' => 'int'
+        ),
         // number of C's played
+        'letters_played_C' => array(
+            'id'=> 202,
+            'name' => totranslate('‘C’s played'),
+            'type' => 'int'
+        ),
         // number of D's played
+        'letters_played_D' => array(
+            'id'=> 203,
+            'name' => totranslate('‘D’s played'),
+            'type' => 'int'
+        ),
         // number of E's played
+        'letters_played_E' => array(
+            'id'=> 204,
+            'name' => totranslate('‘E’s played'),
+            'type' => 'int'
+        ),
         // number of F's played
+        'letters_played_F' => array(
+            'id'=> 205,
+            'name' => totranslate('‘F’s played'),
+            'type' => 'int'
+        ),
         // number of G's played
+        'letters_played_G' => array(
+            'id'=> 206,
+            'name' => totranslate('‘G’s played'),
+            'type' => 'int'
+        ),
         // number of H's played
+        'letters_played_H' => array(
+            'id'=> 207,
+            'name' => totranslate('‘H’s played'),
+            'type' => 'int'
+        ),
         // number of I's played
+        'letters_played_I' => array(
+            'id'=> 208,
+            'name' => totranslate('‘I’s played'),
+            'type' => 'int'
+        ),
         // number of J's played
+        'letters_played_J' => array(
+            'id'=> 209,
+            'name' => totranslate('‘J’s played'),
+            'type' => 'int'
+        ),
         // number of K's played
+        'letters_played_K' => array(
+            'id'=> 210,
+            'name' => totranslate('‘K’s played'),
+            'type' => 'int'
+        ),
         // number of L's played
+        'letters_played_L' => array(
+            'id'=> 211,
+            'name' => totranslate('‘L’s played'),
+            'type' => 'int'
+        ),
         // number of M's played
+        'letters_played_M' => array(
+            'id'=> 212,
+            'name' => totranslate('‘M’s played'),
+            'type' => 'int'
+        ),
         // number of N's played
+        'letters_played_N' => array(
+            'id'=> 213,
+            'name' => totranslate('‘N’s played'),
+            'type' => 'int'
+        ),
         // number of O's played
+        'letters_played_O' => array(
+            'id'=> 214,
+            'name' => totranslate('‘O’s played'),
+            'type' => 'int'
+        ),
         // number of P's played
+        'letters_played_P' => array(
+            'id'=> 215,
+            'name' => totranslate('‘P’s played'),
+            'type' => 'int'
+        ),
         // number of Q's played
+        'letters_played_Q' => array(
+            'id'=> 216,
+            'name' => totranslate('‘Q’s played'),
+            'type' => 'int'
+        ),
         // number of R's played
+        'letters_played_R' => array(
+            'id'=> 217,
+            'name' => totranslate('‘R’s played'),
+            'type' => 'int'
+        ),
         // number of S's played
+        'letters_played_S' => array(
+            'id'=> 218,
+            'name' => totranslate('‘S’s played'),
+            'type' => 'int'
+        ),
         // number of T's played
+        'letters_played_T' => array(
+            'id'=> 219,
+            'name' => totranslate('‘T’s played'),
+            'type' => 'int'
+        ),
         // number of U's played
+        'letters_played_U' => array(
+            'id'=> 220,
+            'name' => totranslate('‘U’s played'),
+            'type' => 'int'
+        ),
         // number of V's played
+        'letters_played_V' => array(
+            'id'=> 221,
+            'name' => totranslate('‘V’s played'),
+            'type' => 'int'
+        ),
         // number of W's played
+        'letters_played_W' => array(
+            'id'=> 222,
+            'name' => totranslate('‘W’s played'),
+            'type' => 'int'
+        ),
         // number of X's played
+        'letters_played_X' => array(
+            'id'=> 223,
+            'name' => totranslate('‘X’s played'),
+            'type' => 'int'
+        ),
         // number of Y's played
+        'letters_played_Y' => array(
+            'id'=> 224,
+            'name' => totranslate('‘Y’s played'),
+            'type' => 'int'
+        ),
         // number of Z's played
+        'letters_played_Z' => array(
+            'id'=> 225,
+            'name' => totranslate('‘Z’s played'),
+            'type' => 'int'
+        ),
 
         // CHALLENGES
 
         // number of successful challenges made
+        'successful_challenges_initiated' => array(
+            'id'=> 300,
+            'name' => totranslate('Successful challenges initiated'),
+            'type' => 'int'
+        ),
         // number of failed challenges made
+        'failed_challenges_initiated' => array(
+            'id'=> 301,
+            'name' => totranslate('Failed challenges initiated'),
+            'type' => 'int'
+        ),
 
         // number of times challenged correctly by another player
+        'correct_challenges_received' => array(
+            'id'=> 302,
+            'name' => totranslate('Correct challenges received (by other players)'),
+            'type' => 'int'
+        ),
         // number of times challenged incorrectly by another player
+        'incorrect_challenges_received' => array(
+            'id'=> 303,
+            'name' => totranslate('Incorrect challenges received (by other players)'),
+            'type' => 'int'
+        ),
 
-        // number of times challenged correctly by automatic challenge
-        // number of times challenged incorretly by automatic challenge
+        // number of times a word was rejected by automatic challenge
+        'words_rejected_by_automatic_challenge' => array(
+            'id'=> 310,
+            'name' => totranslate('Words rejected by automatic challenge'),
+            'type' => 'int'
+        ),
 
         // number of retries used
+        'retries_used' => array(
+            'id'=> 311,
+            'name' => totranslate('Retries used'),
+            'type' => 'int'
+        ),
+        // number of times player ran out of retries
+        'ran_out_of_retries' => array(
+            'id'=> 312,
+            'name' => totranslate('Ran out of retries'),
+            'type' => 'int'
+        ),
     )
 
 );

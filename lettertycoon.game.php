@@ -116,6 +116,54 @@ class LetterTycoon extends Table
         self::initStat('player', 'x_patent_ability_used', 0);
         self::initStat('player', 'z_patent_ability_used', 0);
 
+        self::initStat('player', 'words_played_length_3', 0);
+        self::initStat('player', 'words_played_length_4', 0);
+        self::initStat('player', 'words_played_length_5', 0);
+        self::initStat('player', 'words_played_length_6', 0);
+        self::initStat('player', 'words_played_length_7', 0);
+        self::initStat('player', 'words_played_length_8', 0);
+        self::initStat('player', 'words_played_length_9', 0);
+        self::initStat('player', 'words_played_length_10', 0);
+        self::initStat('player', 'words_played_length_11', 0);
+        self::initStat('player', 'words_played_length_12', 0);
+        self::initStat('player', 'letters_played_total', 0);
+        self::initStat('player', 'words_played_total', 0);
+        self::initStat('player', 'word_length_average', 0);
+
+        self::initStat('player', 'letters_played_A', 0);
+        self::initStat('player', 'letters_played_B', 0);
+        self::initStat('player', 'letters_played_C', 0);
+        self::initStat('player', 'letters_played_D', 0);
+        self::initStat('player', 'letters_played_E', 0);
+        self::initStat('player', 'letters_played_F', 0);
+        self::initStat('player', 'letters_played_G', 0);
+        self::initStat('player', 'letters_played_H', 0);
+        self::initStat('player', 'letters_played_I', 0);
+        self::initStat('player', 'letters_played_J', 0);
+        self::initStat('player', 'letters_played_K', 0);
+        self::initStat('player', 'letters_played_L', 0);
+        self::initStat('player', 'letters_played_M', 0);
+        self::initStat('player', 'letters_played_N', 0);
+        self::initStat('player', 'letters_played_O', 0);
+        self::initStat('player', 'letters_played_P', 0);
+        self::initStat('player', 'letters_played_Q', 0);
+        self::initStat('player', 'letters_played_R', 0);
+        self::initStat('player', 'letters_played_S', 0);
+        self::initStat('player', 'letters_played_T', 0);
+        self::initStat('player', 'letters_played_U', 0);
+        self::initStat('player', 'letters_played_V', 0);
+        self::initStat('player', 'letters_played_W', 0);
+        self::initStat('player', 'letters_played_X', 0);
+        self::initStat('player', 'letters_played_Y', 0);
+        self::initStat('player', 'letters_played_Z', 0);
+
+        self::initStat('player', 'successful_challenges_initiated', 0);
+        self::initStat('player', 'failed_challenges_initiated', 0);
+        self::initStat('player', 'correct_challenges_received', 0);
+        self::initStat('player', 'incorrect_challenges_received', 0);
+        self::initStat('player', 'words_rejected_by_automatic_challenge', 0);
+        self::initStat('player', 'retries_used', 0);
+
         // initialize card table
         $cards = array();
         foreach ($this->letter_counts as $letter => $count) {
@@ -798,6 +846,7 @@ class LetterTycoon extends Table
         $active_player_id = self::getActivePlayerId();
         foreach ($word_objects as $word_object) {
             $letter = $word_object['letter'];
+            self::incStat(1, "letters_played_$letter", $active_player_id);
             if ($letter == 'Y') {
                 $letter_type = $word_object['letter_type'];
                 if ($letter_type == 'v') {
@@ -817,6 +866,21 @@ class LetterTycoon extends Table
                 self::incStat(1, 'z_patent_ability_used', $active_player_id);
             }
         }
+    }
+
+    function recordWordLengthStats($word_length)
+    {
+        $active_player_id = self::getActivePlayerId();
+        if (3 <= $word_length && $word_length <= 12) {
+            self::incStat(1, "words_played_length_$word_length", $active_player_id);
+        } else {
+            self::trace("WARNING: word length out of bounds ($word_length) in recordWordLengthStats");
+        }
+        self::incStat($word_length, 'letters_played_total', $active_player_id);
+        self::incStat(1, 'words_played_total', $active_player_id);
+        $letters_played_total = self::getStat('letters_played_total', $active_player_id);
+        $words_played_total = self::getStat('words_played_total', $active_player_id);
+        self::setStat($letters_played_total/$words_played_total, 'word_length_average', $active_player_id);
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1200,24 +1264,29 @@ class LetterTycoon extends Table
 
     function stAutomaticChallenge()
     {
+        $active_player_id = self::getActivePlayerId();
         $main_word_objects = self::getWordObjects(1);
         $second_word_objects = self::getWordObjects(2);
 
         $rejected_word_string = self::getRejectedWordIfAny($main_word_objects, $second_word_objects);
 
         if (isset($rejected_word_string)) {
+            self::incStat(1, 'words_rejected_by_automatic_challenge', $active_player_id);
             self::returnAllWordCards($main_word_objects, $second_word_objects);
             self::notifyAutomaticChallengeRejectedWord($rejected_word_string);
 
             $retries_left = intval(self::getGameStateValue('retries_left'));
             if ($retries_left > 0) {
+                self::incStat(1, 'retries_used', $active_player_id);
                 self::setGameStateValue('retries_left', $retries_left - 1);
                 self::notifyPlayerMayTryAgainRetriesLeft($retries_left);
                 $this->gamestate->nextState('wordRejectedTryAgain');
             } else if ($retries_left === 0) {
+                self::incStat(1, 'ran_out_of_retries', $active_player_id);
                 self::notifyPlayerMustDiscardNoRetries();
                 $this->gamestate->nextState('wordRejectedNoRetries');
             } else { // unlimited
+                self::incStat(1, 'retries_used', $active_player_id);
                 self::notifyPlayerMayTryAgain();
                 $this->gamestate->nextState('wordRejectedTryAgain');
             }
@@ -1239,6 +1308,7 @@ class LetterTycoon extends Table
 
     function stResolveChallenge()
     {
+        $active_player_id = self::getActivePlayerId();
         $challenger_id = self::getChallengerId();
         if (isset($challenger_id)) {
             self::notifyPlayerChallenged($challenger_id);
@@ -1249,11 +1319,15 @@ class LetterTycoon extends Table
             $rejected_word_string = self::getRejectedWordIfAny($main_word_objects, $second_word_objects);
 
             if (isset($rejected_word_string)) {
+                self::incStat(1, 'successful_challenges_initiated', $challenger_id);
+                self::incStat(1, 'correct_challenges_received', $active_player_id);
                 self::notifyPlayerChallengeSucceeded($rejected_word_string);
                 self::returnAllWordCards($main_word_objects, $second_word_objects);
                 self::notifyPlayerMustDiscard();
                 $this->gamestate->nextState('wordRejected');
             } else {
+                self::incStat(1, 'failed_challenges_initiated', $challenger_id);
+                self::incStat(1, 'incorrect_challenges_received', $active_player_id);
                 self::notifyPlayerChallengeFailed();
                 $challenger_money = self::getPlayerMoney($challenger_id);
                 if ($challenger_money > 0) {
@@ -1261,7 +1335,6 @@ class LetterTycoon extends Table
                     self::incStat(1, 'money_paid_for_challenges', $challenger_id);
                     self::notifyChallengerPaidPenalty($challenger_id);
                 }
-                $active_player_id = self::getActivePlayerId();
                 self::updatePlayerCounters($active_player_id, 1, 0, 0);
                 self::incStat(1, 'money_received_from_challenges', $active_player_id);
                 self::notifyPlayerReceivedPayment();
@@ -1296,6 +1369,7 @@ class LetterTycoon extends Table
 
         $main_word_scoring_info = self::getScoringInfoForWord($main_word_objects);
         $main_word_length = $main_word_scoring_info['length'];
+        self::recordWordLengthStats($main_word_length);
 
         $main_word_scores = $this->scores[$main_word_length];
         $main_word_money = $main_word_scores['money'];
@@ -1316,6 +1390,7 @@ class LetterTycoon extends Table
 
             $second_word_scoring_info = self::getScoringInfoForWord($second_word_objects);
             $second_word_length = $second_word_scoring_info['length'];
+            self::recordWordLengthStats($second_word_length);
 
             $second_word_scores = $this->scores[$second_word_length];
             $second_word_money = $second_word_scores['money'];
