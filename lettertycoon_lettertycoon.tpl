@@ -58,19 +58,19 @@
 <script type="text/javascript">
 
 var jstpl_player_board_info='<div class="lettertycoon_player_board_info">\
-<span class="lettertycoon_player_board_info_item" id="lettertycoon_player_board_coins_${player_id}">\
+<span class="lettertycoon_player_board_info_item lettertycoon_player_board_coins" id="lettertycoon_player_board_coins_${player_id}">\
 <span class="lettertycoon_player_board_counter" id="lettertycoon_player_board_coins_counter_${player_id}">0</span>\
 <span class="lettertycoon_coin_icon"></span>\
 </span>\
-<span class="lettertycoon_player_board_info_item" id="lettertycoon_player_board_stock_${player_id}">\
+<span class="lettertycoon_player_board_info_item lettertycoon_player_board_stock" id="lettertycoon_player_board_stock_${player_id}">\
 <span class="lettertycoon_player_board_counter" id="lettertycoon_player_board_stock_counter_${player_id}">0</span>\
 <span class="lettertycoon_stock_icon"></span>\
 </span>\
-<span class="lettertycoon_player_board_info_item" id="lettertycoon_player_board_patents_${player_id}">\
+<span class="lettertycoon_player_board_info_item lettertycoon_player_board_patents" id="lettertycoon_player_board_patents_${player_id}">\
 <span class="lettertycoon_player_board_counter" id="lettertycoon_player_board_patents_counter_${player_id}">0</span>\
 <span class="lettertycoon_patents_icon"></span>\
 </span>\
-<span class="lettertycoon_player_board_info_item" id="lettertycoon_player_board_zeppelin_${player_id}">\
+<span class="lettertycoon_player_board_info_item lettertycoon_player_board_zeppelin" id="lettertycoon_player_board_zeppelin_${player_id}">\
 <span class="lettertycoon_zeppelin_icon"></span>\
 </span>\
 </div>';
@@ -108,9 +108,9 @@ var jstpl_patent_tooltip='<div class="lettertycoon_tooltip_contents">\
 </div>';
 
 var jstpl_goal_card_tooltip='<div class="lettertycoon_goal_card_tooltip_contents">\
-<div class="lettertycoon_goal_card_tooltip_header">${player_count} Player Goal</div>\
-<div><b>$${value}</b> in patents owned by any player</div>\
-<div>Requires a minimum of <b>${minimum}</b> patents</div>\
+<div class="lettertycoon_goal_card_tooltip_header">${x_player_goal}</div>\
+<div>${goal_text_patents_value}</div>\
+<div>${goal_text_minimum_patents}</div>\
 </div>';
 
 </script>

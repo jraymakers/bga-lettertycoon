@@ -169,19 +169,22 @@ function (dojo, declare) {
             var scoreHtml = '<span>'+score+'</span>';
             this.addTooltipHtmlToClass('player_score_value', scoreHtml);
             this.addTooltipHtmlToClass('fa-star', scoreHtml);
-            this.addTooltipHtmlToClass('player_board_coins', '<span>'+_('Money')+'</span>');
-            this.addTooltipHtmlToClass('player_board_stock', '<span>'+_('Stock')+'</span>');
-            this.addTooltipHtmlToClass('player_board_patents', '<span>'+_('Value of Patents')+'</span>');
-            this.addTooltipHtmlToClass('player_board_zeppelin', '<span>'+_('Start Player')+'</span>');
+            this.addTooltipHtmlToClass('lettertycoon_player_board_coins', '<span>'+_('Money')+'</span>');
+            this.addTooltipHtmlToClass('lettertycoon_player_board_stock', '<span>'+_('Stock')+'</span>');
+            this.addTooltipHtmlToClass('lettertycoon_player_board_patents', '<span>'+_('Value of Patents')+'</span>');
+            this.addTooltipHtmlToClass('lettertycoon_player_board_zeppelin', '<span>'+_('Start Player')+'</span>');
 
             this.addTooltipHtml('lettertycoon_scoring_card', this.createScoringTooltipContents());
 
             this.addTooltipHtml('lettertycoon_frequencies_card', this.createLetterFrequencyTooltipContents());
 
             this.addTooltipHtml('lettertycoon_goal_card', this.format_block('jstpl_goal_card_tooltip', {
-                player_count: player_count,
-                minimum: this.goal.minimum,
-                value: this.goal.value
+                x_player_goal:
+                    dojo.string.substitute(_('${player_count} Player Goal'), { player_count: player_count }),
+                goal_text_patents_value:
+                    dojo.string.substitute(_('<b>${value}</b> in patents owned by any player'), { value: this.goal.value }),
+                goal_text_minimum_patents:
+                    dojo.string.substitute(_('Requires a minimum of <b>${minimum}</b> patents'), { minimum: this.goal.minimum }),
             }));
             
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -484,7 +487,8 @@ function (dojo, declare) {
                 var score = this.scores[length];
                 var money = score.money;
                 var stock = score.stock;
-                lengthColumn += '<div class="lettertycoon_scoring_card_tooltip_item_length">' + length + ' ' + _('letters') + '</div>';
+                var lengthText = dojo.string.substitute(_('${length} letters'), { length: length} );
+                lengthColumn += '<div class="lettertycoon_scoring_card_tooltip_item_length">' + lengthText + '</div>';
                 moneyColumn += '<div class="lettertycoon_scoring_card_tooltip_item_money">$' + money + '</div>';
                 stockColumn += '<div class="lettertycoon_scoring_card_tooltip_item_stock">' + (stock > 0 ? stock : '-') + '</div>';
             }
