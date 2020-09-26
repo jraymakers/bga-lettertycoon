@@ -700,60 +700,36 @@ class LetterTycoon extends Table
         );
     }
 
-    function isVowel($word_object)
+    function getScoringInfoForWord($word_objects)
     {
-        $letter_type = $word_object['letter_type'];
-        if ($letter_type === '_') {
-            $letter = $word_object['letter'];
-            return $this->letter_types[$letter] === 'vowel';
-        } else {
-            return $letter_type === 'v';
-        }
-    }
-
-    function countVowels($word_objects)
-    {
-        $count = 0;
+        $word_len = 0;
+        $contains_Q = FALSE;
+        $is_vowel = array();
+        $num_vowels = 0;
         foreach ($word_objects as $word_object) {
-            if (self::isVowel($word_object)) {
-                $count += 1;
+            $word_len++;
+            $letter = $word_object['letter'];
+            if ($letter === 'Q') {
+                $contains_Q = TRUE;
+            }
+            $letter_type = $word_object['letter_type'];
+            if ($letter_type === '_') {
+                $current_is_vowel = $this->letter_types[$letter] === 'vowel';
+            } else {
+                $current_is_vowel = $letter_type === 'v';
+            }
+            $is_vowel[] = $current_is_vowel;
+            if ($current_is_vowel) {
+                $num_vowels += 1;
             }
         }
-        return $count;
-    }
-
-    function scoreWord($word_objects, $scoring_patents_owned)
-    {
-        $word_string = self::stringFromWordObjects($word_objects);
-        $word_len = strlen($word_string);
-        $word_scores = $this->scores[$word_len];
-        $money = $word_scores['money'];
-        $stock = $word_scores['stock'];
-        if (strpos($word_string, 'Q') !== FALSE) {
-            $money *= 2;
-            $stock *= 2;
-        }
-        if ($scoring_patents_owned['B']) {
-            if (self::isVowel($word_objects[0]) && self::isVowel($word_objects[$word_len - 1])) {
-                $money *= 2;
-                $stock *= 2;
-            }
-        }
-        if ($scoring_patents_owned['J']) {
-            $numVowels = self::countVowels($word_objects);
-            if ($numVowels >= $word_len / 2) {
-                $money *= 2;
-                $stock *= 2;
-            }
-        }
-        if ($scoring_patents_owned['K']) {
-            $numVowels = self::countVowels($word_objects);
-            if ($numVowels === 1) {
-                $money *= 2;
-                $stock *= 2;
-            }
-        }
-        return array('money' => $money, 'stock' => $stock);
+        return array(
+            'length' => $word_len,
+            'B' => $is_vowel[0] && $is_vowel[$word_len - 1],
+            'J' => $num_vowels >= $word_len / 2,
+            'K' => $num_vowels === 1,
+            'Q' => $contains_Q,
+        );
     }
 
     function countRoyaltiesAndPurchasablePatentsForWord(
@@ -1275,10 +1251,6 @@ class LetterTycoon extends Table
     {
         $active_player_id = self::getActivePlayerId();
 
-        $main_word_objects = self::getWordObjects(1);
-        $second_word_objects = self::getWordObjects(2);
-        $second_word_played = count($second_word_objects) > 0;
-
         $patent_owners = self::getPatentOwners();
         $scoring_patents_owned = array(
             'B' => $patent_owners['B'] == $active_player_id,
@@ -1286,43 +1258,78 @@ class LetterTycoon extends Table
             'K' => $patent_owners['K'] == $active_player_id,
         );
 
-        if ($second_word_played && $scoring_patents_owned['B'] && $scoring_patents_owned['J']) {
-            // special case: need to determine which word to use B and J patents with
-            $money = 0;
-            $stock = 0;
-            for ($b = 1; $b <= 2; $b++) {
-                for ($j = 1; $j <= 2; $j++) {
-                    $scoring_patents_owned_1 = array(
-                        'B' => $b === 1 ? $scoring_patents_owned['B'] : FALSE,
-                        'J' => $j === 1 ? $scoring_patents_owned['J'] : FALSE,
-                        'K' => $scoring_patents_owned['K']
-                    );
-                    $scoring_patents_owned_2 = array(
-                        'B' => $b === 2 ? $scoring_patents_owned['B'] : FALSE,
-                        'J' => $j === 2 ? $scoring_patents_owned['J'] : FALSE,
-                        'K' => $scoring_patents_owned['K']
-                    );
-                    $main_word_score = self::scoreWord($main_word_objects, $scoring_patents_owned_1);
-                    $option_money = $main_word_score['money'];
-                    $option_stock = $main_word_score['stock'];
-                    $second_word_score = self::scoreWord($second_word_objects, $scoring_patents_owned_2);
-                    $option_money += $second_word_score['money'];
-                    $option_stock += $second_word_score['stock'];
-                    if ($option_money >= $money && $option_stock >= $stock) {
-                        $money = $option_money;
-                        $stock = $option_stock;
+        $main_word_objects = self::getWordObjects(1);
+        $main_word_scoring_info = self::getScoringInfoForWord($main_word_objects);
+        $main_word_length = $main_word_scoring_info['length'];
+        $main_word_scores = $this->scores[$main_word_length];
+        $main_word_money = $main_word_scores['money'];
+        $main_word_stock = $main_word_scores['stock'];
+        if ($main_word_scoring_info['Q']) {
+            $main_word_money *= 2;
+            $main_word_stock *= 2;
+        }
+
+        $second_word_objects = self::getWordObjects(2);
+        $second_word_played = count($second_word_objects) > 0;        
+
+        if ($second_word_played) {
+
+            $second_word_scoring_info = self::getScoringInfoForWord($second_word_objects);
+            $second_word_length = $second_word_scoring_info['length'];
+            $second_word_scores = $this->scores[$second_word_length];
+            $second_word_money = $second_word_scores['money'];
+            $second_word_stock = $second_word_scores['stock'];
+            if ($second_word_scoring_info['Q']) {
+                $second_word_money *= 2;
+                $second_word_stock *= 2;
+            }
+
+            $contested_doublers = 0;
+
+            foreach ($scoring_patents_owned as $letter => $owned) {
+                if ($owned) {
+                    if ($main_word_scoring_info[$letter] && $second_word_scoring_info[$letter]) {
+                        $contested_doublers++;
+                    } else if ($main_word_scoring_info[$letter]) {
+                        $main_word_money *= 2;
+                        $main_word_stock *= 2;
+                    } else if ($second_word_scoring_info[$letter]) {
+                        $second_word_money *= 2;
+                        $second_word_stock *= 2;
                     }
                 }
             }
-        } else {
-            $main_word_score = self::scoreWord($main_word_objects, $scoring_patents_owned);
-            $money = $main_word_score['money'];
-            $stock = $main_word_score['stock'];
-            if ($second_word_played) {
-                $second_word_score = self::scoreWord($second_word_objects, $scoring_patents_owned);
-                $money += $second_word_score['money'];
-                $stock += $second_word_score['stock'];
+
+            if ($contested_doublers > 0) {
+                if ($main_word_money >= $second_word_money && $main_word_stock >= $second_word_stock) {
+                    while ($contested_doublers > 0) {
+                        $main_word_money *= 2;
+                        $main_word_stock *= 2;
+                        $contested_doublers--;
+                    }
+                } else {
+                    while ($contested_doublers > 0) {
+                        $second_word_money *= 2;
+                        $second_word_stock *= 2;
+                        $contested_doublers--;
+                    }
+                }
             }
+
+            $money = $main_word_money + $second_word_money;
+            $stock = $main_word_stock + $second_word_stock;
+
+        } else {
+
+            foreach ($scoring_patents_owned as $letter => $owned) {
+                if ($owned && $main_word_scoring_info[$letter]) {
+                    $main_word_money *= 2;
+                    $main_word_stock *= 2;
+                }
+            }
+
+            $money = $main_word_money;
+            $stock = $main_word_stock;
         }
 
         self::recordWordStats($main_word_objects);
@@ -1352,8 +1359,6 @@ class LetterTycoon extends Table
         );
 
         // pay royalties
-
-        $patent_owners = self::getPatentOwners();
         
         $player_money = self::getPlayerMoney($active_player_id);
 
