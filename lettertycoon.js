@@ -306,7 +306,9 @@ function (dojo, declare) {
             if (this.isCurrentPlayerActive()) {
                 switch (stateName) {
                     case 'playerMayReplaceCard':
+                        this.addActionButton('lettertycoon_replaceSelectedCard_button', _('Replace selected card'), 'onReplaceSelectedCardButtonClicked', null, false, 'blue');
                         this.addActionButton('lettertycoon_skipReplaceCard_button', _('Skip replacing a card'), 'onSkipReplaceCard', null, false, 'gray');
+                        this.updateReplaceSelectedCardButton();
                         break;
                     
                     case 'playerMayPlayWord':
@@ -337,14 +339,19 @@ function (dojo, declare) {
                         this.addActionButton('lettertycoon_acceptWord_button', _('Accept word'), 'onAcceptWord', null, false, 'gray');
                         break;
                     
-                    case 'playerMayDiscardCards':
-                        this.addActionButton('lettertycoon_discardSelectedCards_button', this.getDiscardButtonLabel(0), 'onDiscardButtonClicked', null, false, 'blue');
-                        this.addActionButton('lettertycoon_skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray');
-                        this.updateDiscardButton();
-                        break;
-                    
                     case 'playerMayBuyPatent':
                         this.addActionButton('lettertycoon_skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'gray');
+                        break;
+                    
+                    case 'playerMayDiscardCards':
+                        this.addActionButton('lettertycoon_discardSelectedCards_button', this.getDiscardButtonLabel(0), 'onDiscardSelectedCardsButtonClicked', null, false, 'blue');
+                        this.addActionButton('lettertycoon_skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray');
+                        this.updateDiscardSelectedCardsButton();
+                        break;
+                    
+                    case 'playerMustDiscardCard':
+                        this.addActionButton('lettertycoon_discardSelectedCard_button', _('Discard selected card'), 'onDiscardSelectedCardButtonClicked', null, false, 'blue');
+                        this.updateDiscardSelectedCardButton();
                         break;
                 }
             }
@@ -626,10 +633,25 @@ function (dojo, declare) {
             return this.patentOwners[letter] === this.getPlayerIdString();
         },
 
-        updateDiscardButton: function () {
+        updateReplaceSelectedCardButton: function () {
+            var selectedHandItems = this.handStock.getSelectedItems();
+            var selectedCommunityItems = this.communityStock.getSelectedItems();
+            this.setClassIf(
+                selectedHandItems.length === 0 && selectedCommunityItems.length === 0,
+                'lettertycoon_replaceSelectedCard_button', 'disabled');
+        },
+
+        updateDiscardSelectedCardsButton: function () {
             var selectedItems = this.handStock.getSelectedItems();
             dojo.place('<span>'+this.getDiscardButtonLabel(selectedItems.length)+'</span>', 'lettertycoon_discardSelectedCards_button', 'only');
             this.setClassIf(selectedItems.length === 0, 'lettertycoon_discardSelectedCards_button', 'disabled');
+        },
+
+        updateDiscardSelectedCardButton: function () {
+            var selectedHandItems = this.handStock.getSelectedItems();
+            this.setClassIf(
+                selectedHandItems.length === 0,
+                'lettertycoon_discardSelectedCard_button', 'disabled');
         },
 
         getDiscardButtonLabel: function (numSelectedCards) {
@@ -640,7 +662,7 @@ function (dojo, declare) {
             }
         },
 
-        discardCard: function (fromStock) {
+        discardSelectedCard: function (fromStock) {
             var items = fromStock.getSelectedItems();
             if (items.length === 1) {
                 var item = items[0];
@@ -648,11 +670,17 @@ function (dojo, declare) {
             }
         },
 
-        replaceCard: function (fromStock) {
-            var items = fromStock.getSelectedItems();
-            if (items.length === 1) {
-                var item = items[0];
-                this.action_replaceCard(item.id);
+        replaceSelectedCard: function () {
+            var handItems = this.handStock.getSelectedItems();
+            if (handItems.length === 1) {
+                var handItem = handItems[0];
+                this.action_replaceCard(handItem.id);
+            } else {
+                var communityItems = this.communityStock.getSelectedItems();
+                if (communityItems.length === 1) {
+                    var communityItem = communityItems[0];
+                    this.action_replaceCard(communityItem.id);
+                }
             }
         },
 
@@ -1071,7 +1099,9 @@ function (dojo, declare) {
             switch (this.currentState) {
 
                 case 'playerMayReplaceCard':
-                    this.replaceCard(this.communityStock);
+                    this.unselectAllItems(this.handStock);
+                    this.updateReplaceSelectedCardButton();
+                    
                     break;
 
                 case 'playerMayPlayWord':
@@ -1087,7 +1117,8 @@ function (dojo, declare) {
             switch (this.currentState) {
 
                 case 'playerMayReplaceCard':
-                    this.replaceCard(this.handStock);
+                    this.unselectAllItems(this.communityStock);
+                    this.updateReplaceSelectedCardButton();
                     break;
 
                 case 'playerMayPlayWord':
@@ -1095,11 +1126,11 @@ function (dojo, declare) {
                     break;
 
                 case 'playerMayDiscardCards':
-                    this.updateDiscardButton();
+                    this.updateDiscardSelectedCardsButton();
                     break;
                 
                 case 'playerMustDiscardCard':
-                    this.discardCard(this.handStock);
+                    this.updateDiscardSelectedCardButton();
                     break;
             }
         },
@@ -1140,6 +1171,15 @@ function (dojo, declare) {
                     break;
 
             }
+        },
+
+        onReplaceSelectedCardButtonClicked: function (evt) {
+            // console.log('discard selected card button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.replaceSelectedCard();
         },
 
         onPlayWordButtonClicked: function (evt) {
@@ -1210,8 +1250,8 @@ function (dojo, declare) {
             this.clearWordArea(this.getPlayerIdString());
         },
 
-        onDiscardButtonClicked: function (evt) {
-            // console.log('discard button clicked');
+        onDiscardSelectedCardsButtonClicked: function (evt) {
+            // console.log('discard selected cards button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
@@ -1221,6 +1261,15 @@ function (dojo, declare) {
             var ids = this.getItemIds(items);
 
             this.action_discardCards(ids);
+        },
+
+        onDiscardSelectedCardButtonClicked: function (evt) {
+            // console.log('discard selected card button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.discardSelectedCard(this.handStock);
         },
         
         ///////////////////////////////////////////////////
