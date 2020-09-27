@@ -163,6 +163,7 @@ class LetterTycoon extends Table
         self::initStat('player', 'incorrect_challenges_received', 0);
         self::initStat('player', 'words_rejected_by_automatic_challenge', 0);
         self::initStat('player', 'retries_used', 0);
+        self::initStat('player', 'ran_out_of_retries', 0);
 
         // initialize card table
         $cards = array();
