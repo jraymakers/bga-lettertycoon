@@ -340,7 +340,9 @@ function (dojo, declare) {
                         break;
                     
                     case 'playerMayBuyPatent':
+                        this.addActionButton('lettertycoon_buySelectedPatent_button', _('Buy selected patent'), 'onBuySelectedPatentButtonClicked', null, false, 'blue');
                         this.addActionButton('lettertycoon_skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'gray');
+                        this.updateBuySelectedPatentButton();
                         break;
                     
                     case 'playerMayDiscardCards':
@@ -639,6 +641,13 @@ function (dojo, declare) {
             this.setClassIf(
                 selectedHandItems.length === 0 && selectedCommunityItems.length === 0,
                 'lettertycoon_replaceSelectedCard_button', 'disabled');
+        },
+
+        updateBuySelectedPatentButton: function () {
+            var selectedPatents = this.availablePatents.getSelectedItems();
+            this.setClassIf(
+                selectedPatents.length === 0,
+                'lettertycoon_buySelectedPatent_button', 'disabled');
         },
 
         updateDiscardSelectedCardsButton: function () {
@@ -1167,7 +1176,7 @@ function (dojo, declare) {
             switch (this.currentState) {
 
                 case 'playerMayBuyPatent':
-                    this.buySelectedPatent();
+                    this.updateBuySelectedPatentButton();
                     break;
 
             }
@@ -1248,6 +1257,15 @@ function (dojo, declare) {
             dojo.stopEvent(evt);
 
             this.clearWordArea(this.getPlayerIdString());
+        },
+
+        onBuySelectedPatentButtonClicked: function (evt) {
+            // console.log('buy selected patent button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.buySelectedPatent();
         },
 
         onDiscardSelectedCardsButtonClicked: function (evt) {
