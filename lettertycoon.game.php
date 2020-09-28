@@ -939,6 +939,15 @@ class LetterTycoon extends Table
     function skipReplaceCard()
     {
         self::checkAction('skipReplaceCard');
+
+        self::notifyAllPlayers('playerSkippedReplacingACard',
+            clienttranslate('${player_name} skipped replacing a card'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName()
+            )
+        );
+
         $this->gamestate->nextState('skip');
     }
 
@@ -1034,6 +1043,15 @@ class LetterTycoon extends Table
     function skipPlayWord()
     {
         self::checkAction('skipPlayWord');
+
+        self::notifyAllPlayers('playerSkippedPlayingAWord',
+            clienttranslate('${player_name} skipped playing a word'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName()
+            )
+        );
+
         $this->gamestate->nextState('skip');
     }
 
@@ -1104,6 +1122,15 @@ class LetterTycoon extends Table
     function skipBuyPatent()
     {
         self::checkAction('skipBuyPatent');
+
+        self::notifyAllPlayers('playerSkippedBuyingAPatent',
+            clienttranslate('${player_name} skipped buying a patent'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName()
+            )
+        );
+
         $this->gamestate->nextState('skip');
     }
 
@@ -1149,6 +1176,15 @@ class LetterTycoon extends Table
     function skipDiscardCards()
     {
         self::checkAction('skipDiscardCards');
+
+        self::notifyAllPlayers('playerSkippedDiscardingCards',
+            clienttranslate('${player_name} skipped discarding cards'),
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName()
+            )
+        );
+
         $this->gamestate->nextState('done');
     }
 
@@ -1238,7 +1274,6 @@ class LetterTycoon extends Table
             // no retries allowed in players challenge mode
             self::setGameStateValue('retries_left', 0);
         }
-        
 
         if ($patent_owners['Q'] == $active_player_id) {
             $this->gamestate->nextState('hasReplaceCardOption');
@@ -1523,6 +1558,14 @@ class LetterTycoon extends Table
         if (count($purchasable_patents) > 0) {
             $this->gamestate->nextState('patentsAvailable');
         } else {
+            self::notifyAllPlayers('playerCannotBuyAPatent',
+                clienttranslate('${player_name} cannot buy a patent'),
+                array(
+                    'player_id' => $active_player_id,
+                    'player_name' => self::getActivePlayerName()
+                )
+            );
+
             $this->gamestate->nextState('noPatentsAvailable');
         }
     }
