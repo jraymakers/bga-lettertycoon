@@ -23,10 +23,12 @@ $game_options = array(
             1 => array(
                 'name' => totranslate('Players challenge'),
                 'description' => totranslate('Played words may be challenged by other players. This follows the rules as written. It is suitable for real-time play.'),
+                'tmdisplay' => totranslate('Players challenge'),
             ),
             2 => array(
                 'name' => totranslate('Automatic challenge'),
                 'description' => totranslate('Played words are checked and challenged automatically by the system. Retries may be allowed. This is a variant designed to speed up turn-based play.'),
+                'tmdisplay' => totranslate('Automatic challenge'),
             ),
         ),
     ),
@@ -37,30 +39,37 @@ $game_options = array(
             0 => array(
                 'name' => totranslate('None'),
                 'description' => totranslate('If automatically challenged, player gets no retries.'),
+                'tmdisplay' => totranslate('Retries: None'),
             ),
             1 => array(
                 'name' => totranslate('1'),
                 'description' => totranslate('If automatically challenged, player gets 1 retry.'),
+                'tmdisplay' => totranslate('Retries: 1'),
             ),
             2 => array(
                 'name' => totranslate('2'),
                 'description' => totranslate('If automatically challenged, player gets 2 retries.'),
+                'tmdisplay' => totranslate('Retries: 2'),
             ),
             3 => array(
                 'name' => totranslate('3'),
                 'description' => totranslate('If automatically challenged, player gets 3 retries.'),
+                'tmdisplay' => totranslate('Retries: 3'),
             ),
             4 => array(
                 'name' => totranslate('4'),
                 'description' => totranslate('If automatically challenged, player gets 4 retries.'),
+                'tmdisplay' => totranslate('Retries: 4'),
             ),
             5 => array(
                 'name' => totranslate('5'),
                 'description' => totranslate('If automatically challenged, player gets 5 retries.'),
+                'tmdisplay' => totranslate('Retries: 5'),
             ),
             -1 => array(
                 'name' => totranslate('Unlimited'),
                 'description' => totranslate('If automatically challenged, player gets unlimited retries.'),
+                'tmdisplay' => totranslate('Retries: Unlimited'),
             ),
         ),
         'default' => 3,
