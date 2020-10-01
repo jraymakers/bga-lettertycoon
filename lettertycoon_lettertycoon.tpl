@@ -1,13 +1,13 @@
 {OVERALL_GAME_HEADER}
 
-<div class="lettertycoon_dark_area" id="lettertycoon_current_player_hand_area">
+<div class="lettertycoon_area" id="lettertycoon_current_player_hand_area">
     <div id="lettertycoon_current_player_hand_area_header" class="lettertycoon_area_header">
         <span class="lettertycoon_player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOUR_HAND}</span>
     </div>
     <div id="lettertycoon_current_player_hand"></div>
 </div>
 
-<div class="lettertycoon_dark_area">
+<div class="lettertycoon_area">
     <div class="lettertycoon_area_header">
         <span class="lettertycoon_area_label"">{WORD_AREA}</span>
     </div>
@@ -16,14 +16,14 @@
 </div>
 
 <div id="lettertycoon_community_pool_and_game_cards_area">
-    <div class="lettertycoon_dark_area" id="lettertycoon_community_pool_area">
+    <div class="lettertycoon_area" id="lettertycoon_community_pool_area">
         <div id="lettertycoon_community_pool_area_header" class="lettertycoon_area_header">
             <div class="lettertycoon_area_label">{COMMUNITY_POOL}</div>
         </div>
         <div id="lettertycoon_community_pool"></div>
     </div>
 
-    <div class="lettertycoon_dark_area" id="lettertycoon_game_cards_area">
+    <div class="lettertycoon_area" id="lettertycoon_game_cards_area">
         <div class="lettertycoon_area_header">
             <div class="lettertycoon_area_label">{GAME_CARDS}</div>
         </div>
@@ -35,7 +35,7 @@
     </div>
 </div>
 
-<div class="lettertycoon_dark_area">
+<div class="lettertycoon_area">
     <div class="lettertycoon_area_header">
         <div class="lettertycoon_area_label">{AVAILABLE_PATENTS}</div>
     </div>
@@ -45,7 +45,7 @@
 <div id="lettertycoon_player_areas">
 
     <!-- BEGIN player -->
-    <div class="lettertycoon_dark_area player_patents_area" id="lettertycoon_player_patents_area_{PLAYER_ID}">
+    <div class="lettertycoon_area player_patents_area" id="lettertycoon_player_patents_area_{PLAYER_ID}">
         <div class="lettertycoon_area_header">
             <span class="lettertycoon_player_area_name" style="color:#{PLAYER_COLOR}">{PLAYER_NAME}</span>
         </div>
