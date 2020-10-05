@@ -13,6 +13,9 @@
 ALTER TABLE `player` ADD `money` smallint(5) unsigned NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `stock` smallint(5) unsigned NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `challenge` tinyint(1) unsigned NOT NULL DEFAULT '0';
+-- HAND ORDER: This is one way we might save the hand order.
+-- hand_order: semicolon separated list of card_ids (up to 7, each max 3 chars)
+-- ALTER TABLE `player` ADD `hand_order` varchar(32) NOT NULL DEFAULT '';
 
 
 -- card_id: 102 cards
@@ -59,3 +62,10 @@ CREATE TABLE IF NOT EXISTS `word` (
   `card_id` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`word_num`, `word_pos`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- HAND ORDER: This is another way we might save the hand order.
+-- CREATE TABLE IF NOT EXISTS `hand_order` (
+--   `player_id` int(10) unsigned NOT NULL,
+--   `index` tinyint(1) unsigned NOT NULL,
+--   `card_id` tinyint(3) unsigned NOT NULL,
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;

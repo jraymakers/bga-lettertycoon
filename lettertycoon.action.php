@@ -151,4 +151,14 @@ class action_lettertycoon extends APP_GameAction
         self::ajaxResponse();
     }
 
+    // HAND ORDER: hand order
+
+    // public function setHandOrder()
+    // {
+    //     self::setAjaxMode();
+    //     $card_ids = self::parseNumberList(self::getArg('card_ids', AT_numberlist, true));
+    //     $this->game->setHandOrder($card_ids);
+    //     self::ajaxResponse();
+    // }
+
 }

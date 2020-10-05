@@ -11,6 +11,34 @@
 
 require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
 
+// HAND ORDER:
+
+// function cardCompareAlphabetic($a, $b)
+// {
+//     $aType = $a['type'];
+//     $bType = $b['type'];
+//     if ($aType < $bType) {
+//         return -1;
+//     } else if ($aType > $bType) {
+//         return 1;
+//     } else {
+//         $aId = $a['id'];
+//         $bId = $b['id'];
+//         if ($aId < $bId) {
+//             return -1;
+//         } else if ($aId > $bId) {
+//             return 1;
+//         } else {
+//             return 0;
+//         }
+//     }
+// }
+
+// function getCardId($card)
+// {
+//     return $card['id'];
+// }
+
 class LetterTycoon extends Table
 {
     function __construct()
@@ -187,6 +215,13 @@ class LetterTycoon extends Table
         foreach ($players as $player_id => $player) {
             $this->cards->pickCards(7, 'deck', $player_id);
             self::incStat(7, 'cards_drawn_to_hand', $player_id);
+
+            // HAND ORDER: save initial player hand order
+            // $cards_in_hand = $this->cards->getCardsInLocation('hand', $player_id);
+            // uasort($cards_in_hand, 'cardCompareAlphabetic');
+            // $card_ids_in_order = array_map('getCardId', $cards_in_hand);
+            // $hand_order = implode(';', $card_ids_in_order);
+            // self::setPlayerHandOrder($player_id, $hand_order);
         }
 
         // deal 3 cards to the community pool
@@ -225,6 +260,11 @@ class LetterTycoon extends Table
 
         $result['hand'] = $this->cards->getCardsInLocation('hand', $current_player_id);
 
+        // HAND ORDER:
+        // $hand_order = self::getPlayerHandOrder($current_player_id);
+        // $card_ids_in_order = explode(';', $hand_order);
+        // $result['hand_order'] = $card_ids_in_order;
+
         $result['patent_owners'] = self::getPatentOwners();
 
         $result['main_word'] = self::getWordObjects(1);
@@ -237,7 +277,6 @@ class LetterTycoon extends Table
         $result['letter_types'] = $this->letter_types;
         $result['patent_costs'] = $this->patent_costs;
         $result['patent_text'] = $this->patent_text;
-        
   
         return $result;
     }
@@ -293,6 +332,13 @@ class LetterTycoon extends Table
         return self::getCollectionFromDB($sql, true);
     }
 
+    // HAND ORDER:
+    // function getPlayerHandOrder($player_id)
+    // {
+    //     $sql = "SELECT hand_order FROM player WHERE player_id = '$player_id' ";
+    //     return self::getUniqueValueFromDB($sql);
+    // }
+
     function getPlayerMoney($player_id)
     {
         $sql = "SELECT `money` FROM player WHERE player_id = '$player_id' ";
@@ -336,6 +382,13 @@ class LetterTycoon extends Table
         $sql = "UPDATE patent SET owning_player_id = $player_id WHERE patent_id = '$patent_id' ";
         self::DbQuery($sql);
     }
+
+    // HAND ORDER:
+    // function setPlayerHandOrder($player_id, $hand_order)
+    // {
+    //     $sql = "UPDATE player SET hand_order = '$hand_order' WHERE player_id = '$player_id' ";
+    //     self::DbQuery($sql);
+    // }
 
     function updatePlayerCounters($player_id, $money_change, $stock_change, $patents_value_change)
     {
@@ -644,6 +697,7 @@ class LetterTycoon extends Table
         
         $this->cards->moveCards($community_cards, 'community');
         $this->cards->moveCards($hand_cards, 'hand', self::getActivePlayerId());
+        // HAND ORDER:: update player hand order
     }
 
     function returnAllWordCards($main_word_objects, $second_word_objects)
@@ -908,6 +962,8 @@ class LetterTycoon extends Table
 
         $this->cards->moveCard($card_id, 'discard');
 
+        // HAND ORDER:: update player hand order
+
         self::incStat(1, 'q_patent_ability_used', $active_player_id);
 
         if ($card['location'] == 'community') {
@@ -1020,6 +1076,8 @@ class LetterTycoon extends Table
         if (isset($second_word)) {
             $this->cards->moveCards($second_word['card_ids'], 'word');
         }
+
+        // HAND ORDER:: update player hand order
 
         if (isset($second_word)) {
             $message = clienttranslate('${player_name} played ‘${main_word.letters}’ and ‘${second_word.letters}’');
@@ -1156,6 +1214,8 @@ class LetterTycoon extends Table
         $this->cards->moveCards($card_ids, 'discard');
         self::incStat($num_cards, 'cards_discarded_from_hand', $active_player_id);
 
+        // HAND ORDER:: update player hand order
+
         // notify the active player to discard the specific cards
         self::notifyPlayer($active_player_id, 'activePlayerDiscardedCards', '', array(
             'card_ids' => $card_ids
@@ -1207,6 +1267,8 @@ class LetterTycoon extends Table
         $this->cards->moveCard($card_id, 'discard');
         self::incStat(1, 'cards_discarded_from_hand', $active_player_id);
 
+        // HAND ORDER:: update player hand order
+
         // notify the active player to discard the specific cards
         self::notifyPlayer($active_player_id, 'activePlayerDiscardedCards', '', array(
             'card_ids' => array($card_id)
@@ -1223,6 +1285,27 @@ class LetterTycoon extends Table
 
         $this->gamestate->nextState('done');
     }
+
+    // HAND ORDER: If we saved hand order on the backend, we might have an action like this:
+    // function setHandOrder($card_ids)
+    // {
+    //     // Players can set their hand order at any time.
+    //     // So we don't call checkAction, and we get the current player, not the active player.
+    //     $current_player_id = self::getCurrentPlayerId();
+
+    //     // validate args
+
+    //     // $cards_in_hand = $this->cards->getCardsInLocation('hand', $current_player_id);
+
+    //     // foreach ($card_ids as $card_id) {
+    //     // }
+
+    //     $hand_order = implode(';', $card_ids);
+    //     self::setPlayerHandOrder($current_player_id, $hand_order);
+
+    //     // HAND ORDER: If we reenable this we'd have to add back the 'loopback' state.
+    //     $this->gamestate->nextState('loopback');
+    // }
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments

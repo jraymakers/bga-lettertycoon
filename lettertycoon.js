@@ -63,6 +63,14 @@ function (dojo, declare) {
             this.duplicateLetterButtonVisible = false;
             this.toggleYButtonVisible = false;
             this.addAnSButtonVisible = false;
+
+            // hand order
+
+            this.handOrderList = []; // list of card ids
+            this.handOrderMap = {}; // card id -> index
+
+            this.reorderMode = false;
+            this.reorderSourceItem = null;
         },
         
         /*
@@ -82,6 +90,7 @@ function (dojo, declare) {
 
             this.communityStock = this.createCardStock('lettertycoon_community_pool');
             this.handStock = this.createCardStock('lettertycoon_current_player_hand');
+            this.handStock.order_items = false;
             this.wordStock[1] = this.createCardStock('lettertycoon_main_word');
             this.wordStock[1].order_items = false;
             this.wordStock[2] = this.createCardStock('lettertycoon_second_word');
@@ -134,11 +143,51 @@ function (dojo, declare) {
                 this.communityStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
             }
 
+            // HAND ORDER: If the hand order was saved on the backend, we might do something like this:
+            // this.handOrderList = gamedatas.hand_order;
+            // for (var i = 0, l = this.handOrderList.length; i < l; i++) {
+                // var id = this.handOrderList[i];
+                // var card = hand[id];
+                // ...
+            // }
+
             var hand = gamedatas.hand;
+            var handInOrder = [];
             for (var card_id in hand) {
                 var card = hand[card_id];
+                handInOrder.push(card);
+            }
+            handInOrder.sort((a,b) => {
+                if (a.type < b.type) {
+                    return -1;
+                } else if (a.type > b.type) {
+                    return 1;
+                } else {
+                    if (a.id < b.id) {
+                        return -1;
+                    } else if (a.id > b.id) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+
+            this.handOrderList = [];
+            for (var card of handInOrder) {
+                this.handOrderList.push(card.id);
                 this.handStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
             }
+            this.updateHandOrderMap();
+
+            var comparePlayerHandCards = dojo.hitch(this, function (a, b) {
+                var aIndex = this.handOrderMap[a.id];
+                var bIndex = this.handOrderMap[b.id];
+                return aIndex > bIndex ? 1 : aIndex < bIndex ? -1 : 0;
+            });
+            this.handStock.sortItems = function () {
+                this.items.sort(comparePlayerHandCards);
+            };
 
             var main_word = gamedatas.main_word;
             for (var i in main_word) {
@@ -192,7 +241,7 @@ function (dojo, declare) {
 
             // console.log('Ending game setup');
         },
-       
+        
 
         ///////////////////////////////////////////////////
         //// Game & client states
@@ -207,14 +256,22 @@ function (dojo, declare) {
             switch (stateName) {
                 case 'playerMayReplaceCard':
                     if (this.isCurrentPlayerActive()) {
-                        this.handStock.setSelectionMode(1);
+                        if (this.reorderMode) {
+                            this.savedSelectionMode = 1;
+                        } else {
+                            this.handStock.setSelectionMode(1);
+                        }
                         this.communityStock.setSelectionMode(1);
                     }
                     break;
 
                 case 'playerMayPlayWord':
                     if (this.isCurrentPlayerActive()) {
-                        this.handStock.setSelectionMode(1);
+                        if (this.reorderMode) {
+                            this.savedSelectionMode = 1;
+                        } else {
+                            this.handStock.setSelectionMode(1);
+                        }
                         this.communityStock.setSelectionMode(1);
                         this.wordStock[1].setSelectionMode(1);
                         this.wordStock[2].setSelectionMode(1);
@@ -230,13 +287,21 @@ function (dojo, declare) {
 
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
-                        this.handStock.setSelectionMode(2);
+                        if (this.reorderMode) {
+                            this.savedSelectionMode = 2;
+                        } else {
+                            this.handStock.setSelectionMode(2);
+                        }
                     }
                     break;
                 
                 case 'playerMustDiscardCard':
                     if (this.isCurrentPlayerActive()) {
-                        this.handStock.setSelectionMode(1);
+                        if (this.reorderMode) {
+                            this.savedSelectionMode = 1;
+                        } else {
+                            this.handStock.setSelectionMode(1);
+                        }
                     }
                     break;
 
@@ -258,14 +323,22 @@ function (dojo, declare) {
             switch (stateName) {
                 case 'playerMayReplaceCard':
                     if (this.isCurrentPlayerActive()) {
-                        this.handStock.setSelectionMode(0);
+                        if (this.reorderMode) {
+                            this.savedSelectionMode = 0;
+                        } else {
+                            this.handStock.setSelectionMode(0);
+                        }
                         this.communityStock.setSelectionMode(0);
                     }
                     break;
                 
                 case 'playerMayPlayWord':
                     if (this.isCurrentPlayerActive()) {
-                        this.handStock.setSelectionMode(0);
+                        if (this.reorderMode) {
+                            this.savedSelectionMode = 0;
+                        } else {
+                            this.handStock.setSelectionMode(0);
+                        }
                         this.communityStock.setSelectionMode(0);
                         this.wordStock[1].setSelectionMode(0);
                         this.wordStock[2].setSelectionMode(0);
@@ -285,13 +358,21 @@ function (dojo, declare) {
 
                 case 'playerMayDiscardCards':
                     if (this.isCurrentPlayerActive()) {
-                        this.handStock.setSelectionMode(0);
+                        if (this.reorderMode) {
+                            this.savedSelectionMode = 0;
+                        } else {
+                            this.handStock.setSelectionMode(0);
+                        }
                     }
                     break;
                 
                 case 'playerMustDiscardCard':
                     if (this.isCurrentPlayerActive()) {
-                        this.handStock.setSelectionMode(0);
+                        if (this.reorderMode) {
+                            this.savedSelectionMode = 0;
+                        } else {
+                            this.handStock.setSelectionMode(0);
+                        }
                     }
                     break;
             }
@@ -359,6 +440,8 @@ function (dojo, declare) {
                         break;
                 }
             }
+            
+            this.addActionButton('lettertycoon_reorderHand_button', this.getReorderHandButtonLabel(), 'onReorderHandButtonClicked', null, false, 'gray');
         },
 
         ///////////////////////////////////////////////////
@@ -668,6 +751,22 @@ function (dojo, declare) {
                 'lettertycoon_discardSelectedCard_button', 'disabled');
         },
 
+        updateReorderHandButton: function () {
+            dojo.place('<span>'+this.getReorderHandButtonLabel()+'</span>', 'lettertycoon_reorderHand_button', 'only');
+        },
+
+        setPlayerAreaMessageReorderSelect: function () {
+            this.setPlayerAreaMessage(_('Select a card to move'));
+        },
+
+        setPlayerAreaMessageReorderMove: function () {
+            this.setPlayerAreaMessage(_('Click another card to move selected card to its location'));
+        },
+
+        setPlayerAreaMessage: function (message) {
+            dojo.place('<span>'+message+'</span>', 'lettertycoon_player_area_message', 'only');
+        },
+
         getBuySelectedPatentLabel: function (selectedPatents) {
             if (selectedPatents.length === 1) {
                 var selectedPatent = selectedPatents[0];
@@ -685,6 +784,10 @@ function (dojo, declare) {
             } else {
                 return _('Discard selected cards');
             }
+        },
+
+        getReorderHandButtonLabel: function () {
+            return this.reorderMode ? _('Stop reordering hand') : _('Reorder hand');
         },
 
         discardSelectedCard: function (fromStock) {
@@ -721,6 +824,15 @@ function (dojo, declare) {
                 var elementId = fromStock.getItemDivId(item.id);
                 wordStock.addToStockWithId(item.type, item.id, $(elementId));
                 fromStock.removeFromStockById(item.id);
+                if (fromStock === this.handStock) {
+                    // move card to end of order
+                    this.removeFromHandOrderList(item.id);
+                    this.handOrderList.push(item.id);
+                    this.updateHandOrderMap();
+                    this.handStock.changeItemsWeight({});
+                    // HAND ORDER: If we wanted to save the hand order on the backend, we might send an update here.
+                    // this.action_setHandOrder(this.handOrderList);
+                }
                 wordInfo.origins.push(origin);
                 wordInfo.types.push(item.type === 24 ? 'v' : '_'); // Y defaults to vowel
                 this.updateWordAreaButtons();
@@ -880,6 +992,8 @@ function (dojo, declare) {
                 if (letter_origin === 'h') {
                     if (player_id === this.getPlayerIdString()) {
                         this.handStock.removeFromStockById(card_id);
+                        // HAND ORDER: If we were saving the hand order on the backend,
+                        // we'd have to handle this case somehow.
                     }
                 }
             }
@@ -899,8 +1013,11 @@ function (dojo, declare) {
                     this.communityStock.addToStockWithId(item.type, item.id, $(elementId));
                 } else if (wordInfo.origins[i] === 'h' && this.getPlayerIdString() === active_player_id) {
                     this.handStock.addToStockWithId(item.type, item.id, $(elementId));
+                    // HAND ORDER: If we were saving the hand order on the backend,
+                    // we'd have to handle this case somehow.
                 }
             }
+
             wordStock.removeAll();
             wordInfo.origins = [];
             wordInfo.types = [];
@@ -962,6 +1079,25 @@ function (dojo, declare) {
             if (items.length === 1) {
                 var item = items[0];
                 this.action_buyPatent(item.type);
+            }
+        },
+
+        removeFromHandOrderList: function (cardId) {
+            var newHandOrderList = [];
+            for (var i = 0, l = this.handOrderList.length; i < l; i++) {
+                var id = this.handOrderList[i];
+                if (id != cardId) {
+                    newHandOrderList.push(id);
+                }
+            }
+            this.handOrderList = newHandOrderList;
+        },
+
+        updateHandOrderMap: function () {
+            this.handOrderMap = {};
+            for (var i = 0, l = this.handOrderList.length; i < l; i++) {
+                var id = this.handOrderList[i];
+                this.handOrderMap[id] = i;
             }
         },
 
@@ -1060,6 +1196,13 @@ function (dojo, declare) {
             this.sendAction('skipDiscardCards');
         },
 
+        // HAND ORDER: If we were saving hand orer on the backend, we might use an action like this:
+        // action_setHandOrder: function (cardIds) {
+        //     this.sendAction('setHandOrder', {
+        //         card_ids: this.toNumberList(cardIds)
+        //     });
+        // },
+
         ///////////////////////////////////////////////////
         //// Player's action
 
@@ -1139,24 +1282,67 @@ function (dojo, declare) {
         onHandSelectionChanged: function () {
             // console.log('hand selection changed');
 
-            switch (this.currentState) {
+            if (this.reorderMode) {
+                var selectedItems = this.handStock.getSelectedItems();
+                if (selectedItems.length === 1) {
+                    this.reorderSourceItem = selectedItems[0];
+                    this.setPlayerAreaMessageReorderMove();
+                } else if (selectedItems.length === 2) {
+                    var source = this.reorderSourceItem;
+                    var item0 = selectedItems[0];
+                    var item1 = selectedItems[1];
+                    var target = source === item0 ? item1 : item0;
+                    this.unselectAllItems(this.handStock);
 
-                case 'playerMayReplaceCard':
-                    this.unselectAllItems(this.communityStock);
-                    this.updateReplaceSelectedCardButton();
-                    break;
+                    var sourceIndex = this.handOrderMap[source.id];
+                    var targetIndex = this.handOrderMap[target.id];
 
-                case 'playerMayPlayWord':
-                    this.playSelectedCard(this.handStock, 'h', this.secondWordStarted ? 2 : 1);
-                    break;
+                    if (false) { // swap
+                        this.handOrderList[sourceIndex] = target.id;
+                        this.handOrderList[targetIndex] = source.id;
+                    } else { // insert/cycle
+                        if (sourceIndex < targetIndex) {
+                            // add source id after target
+                            this.handOrderList.splice(targetIndex + 1, 0, source.id);
+                            // remove source
+                            this.handOrderList.splice(sourceIndex, 1);
+                        } else {
+                            // remove source
+                            this.handOrderList.splice(sourceIndex, 1);
+                            // add source id before target
+                            this.handOrderList.splice(targetIndex, 0, source.id);
+                        }
+                    }
+                    this.updateHandOrderMap();
+                    this.handStock.changeItemsWeight({});
 
-                case 'playerMayDiscardCards':
-                    this.updateDiscardSelectedCardsButton();
-                    break;
-                
-                case 'playerMustDiscardCard':
-                    this.updateDiscardSelectedCardButton();
-                    break;
+                    this.setPlayerAreaMessageReorderSelect();
+
+                    // HAND ORDER: If we were saving hand order on the backend, we'd might send an update here.
+                    // this.action_setHandOrder(this.handOrderList);
+                }
+            } else {
+
+                switch (this.currentState) {
+
+                    case 'playerMayReplaceCard':
+                        this.unselectAllItems(this.communityStock);
+                        this.updateReplaceSelectedCardButton();
+                        break;
+
+                    case 'playerMayPlayWord':
+                        this.playSelectedCard(this.handStock, 'h', this.secondWordStarted ? 2 : 1);
+                        break;
+
+                    case 'playerMayDiscardCards':
+                        this.updateDiscardSelectedCardsButton();
+                        break;
+                    
+                    case 'playerMustDiscardCard':
+                        this.updateDiscardSelectedCardButton();
+                        break;
+                }
+
             }
         },
 
@@ -1305,6 +1491,33 @@ function (dojo, declare) {
 
             this.discardSelectedCard(this.handStock);
         },
+
+        onReorderHandButtonClicked: function () {
+            this.reorderMode = !this.reorderMode;
+            if (this.reorderMode) {
+                this.unselectAllItems(this.handStock);
+                this.savedSelectionMode = this.handStock.selectable;
+                this.handStock.setSelectionMode(2);
+                this.setPlayerAreaMessageReorderSelect();
+            } else {
+                this.unselectAllItems(this.handStock);
+                this.reorderSourceItem = null;
+                this.handStock.setSelectionMode(this.savedSelectionMode);
+                this.setPlayerAreaMessage('');
+            }
+            switch (this.currentState) {
+                case 'playerMayReplaceCard':
+                    this.updateReplaceSelectedCardButton();
+                    break;
+                case 'playerMayDiscardCards':
+                    this.updateDiscardSelectedCardsButton();
+                    break;
+                case 'playerMustDiscardCard':
+                    this.updateDiscardSelectedCardButton();
+                    break;
+            }
+            this.updateReorderHandButton();
+        },
         
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications
@@ -1372,6 +1585,8 @@ function (dojo, declare) {
             // console.log(notif);
             var card_id = notif.args.card_id;
             this.handStock.removeFromStockById(card_id);
+            this.removeFromHandOrderList(card_id);
+            this.updateHandOrderMap();
         },
 
         notif_playerPlayedWord: function (notif) {
@@ -1483,7 +1698,9 @@ function (dojo, declare) {
             for (var i in card_ids) {
                 var card_id = card_ids[i];
                 this.handStock.removeFromStockById(card_id, undefined, true);
+                this.removeFromHandOrderList(card_id);
             }
+            this.updateHandOrderMap();
             this.handStock.updateDisplay();
         },
 
@@ -1495,7 +1712,11 @@ function (dojo, declare) {
                 var new_card = new_cards[i];
                 this.handStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
                     $('lettertycoon_current_player_hand_area_header'));
+                this.handOrderList.push(new_card.id);
+                // HAND ORDER: If we were saving the hand order on the backend,
+                // we might get it from the notification instead of just appending.
             }
+            this.updateHandOrderMap();
         }
 
    });             

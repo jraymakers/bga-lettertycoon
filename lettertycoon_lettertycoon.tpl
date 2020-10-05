@@ -3,6 +3,7 @@
 <div class="lettertycoon_area" id="lettertycoon_current_player_hand_area">
     <div id="lettertycoon_current_player_hand_area_header" class="lettertycoon_area_header">
         <span class="lettertycoon_player_area_name" style="color:#{CURRENT_PLAYER_COLOR}">{YOUR_HAND}</span>
+        <span id="lettertycoon_player_area_message"></span>
     </div>
     <div id="lettertycoon_current_player_hand"></div>
 </div>
