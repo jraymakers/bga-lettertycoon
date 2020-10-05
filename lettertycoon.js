@@ -440,10 +440,18 @@ function (dojo, declare) {
                         break;
                 }
             }
-            
-            if (!this.isSpectator) {
-                this.addActionButton('lettertycoon_reorderHand_button', this.getReorderHandButtonLabel(), 'onReorderHandButtonClicked', null, false, 'gray');
+
+            switch (stateName) {
+                case 'playerMayReplaceCard':
+                case 'playerMayPlayWord':
+                case 'playersMayChallenge':
+                case 'playerMayBuyPatent':
+                case 'playerMayDiscardCards':
+                case 'playerMustDiscardCard':
+                    this.addReorderHandButton();
+                    break;
             }
+            
         },
 
         ///////////////////////////////////////////////////
@@ -751,6 +759,12 @@ function (dojo, declare) {
             this.setClassIf(
                 selectedHandItems.length === 0,
                 'lettertycoon_discardSelectedCard_button', 'disabled');
+        },
+
+        addReorderHandButton: function () {
+            if (!this.isSpectator) {
+                this.addActionButton('lettertycoon_reorderHand_button', this.getReorderHandButtonLabel(), 'onReorderHandButtonClicked', null, false, 'gray');
+            }
         },
 
         updateReorderHandButton: function () {
@@ -1507,16 +1521,18 @@ function (dojo, declare) {
                 this.handStock.setSelectionMode(this.savedSelectionMode);
                 this.setPlayerAreaMessage('');
             }
-            switch (this.currentState) {
-                case 'playerMayReplaceCard':
-                    this.updateReplaceSelectedCardButton();
-                    break;
-                case 'playerMayDiscardCards':
-                    this.updateDiscardSelectedCardsButton();
-                    break;
-                case 'playerMustDiscardCard':
-                    this.updateDiscardSelectedCardButton();
-                    break;
+            if (this.isCurrentPlayerActive()) {
+                switch (this.currentState) {
+                    case 'playerMayReplaceCard':
+                        this.updateReplaceSelectedCardButton();
+                        break;
+                    case 'playerMayDiscardCards':
+                        this.updateDiscardSelectedCardsButton();
+                        break;
+                    case 'playerMustDiscardCard':
+                        this.updateDiscardSelectedCardButton();
+                        break;
+                }
             }
             this.updateReorderHandButton();
         },
