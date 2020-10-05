@@ -441,7 +441,9 @@ function (dojo, declare) {
                 }
             }
             
-            this.addActionButton('lettertycoon_reorderHand_button', this.getReorderHandButtonLabel(), 'onReorderHandButtonClicked', null, false, 'gray');
+            if (!this.isSpectator) {
+                this.addActionButton('lettertycoon_reorderHand_button', this.getReorderHandButtonLabel(), 'onReorderHandButtonClicked', null, false, 'gray');
+            }
         },
 
         ///////////////////////////////////////////////////
