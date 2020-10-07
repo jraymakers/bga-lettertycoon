@@ -399,7 +399,7 @@ function (dojo, declare) {
                         this.addAnSButtonVisible = this.playerOwnsPatent('Z');
                         this.addActionButton('lettertycoon_playWord_button', _('Play word(s)'), 'onPlayWordButtonClicked', null, false, 'blue');
                         if (this.startSecondWordButtonVisible) {
-                            this.addActionButton('lettertycoon_startSecondWord_button', _('Start second word'), 'onStartSecondWordButtonClicked', null, false, 'gray');
+                            this.addActionButton('lettertycoon_secondWord_button', this.getSecondWordButtonLabel(), 'onSecondWordButtonClicked', null, false, 'gray');
                         }
                         if (this.duplicateLetterButtonVisible) {
                             this.addActionButton('lettertycoon_duplicateLetter_button', _('Duplicate letter'), 'onDuplicateLetterButtonClicked', null, false, 'gray');
@@ -410,6 +410,7 @@ function (dojo, declare) {
                         if (this.addAnSButtonVisible) {
                             this.addActionButton('lettertycoon_addAnS_button', _('Add an ‘S’'), 'onAddAnSButtonClicked', null, false, 'gray');
                         }
+                        this.addActionButton('lettertycoon_undoLastLetter_button', _('Undo last letter'), 'onUndoLastLetterButtonClicked', null, false, 'gray');
                         this.addActionButton('lettertycoon_resetWordArea_button', _('Reset word area'), 'onResetWordAreaButtonClicked', null, false, 'gray');
                         this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing word(s)'), 'onSkipPlayWord', null, false, 'gray');
                         this.updateWordAreaButtons();
@@ -666,9 +667,11 @@ function (dojo, declare) {
 
             if (this.startSecondWordButtonVisible) {
                 this.setClassIf(
-                    mainWordItems.length < 3 || this.secondWordStarted,
-                    'lettertycoon_startSecondWord_button', 'disabled'
+                    mainWordItems.length < 3,
+                    'lettertycoon_secondWord_button', 'disabled'
                 );
+                dojo.place('<span>'+this.getSecondWordButtonLabel()+'</span>',
+                    'lettertycoon_secondWord_button', 'only');
             }
 
             if (this.duplicateLetterButtonVisible) {
@@ -698,6 +701,11 @@ function (dojo, declare) {
                     'lettertycoon_addAnS_button', 'disabled'
                 );
             }
+
+            this.setClassIf(
+                mainWordItems.length < 1,
+                'lettertycoon_undoLastLetter_button', 'disabled'
+            );
 
             this.setClassIf(
                 mainWordItems.length < 1,
@@ -794,6 +802,14 @@ function (dojo, declare) {
             }
         },
 
+        getSecondWordButtonLabel: function () {
+            if (this.secondWordStarted) {
+                return _('Reset second word');
+            } else {
+                return _('Start second word');
+            }
+        },
+
         getDiscardSelectedCardsButtonLabel: function (numSelectedCards) {
             if (numSelectedCards > 0) {
                 return dojo.string.substitute(_('Discard selected cards (${n})'), { n: numSelectedCards });
@@ -841,13 +857,8 @@ function (dojo, declare) {
                 wordStock.addToStockWithId(item.type, item.id, $(elementId));
                 fromStock.removeFromStockById(item.id);
                 if (fromStock === this.handStock) {
-                    // move card to end of order
                     this.removeFromHandOrderList(item.id);
-                    this.handOrderList.push(item.id);
                     this.updateHandOrderMap();
-                    this.handStock.changeItemsWeight({});
-                    // HAND ORDER: If we wanted to save the hand order on the backend, we might send an update here.
-                    // this.action_setHandOrder(this.handOrderList);
                 }
                 wordInfo.origins.push(origin);
                 wordInfo.types.push(item.type === 24 ? 'v' : '_'); // Y defaults to vowel
@@ -1008,14 +1019,50 @@ function (dojo, declare) {
                 if (letter_origin === 'h') {
                     if (player_id === this.getPlayerIdString()) {
                         this.handStock.removeFromStockById(card_id);
-                        // HAND ORDER: If we were saving the hand order on the backend,
-                        // we'd have to handle this case somehow.
+                        this.removeFromHandOrderList(card_id);
                     }
                 }
             }
+            this.updateHandOrderMap();
 
             wordInfo.origins = letter_origins.split('');
             wordInfo.types = letter_types.split('');
+        },
+
+        maybeUndoLastLetter: function (word /* 1 or 2 */) {
+            var wordStock = this.wordStock[word];
+            var wordInfo = this.wordInfo[word];
+            var wordItems = wordStock.getAllItems();
+            if (wordItems.length > 0) {
+                var index = wordItems.length - 1;
+                var item = wordItems[index];
+                var elementId = wordStock.getItemDivId(item.id);
+                var origin = wordInfo.origins[index];
+                if (origin === 'c') {
+                    this.communityStock.addToStockWithId(item.type, item.id, $(elementId));
+                } else if (origin === 'h') {
+                    this.handStock.addToStockWithId(item.type, item.id, $(elementId));
+                    this.handOrderList.push(item.id);
+                    this.updateHandOrderMap();
+                }
+                wordStock.removeFromStockById(item.id);
+                wordInfo.origins.pop();
+                wordInfo.types.pop();
+                this.updateWordAreaButtons();
+                return true;
+            }
+            return false;
+        },
+
+        undoLastLetter: function () {
+            if (this.secondWordStarted) {
+                if (!this.maybeUndoLastLetter(2)) {
+                    this.secondWordStarted = false;
+                    this.maybeUndoLastLetter(1);
+                }
+            } else {
+                this.maybeUndoLastLetter(1);
+            }
         },
 
         clearWord: function (word /* 1 or 2 */, active_player_id) {
@@ -1029,11 +1076,10 @@ function (dojo, declare) {
                     this.communityStock.addToStockWithId(item.type, item.id, $(elementId));
                 } else if (wordInfo.origins[i] === 'h' && this.getPlayerIdString() === active_player_id) {
                     this.handStock.addToStockWithId(item.type, item.id, $(elementId));
-                    // HAND ORDER: If we were saving the hand order on the backend,
-                    // we'd have to handle this case somehow.
+                    this.handOrderList.push(item.id);
                 }
             }
-
+            this.updateHandOrderMap();
             wordStock.removeAll();
             wordInfo.origins = [];
             wordInfo.types = [];
@@ -1237,8 +1283,13 @@ function (dojo, declare) {
             evt.preventDefault();
             dojo.stopEvent(evt);
 
-            this.clearWordArea(this.getPlayerIdString());
-            this.action_skipPlayWord();
+            this.confirmationDialog(
+                _('If you skip playing word(s), your only action this turn will be to discard and redraw cards.'),
+                dojo.hitch(this, function () {
+                    this.clearWordArea(this.getPlayerIdString());
+                    this.action_skipPlayWord();
+                })
+            );
         },
 
         onChallengeWord: function (evt) {
@@ -1438,14 +1489,20 @@ function (dojo, declare) {
             }
         },
 
-        onStartSecondWordButtonClicked: function (evt) {
+        onSecondWordButtonClicked: function (evt) {
             // console.log('start second word button clicked');
 
             evt.preventDefault();
             dojo.stopEvent(evt);
 
-            this.secondWordStarted = true;
-            this.updateWordAreaButtons();
+            if (this.secondWordStarted) {
+                this.clearWord(2, this.getPlayerIdString());
+                this.secondWordStarted = false;
+                this.updateWordAreaButtons();
+            } else {
+                this.secondWordStarted = true;
+                this.updateWordAreaButtons();
+            }
         },
 
         onDuplicateLetterButtonClicked: function (evt) {
@@ -1466,6 +1523,15 @@ function (dojo, declare) {
             dojo.stopEvent(evt);
 
             this.addAnS(this.secondWordStarted ? 2 : 1);
+        },
+
+        onUndoLastLetterButtonClicked: function (evt) {
+            // console.log('undo last letter button clicked');
+
+            evt.preventDefault();
+            dojo.stopEvent(evt);
+
+            this.undoLastLetter();
         },
 
         onResetWordAreaButtonClicked: function (evt) {
@@ -1731,8 +1797,6 @@ function (dojo, declare) {
                 this.handStock.addToStockWithId(this.getLetterIndex(new_card.type), new_card.id,
                     $('lettertycoon_current_player_hand_area_header'));
                 this.handOrderList.push(new_card.id);
-                // HAND ORDER: If we were saving the hand order on the backend,
-                // we might get it from the notification instead of just appending.
             }
             this.updateHandOrderMap();
         }
