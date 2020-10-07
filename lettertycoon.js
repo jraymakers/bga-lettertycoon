@@ -606,6 +606,10 @@ function (dojo, declare) {
 
             html += '</div>'; // columns
 
+            html += '<div class="lettertycoon_scoring_card_tooltip_footer"><span>';
+            html += _('The ‘B’, ‘J’, and ‘K’ patents, and the ‘Q’ card, can each <b>double</b> money and stock.')
+            html += '</span></div>'; // footer
+
             html += '</div>'; // contents
 
             return html;

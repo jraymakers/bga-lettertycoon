@@ -307,9 +307,19 @@
     padding-bottom: 5px;
 }
 
+.lettertycoon_scoring_card_tooltip_footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    font-style: italic;
+    padding-top: 5px;
+    max-width: 160px;
+}
+
 .lettertycoon_scoring_card_tooltip_columns {
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 .lettertycoon_scoring_card_tooltip_column_length {
