@@ -388,7 +388,7 @@ function (dojo, declare) {
                 switch (stateName) {
                     case 'playerMayReplaceCard':
                         this.addActionButton('lettertycoon_replaceSelectedCard_button', _('Replace selected card'), 'onReplaceSelectedCardButtonClicked', null, false, 'blue');
-                        this.addActionButton('lettertycoon_skipReplaceCard_button', _('Skip replacing a card'), 'onSkipReplaceCard', null, false, 'gray');
+                        this.addActionButton('lettertycoon_skipReplaceCard_button', _('Skip replacing a card'), 'onSkipReplaceCard', null, false, 'red');
                         this.updateReplaceSelectedCardButton();
                         break;
                     
