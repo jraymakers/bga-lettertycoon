@@ -412,26 +412,26 @@ function (dojo, declare) {
                         }
                         this.addActionButton('lettertycoon_undoLastLetter_button', _('Undo last letter'), 'onUndoLastLetterButtonClicked', null, false, 'gray');
                         this.addActionButton('lettertycoon_resetWordArea_button', _('Reset word area'), 'onResetWordAreaButtonClicked', null, false, 'gray');
-                        this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing word(s)'), 'onSkipPlayWord', null, false, 'gray');
+                        this.addActionButton('lettertycoon_skipPlayWord_button', _('Skip playing word(s)'), 'onSkipPlayWord', null, false, 'red');
                         this.updateWordAreaButtons();
                         break;
                     
                     case 'playersMayChallenge':
                         this.addActionButton('lettertycoon_challengeWord_button', _('Challenge word'), 'onChallengeWord', null, false, 'red');
-                        this.addActionButton('lettertycoon_acceptWord_button', _('Accept word'), 'onAcceptWord', null, false, 'gray');
+                        this.addActionButton('lettertycoon_acceptWord_button', _('Accept word'), 'onAcceptWord', null, false, 'blue');
                         break;
                     
                     case 'playerMayBuyPatent':
                         this.addActionButton('lettertycoon_buySelectedPatent_button',
                             this.getBuySelectedPatentLabel(this.availablePatents.getSelectedItems()),
                             'onBuySelectedPatentButtonClicked', null, false, 'blue');
-                        this.addActionButton('lettertycoon_skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'gray');
+                        this.addActionButton('lettertycoon_skipBuyPatent_button', _('Skip buying a patent'), 'onSkipBuyPatent', null, false, 'red');
                         this.updateBuySelectedPatentButton();
                         break;
                     
                     case 'playerMayDiscardCards':
                         this.addActionButton('lettertycoon_discardSelectedCards_button', this.getDiscardSelectedCardsButtonLabel(0), 'onDiscardSelectedCardsButtonClicked', null, false, 'blue');
-                        this.addActionButton('lettertycoon_skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'gray');
+                        this.addActionButton('lettertycoon_skipDiscardCards_button', _('Skip discarding cards'), 'onSkipDiscardCards', null, false, 'red');
                         this.updateDiscardSelectedCardsButton();
                         break;
                     
