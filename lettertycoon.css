@@ -40,6 +40,16 @@
     text-align: right;
 }
 
+.lettertycoon_player_board_patent_list {
+    display: flex;
+    margin: 5px;
+    font-size: 14px;
+}
+
+.lettertycoon_player_board_patent_list_label {
+    margin-right: 5px;
+}
+
 .lettertycoon_coin_icon {
     display: inline-block;
     background-image: url('img/coin_large.png');

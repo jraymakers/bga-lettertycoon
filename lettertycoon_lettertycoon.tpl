@@ -76,6 +76,11 @@ var jstpl_player_board_info='<div class="lettertycoon_player_board_info">\
 </span>\
 </div>';
 
+var jstpl_player_board_patent_list='<div class="lettertycoon_player_board_patent_list">\
+<span class="lettertycoon_player_board_patent_list_label">{PATENTS}</span>\
+<span class="lettertycoon_player_board_patent_list_value" id="lettertycoon_player_board_patent_list_${player_id}"></span>\
+</div>';
+
 var jstpl_card_tooltip='<div class="lettertycoon_tooltip_contents">\
 <div class="lettertycoon_tooltip_body">\
 <div class="lettertycoon_tooltip_body_left">\

@@ -53,6 +53,7 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['PATENT_COST'] = self::_("Patent Cost");
 
         $this->tpl['PATENT'] = self::_("Patent");
+        $this->tpl['PATENTS'] = self::_("Patents:");
         $this->tpl['COST'] = self::_("Cost");
 
         $this->tpl['PLAYER_COUNT'] = $players_nbr;

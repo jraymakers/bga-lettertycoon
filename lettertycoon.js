@@ -105,6 +105,8 @@ function (dojo, declare) {
             this.patent_costs = gamedatas.patent_costs;
             this.patent_text = gamedatas.patent_text;
 
+            this.patentOwners = gamedatas.patent_owners;
+
             var player_count = 0;
             var players = gamedatas.players;
             for (var player_id in players) {
@@ -114,6 +116,11 @@ function (dojo, declare) {
                     this.format_block('jstpl_player_board_info', { player_id: player_id }),
                     $('player_board_'+player_id)
                 );
+                dojo.place(
+                    this.format_block('jstpl_player_board_patent_list', { player_id: player_id }),
+                    $('player_board_'+player_id)
+                );
+                this.updatePlayerBoardPatentList(player_id);
                 this.playerMoney[player_id] =
                     this.createCounter('lettertycoon_player_board_coins_counter_'+player_id, player.money);
                 this.playerStock[player_id] =
@@ -126,7 +133,6 @@ function (dojo, declare) {
                 this.patentStocksByPlayer[player_id] = this.createPatentStock('lettertycoon_player_patents_'+player_id);
             }
 
-            this.patentOwners = gamedatas.patent_owners;
             for (var letter in this.patentOwners) {
                 var letter_index = this.getLetterIndex(letter);
                 var owner = this.patentOwners[letter];
@@ -793,6 +799,17 @@ function (dojo, declare) {
 
         setPlayerAreaMessage: function (message) {
             dojo.place('<span>'+message+'</span>', 'lettertycoon_player_area_message', 'only');
+        },
+
+        updatePlayerBoardPatentList: function (player_id) {
+            var ownedLetters = [];
+            for (var letter in this.patentOwners) {
+                if (this.patentOwners[letter] === player_id) {
+                    ownedLetters.push(letter);
+                }
+            }
+            var text = ownedLetters.length > 0 ? ownedLetters.join(', ') : _('none');
+            dojo.place('<span>'+text+'</span>', 'lettertycoon_player_board_patent_list_'+player_id, 'only');
         },
 
         getBuySelectedPatentLabel: function (selectedPatents) {
@@ -1758,6 +1775,7 @@ function (dojo, declare) {
             this.playerPatentsValue[player_id].incValue(cost);
             // update patent owners
             this.patentOwners[letter] = player_id;
+            this.updatePlayerBoardPatentList(player_id);
         },
 
         notif_communityReceivedCards: function (notif) {
