@@ -1667,6 +1667,8 @@ function (dojo, declare) {
 
             dojo.subscribe('playerBoughtPatent', this, 'notif_playerBoughtPatent');
 
+            dojo.subscribe('playerTriggeredLastRound', this, 'notif_playerTriggeredLastRound');
+
             dojo.subscribe('communityReceivedCards', this, 'notif_communityReceivedCards');
             this.notifqueue.setSynchronous('communityReceivedCards', 1000);
 
@@ -1776,6 +1778,12 @@ function (dojo, declare) {
             // update patent owners
             this.patentOwners[letter] = player_id;
             this.updatePlayerBoardPatentList(player_id);
+        },
+
+        notif_playerTriggeredLastRound: function (notif) {
+            // console.log('player triggered last round');
+            // console.log(notif);
+            this.showMessage(dojo.string.substitute(notif.log, notif.args), 'info');
         },
 
         notif_communityReceivedCards: function (notif) {
