@@ -356,18 +356,21 @@
 
 .lettertycoon_scoring_card_tooltip_item_length {
     text-align: center;
+    height: 18px;
 }
 
 .lettertycoon_scoring_card_tooltip_item_money {
     text-align: left;
     font-weight: bold;
     text-align: center;
+    height: 18px;
 }
 
 .lettertycoon_scoring_card_tooltip_item_stock {
     text-align: left;
     font-weight: bold;
     text-align: center;
+    height: 18px;
 }
 
 
