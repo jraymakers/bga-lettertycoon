@@ -117,7 +117,10 @@ function (dojo, declare) {
                     $('player_board_'+player_id)
                 );
                 dojo.place(
-                    this.format_block('jstpl_player_board_patent_list', { player_id: player_id }),
+                    this.format_block('jstpl_player_board_patent_list', {
+                        player_id: player_id,
+                        patents_label: _('Patents:')
+                    }),
                     $('player_board_'+player_id)
                 );
                 this.updatePlayerBoardPatentList(player_id);
@@ -537,11 +540,15 @@ function (dojo, declare) {
                         : '';
 
             this.addTooltipHtml(id, this.format_block('jstpl_card_tooltip', {
+                card_label: _('Card'),
+                frequency_label: _('Frequency'),
                 letter: letter,
                 letter_count: letter_count,
                 letter_type: letter_type_display,
                 patent_cost: patent_cost,
-                text: text
+                patent_cost_label: _('Patent Cost'),
+                text: text,
+                type_label: _('Type')
             }));
         },
 
@@ -566,8 +573,10 @@ function (dojo, declare) {
             var patent_text = this.patent_text[letter];
 
             this.addTooltipHtml(id, this.format_block('jstpl_patent_tooltip', {
-                letter: letter,
                 cost: patent_cost,
+                cost_label: _('Cost'),
+                letter: letter,
+                patent_label: _('Patent'),
                 text: patent_text
             }));
         },
@@ -1783,7 +1792,7 @@ function (dojo, declare) {
         notif_playerTriggeredLastRound: function (notif) {
             // console.log('player triggered last round');
             // console.log(notif);
-            this.showMessage(dojo.string.substitute(notif.log, notif.args), 'info');
+            this.showMessage(dojo.string.substitute(_(notif.log), notif.args), 'info');
         },
 
         notif_communityReceivedCards: function (notif) {

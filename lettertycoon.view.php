@@ -46,15 +46,6 @@ class view_lettertycoon_lettertycoon extends game_view
         $this->tpl['COMMUNITY_POOL'] = self::_("Community Pool");
         $this->tpl['GAME_CARDS'] = self::_("Game Cards");
         $this->tpl['AVAILABLE_PATENTS'] = self::_("Available Patents");
-        
-        $this->tpl['CARD'] = self::_("Card");
-        $this->tpl['TYPE'] = self::_("Type");
-        $this->tpl['FREQUENCY'] = self::_("Frequency");
-        $this->tpl['PATENT_COST'] = self::_("Patent Cost");
-
-        $this->tpl['PATENT'] = self::_("Patent");
-        $this->tpl['PATENTS'] = self::_("Patents:");
-        $this->tpl['COST'] = self::_("Cost");
 
         $this->tpl['PLAYER_COUNT'] = $players_nbr;
         $this->tpl['CURRENT_PLAYER_ID'] = $current_player_id;
