@@ -290,6 +290,10 @@
     font-weight: bold;
 }
 
+.lettertycoon_tooltip_item {
+    height: 18px;
+}
+
 .lettertycoon_tooltip_footer_175 {
     padding-top: 5px;
     max-width: 175px;
