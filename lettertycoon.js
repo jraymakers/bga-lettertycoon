@@ -71,6 +71,8 @@ function (dojo, declare) {
 
             this.reorderMode = false;
             this.reorderSourceItem = null;
+
+            this.confirmationDialogActive = false;
         },
         
         /*
@@ -355,6 +357,7 @@ function (dojo, declare) {
                         this.duplicateLetterButtonVisible = false;
                         this.toggleYButtonVisible = false;
                         this.addAnSButtonVisible = false;
+                        this.confirmationDialogActive = false;
                     }
                     break;
                 
@@ -1313,11 +1316,15 @@ function (dojo, declare) {
             evt.preventDefault();
             dojo.stopEvent(evt);
 
+            this.confirmationDialogActive = true;
             this.confirmationDialog(
                 _('If you skip playing word(s), your only action this turn will be to discard and redraw cards.'),
                 dojo.hitch(this, function () {
                     this.clearWordArea(this.getPlayerIdString());
                     this.action_skipPlayWord();
+                }),
+                dojo.hitch(this, function () {
+                    this.confirmationDialogActive = false;
                 })
             );
         },
@@ -1361,12 +1368,13 @@ function (dojo, declare) {
         onCommunitySelectionChanged: function () {
             // console.log('community selection changed');
 
+            if (this.confirmationDialogActive) return;
+
             switch (this.currentState) {
 
                 case 'playerMayReplaceCard':
                     this.unselectAllItems(this.handStock);
                     this.updateReplaceSelectedCardButton();
-                    
                     break;
 
                 case 'playerMayPlayWord':
@@ -1378,6 +1386,8 @@ function (dojo, declare) {
 
         onHandSelectionChanged: function () {
             // console.log('hand selection changed');
+
+            if (this.confirmationDialogActive) return;
 
             if (this.reorderMode) {
                 var selectedItems = this.handStock.getSelectedItems();
@@ -1446,6 +1456,8 @@ function (dojo, declare) {
         onWord1SelectionChanged: function () {
             // console.log('word 1 selection changed');
 
+            if (this.confirmationDialogActive) return;
+
             switch (this.currentState) {
 
                 case 'playerMayPlayWord':
@@ -1458,6 +1470,8 @@ function (dojo, declare) {
 
         onWord2SelectionChanged: function () {
             // console.log('word 2 selection changed');
+
+            if (this.confirmationDialogActive) return;
 
             switch (this.currentState) {
 
