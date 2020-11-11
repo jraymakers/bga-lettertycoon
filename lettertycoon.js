@@ -426,8 +426,8 @@ function (dojo, declare) {
                         break;
                     
                     case 'playersMayChallenge':
-                        this.addActionButton('lettertycoon_challengeWord_button', _('Challenge word'), 'onChallengeWord', null, false, 'red');
                         this.addActionButton('lettertycoon_acceptWord_button', _('Accept word'), 'onAcceptWord', null, false, 'blue');
+                        this.addActionButton('lettertycoon_challengeWord_button', _('Challenge word'), 'onChallengeWord', null, false, 'red');
                         break;
                     
                     case 'playerMayBuyPatent':
