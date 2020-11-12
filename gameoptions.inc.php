@@ -87,7 +87,7 @@ $game_options = array(
         'values' => array(
             1 => array(
                 'name' => totranslate('NWL 2018'),
-                'description' => totranslate('NAPSA (North American Scrabble Players Association) Word List 2018'),
+                'description' => totranslate('NASPA (North American Scrabble Players Association) Word List 2018'),
                 'tmdisplay' => totranslate('NWL 2018'),
             ),
             2 => array(
