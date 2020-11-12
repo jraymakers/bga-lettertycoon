@@ -782,6 +782,17 @@ function (dojo, declare) {
             dojo.place('<span>'+this.getDiscardSelectedCardsButtonLabel(selectedItems.length)+'</span>',
                 'lettertycoon_discardSelectedCards_button', 'only');
             this.setClassIf(selectedItems.length === 0, 'lettertycoon_discardSelectedCards_button', 'disabled');
+            dojo.removeClass('lettertycoon_discardSelectedCards_button', 'blinking');
+            dojo.removeClass('lettertycoon_skipDiscardCards_button', 'blinking');
+            if (this.discardButtonsTimeout) {
+                clearTimeout(this.discardButtonsTimeout);
+            }
+            if (selectedItems.length === 0) {
+                this.discardButtonsTimeout = setTimeout(function () {
+                    dojo.addClass('lettertycoon_discardSelectedCards_button', 'blinking');
+                    dojo.addClass('lettertycoon_skipDiscardCards_button', 'blinking');
+                }, 10 * 1000);
+            }
         },
 
         updateDiscardSelectedCardButton: function () {
