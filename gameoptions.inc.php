@@ -82,6 +82,22 @@ $game_options = array(
         ),
     ),
 
+    102 => array(
+        'name' => totranslate('Dictionary'),
+        'values' => array(
+            1 => array(
+                'name' => totranslate('NWL 2018'),
+                'description' => totranslate('NAPSA (North American Scrabble Players Association) Word List 2018'),
+                'tmdisplay' => totranslate('NWL 2018'),
+            ),
+            2 => array(
+                'name' => totranslate('CSW 2019'),
+                'description' => totranslate('CSW (Collins Scrabble Words) 2019'),
+                'tmdisplay' => totranslate('CSW 2019'),
+            ),
+        ),
+    ),
+
     // possible variant: stacked doubles only add, so 2x and 2x is 3x instead of 4x
     // (proposed by designer on forums)
 

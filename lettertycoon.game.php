@@ -60,6 +60,7 @@ class LetterTycoon extends Table
                 // game options
                 'challenge_mode' => 100,
                 'automatic_challenge_retries' => 101,
+                'dictionary' => 102,
             )
         );
 
@@ -581,10 +582,19 @@ class LetterTycoon extends Table
         return $letters;
     }
 
+    function getWordListFile($word_length)
+    {
+        if (self::getGameStateValue('dictionary') == 2) {
+            return "csw_$word_length.txt";
+        } else {
+            return "nwl_$word_length.txt";
+        }
+    }
+
     function loadWordList($word_length)
     {
         if (3 <= $word_length && $word_length <= 12) {
-            $wordlist_filename = "$word_length-letter-words.txt";
+            $wordlist_filename = self::getWordListFile($word_length);
             $words = file(__DIR__ . "/modules/$wordlist_filename", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             return $words;
         } else {
@@ -613,7 +623,7 @@ class LetterTycoon extends Table
         $wordlist = self::loadWordList(strlen($word_string));
 
         // is the word in the word list?
-        return self::isWordInList(strtolower($word_string), $wordlist);
+        return self::isWordInList(strtoupper($word_string), $wordlist);
     }
 
     function getRejectedWordIfAny($main_word_objects, $second_word_objects)
