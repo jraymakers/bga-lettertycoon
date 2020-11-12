@@ -153,6 +153,8 @@ $gameinfos = array(
     'label' => 'Breaking Games'
  ),
 
+ 'language_dependecy' => array( 1 => 'en' ),
+
 
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
 
