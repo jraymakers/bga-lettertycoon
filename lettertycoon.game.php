@@ -585,9 +585,11 @@ class LetterTycoon extends Table
     function getWordListFile($word_length)
     {
         if (self::getGameStateValue('dictionary') == 2) {
-            return "csw_$word_length.txt";
+            // return "csw_$word_length.txt";
+            return "$word_length-letter-words.txt";
         } else {
-            return "nwl_$word_length.txt";
+            // return "nwl_$word_length.txt";
+            return "$word_length-letter-words.txt";
         }
     }
 
