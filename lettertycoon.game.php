@@ -1668,7 +1668,7 @@ class LetterTycoon extends Table
         $active_player_id = self::getActivePlayerId();
 
         // check if the last round was triggered
-        if (self::playerMeetsGoal($active_player_id))
+        if (self::playerMeetsGoal($active_player_id) && self::getGameStateValue('last_round') != 1)
         {
             self::setGameStateValue('last_round', 1);
 
