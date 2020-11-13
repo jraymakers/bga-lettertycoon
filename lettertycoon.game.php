@@ -1698,7 +1698,7 @@ class LetterTycoon extends Table
         self::notifyAllPlayers('wordDiscarded', '', array());
 
         $num_cards = $this->cards->countCardsInLocation('hand', self::getActivePlayerId());
-        if ($num_cards > 0) {
+        if ($num_cards > 0 && !self::isLastTurnOfLastRound()) {
             $this->gamestate->nextState('discardCards');
         } else {
             $this->gamestate->nextState('refillHand');
