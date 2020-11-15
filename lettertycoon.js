@@ -795,10 +795,10 @@ function (dojo, declare) {
             }
             if (selectedItems.length === 0) {
                 this.discardButtonsTimeout = setTimeout(function () {
-                    if (dojo.query('.lettertycoon_discardSelectedCards_button').length > 0) {
+                    if (dojo.query('#lettertycoon_discardSelectedCards_button').length > 0) {
                         dojo.addClass('lettertycoon_discardSelectedCards_button', 'blinking');
                     }
-                    if (dojo.query('.lettertycoon_skipDiscardCards_button').length > 0) {
+                    if (dojo.query('#lettertycoon_skipDiscardCards_button').length > 0) {
                         dojo.addClass('lettertycoon_skipDiscardCards_button', 'blinking');
                     }
                 }, 10 * 1000);
