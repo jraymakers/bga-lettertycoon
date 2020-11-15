@@ -154,6 +154,12 @@ function (dojo, declare) {
                 this.communityStock.addToStockWithId(this.getLetterIndex(card.type), card.id);
             }
 
+            var deck_count = gamedatas.deck_count;
+            this.deckCounter = this.createCounter('lettertycoon_deck_counter', deck_count);
+
+            var discard_count = gamedatas.discard_count;
+            this.discardCounter = this.createCounter('lettertycoon_discard_counter', discard_count);
+
             // HAND ORDER: If the hand order was saved on the backend, we might do something like this:
             // this.handOrderList = gamedatas.hand_order;
             // for (var i = 0, l = this.handOrderList.length; i < l; i++) {
@@ -789,8 +795,12 @@ function (dojo, declare) {
             }
             if (selectedItems.length === 0) {
                 this.discardButtonsTimeout = setTimeout(function () {
-                    dojo.addClass('lettertycoon_discardSelectedCards_button', 'blinking');
-                    dojo.addClass('lettertycoon_skipDiscardCards_button', 'blinking');
+                    if (dojo.query('.lettertycoon_discardSelectedCards_button').length > 0) {
+                        dojo.addClass('lettertycoon_discardSelectedCards_button', 'blinking');
+                    }
+                    if (dojo.query('.lettertycoon_skipDiscardCards_button').length > 0) {
+                        dojo.addClass('lettertycoon_skipDiscardCards_button', 'blinking');
+                    }
                 }, 10 * 1000);
             }
         },
@@ -1712,6 +1722,8 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous('activePlayerDiscardedCards', 1000);
             
             dojo.subscribe('activePlayerReceivedCards', this, 'notif_activePlayerReceivedCards');
+
+            dojo.subscribe('deckAndDiscardSizesChanged', this, 'notif_deckAndDiscardSizesChanged');
         },
 
         notif_playerReplacedCardFromCommunity: function (notif) {
@@ -1863,6 +1875,15 @@ function (dojo, declare) {
                 this.handOrderList.push(new_card.id);
             }
             this.updateHandOrderMap();
+        },
+
+        notif_deckAndDiscardSizesChanged: function (notif) {
+            // console.log('deck and discard sizes changed');
+            // console.log(notif);
+            var deck_count = notif.args.deck_count;
+            var discard_count = notif.args.discard_count;
+            this.deckCounter.setValue(deck_count);
+            this.discardCounter.setValue(discard_count);
         }
 
    });             

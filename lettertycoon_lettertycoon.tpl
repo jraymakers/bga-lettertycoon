@@ -20,6 +20,11 @@
     <div class="lettertycoon_area" id="lettertycoon_community_pool_area">
         <div id="lettertycoon_community_pool_area_header" class="lettertycoon_area_header">
             <div class="lettertycoon_area_label">{COMMUNITY_POOL}</div>
+            <div class="lettertycoon_deck_info">
+                {DECK} <span id="lettertycoon_deck_counter"></span>
+                /
+                {DISCARD} <span id="lettertycoon_discard_counter"></span>
+            </div>
         </div>
         <div id="lettertycoon_community_pool"></div>
     </div>

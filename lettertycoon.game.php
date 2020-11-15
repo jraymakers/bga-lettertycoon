@@ -259,6 +259,9 @@ class LetterTycoon extends Table
   
         $result['community'] = $this->cards->getCardsInLocation('community');
 
+        $result['deck_count'] = $this->cards->countCardsInLocation('deck');
+        $result['discard_count'] = $this->cards->countCardsInLocation('discard');
+
         $result['hand'] = $this->cards->getCardsInLocation('hand', $current_player_id);
 
         // HAND ORDER:
@@ -671,6 +674,8 @@ class LetterTycoon extends Table
             self::notifyAllPlayers('communityReceivedCards', '', array(
                 'new_cards' => $new_community_cards
             ));
+
+            self::notifyDeckAndDiscardSizesChanged();
         }
     }
 
@@ -687,6 +692,8 @@ class LetterTycoon extends Table
             self::notifyPlayer($active_player_id, 'activePlayerReceivedCards', '', array(
                 'new_cards' => $new_cards
             ));
+
+            self::notifyDeckAndDiscardSizesChanged();
         }
     }
 
@@ -820,6 +827,16 @@ class LetterTycoon extends Table
             array(
                 'player_id' => self::getActivePlayerId(),
                 'player_name' => self::getActivePlayerName()
+            )
+        );
+    }
+
+    function notifyDeckAndDiscardSizesChanged()
+    {
+        self::notifyAllPlayers('deckAndDiscardSizesChanged', '',
+            array(
+                'deck_count' => $this->cards->countCardsInLocation('deck'),
+                'discard_count' => $this->cards->countCardsInLocation('discard')
             )
         );
     }
@@ -998,6 +1015,8 @@ class LetterTycoon extends Table
                 )
             );
         }
+
+        self::notifyDeckAndDiscardSizesChanged();
 
         $this->gamestate->nextState('replaceCard');
     }
@@ -1239,6 +1258,7 @@ class LetterTycoon extends Table
                 'num_cards' => $num_cards
             )
         );
+        self::notifyDeckAndDiscardSizesChanged();
         
         $this->gamestate->nextState('done');
     }
@@ -1292,6 +1312,7 @@ class LetterTycoon extends Table
                 'num_cards' => 1
             )
         );
+        self::notifyDeckAndDiscardSizesChanged();
 
         $this->gamestate->nextState('done');
     }
@@ -1696,6 +1717,7 @@ class LetterTycoon extends Table
         $this->cards->moveAllCardsInLocation('word', 'discard');
 
         self::notifyAllPlayers('wordDiscarded', '', array());
+        self::notifyDeckAndDiscardSizesChanged();
 
         $num_cards = $this->cards->countCardsInLocation('hand', self::getActivePlayerId());
         if ($num_cards > 0 && !self::isLastTurnOfLastRound()) {
