@@ -577,6 +577,17 @@ function (dojo, declare) {
         createPatent: function (element, type, id) {
             dojo.addClass(element, 'lettertycoon_patent');
 
+            // hack to fix pixel rounding error in Safari
+            // see https://boardgamearena.com/bug?id=28254
+            var width = Math.round(dojo.getStyle(element, 'width'));
+            var height = Math.round(dojo.getStyle(element, 'height'));
+            var background_position = dojo.getStyle(element, 'background-position');
+            var background_position_parts = background_position.split(' ');
+            var dx = parseInt(background_position_parts[0], 10) / 100;
+            var dy = parseInt(background_position_parts[1], 10) / 100;
+            var new_background_position = `${width * dx}px ${height * dy}px`;
+            dojo.style(element, 'background-position', new_background_position);
+
             var letter = this.getLetterFromIndex(type);
             var patent_cost = this.patent_costs[letter];
             var patent_text = this.patent_text[letter];
