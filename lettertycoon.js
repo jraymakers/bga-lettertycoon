@@ -15,6 +15,21 @@ define([
     'ebg/stock'
 ],
 function (dojo, declare) {
+    function compareCardTypes(a, b) {
+        if (a.type < b.type) {
+            return -1;
+        } else if (a.type > b.type) {
+            return 1;
+        } else {
+            if (a.id < b.id) {
+                return -1;
+            } else if (a.id > b.id) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    }
     return declare('bgagame.lettertycoon', ebg.core.gamegui, {
         constructor: function () {
             // console.log('lettertycoon constructor');
@@ -174,21 +189,7 @@ function (dojo, declare) {
                 var card = hand[card_id];
                 handInOrder.push(card);
             }
-            handInOrder.sort((a,b) => {
-                if (a.type < b.type) {
-                    return -1;
-                } else if (a.type > b.type) {
-                    return 1;
-                } else {
-                    if (a.id < b.id) {
-                        return -1;
-                    } else if (a.id > b.id) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                }
-            });
+            handInOrder.sort(compareCardTypes);
 
             this.handOrderList = [];
             for (var card of handInOrder) {
@@ -826,6 +827,8 @@ function (dojo, declare) {
         addReorderHandButton: function () {
             if (!this.isSpectator) {
                 this.addActionButton('lettertycoon_reorderHand_button', this.getReorderHandButtonLabel(), 'onReorderHandButtonClicked', null, false, 'gray');
+                this.addActionButton('lettertycoon_sortHand_button', _('Sort hand'), 'onSortHandButtonClicked', null, false, 'gray');
+                this.addActionButton('lettertycoon_shuffleHand_button', _('Shuffle hand'), 'onShuffleHandButtonClicked', null, false, 'gray');
             }
         },
 
@@ -1677,6 +1680,31 @@ function (dojo, declare) {
                 }
             }
             this.updateReorderHandButton();
+        },
+
+        onSortHandButtonClicked: function () {
+            var items = this.handStock.getAllItems();
+            items.sort(compareCardTypes);
+
+            this.handOrderList = [];
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i];
+                this.handOrderList.push(item.id);
+            }
+
+            this.updateHandOrderMap();
+            this.handStock.changeItemsWeight({});
+        },
+
+        onShuffleHandButtonClicked: function () {
+            for (var i = this.handOrderList.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = this.handOrderList[i];
+                this.handOrderList[i] = this.handOrderList[j];
+                this.handOrderList[j] = temp;
+            }
+            this.updateHandOrderMap();
+            this.handStock.changeItemsWeight({});
         },
         
         ///////////////////////////////////////////////////
