@@ -42,27 +42,27 @@ $game_options = array(
                 'tmdisplay' => totranslate('Retries: None'),
             ),
             1 => array(
-                'name' => totranslate('1'),
+                'name' => '1', // no totranslate because Arabic numerals are universal
                 'description' => totranslate('If automatically challenged, player gets 1 retry.'),
                 'tmdisplay' => totranslate('Retries: 1'),
             ),
             2 => array(
-                'name' => totranslate('2'),
+                'name' => '2', // no totranslate because Arabic numerals are universal
                 'description' => totranslate('If automatically challenged, player gets 2 retries.'),
                 'tmdisplay' => totranslate('Retries: 2'),
             ),
             3 => array(
-                'name' => totranslate('3'),
+                'name' => '3', // no totranslate because Arabic numerals are universal
                 'description' => totranslate('If automatically challenged, player gets 3 retries.'),
                 'tmdisplay' => totranslate('Retries: 3'),
             ),
             4 => array(
-                'name' => totranslate('4'),
+                'name' => '4', // no totranslate because Arabic numerals are universal
                 'description' => totranslate('If automatically challenged, player gets 4 retries.'),
                 'tmdisplay' => totranslate('Retries: 4'),
             ),
             5 => array(
-                'name' => totranslate('5'),
+                'name' => '5', // no totranslate because Arabic numerals are universal
                 'description' => totranslate('If automatically challenged, player gets 5 retries.'),
                 'tmdisplay' => totranslate('Retries: 5'),
             ),
