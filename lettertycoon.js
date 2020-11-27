@@ -226,6 +226,11 @@ function (dojo, declare) {
                 this.wordInfo[2].types[i] = part.letter_type;
             }
 
+            var last_round = gamedatas.last_round;
+            if (last_round === '1') {
+                dojo.addClass('lettertycoon_round_info', 'show');
+            }
+
             dojo.connect(this.communityStock, 'onChangeSelection', this, 'onCommunitySelectionChanged');
             dojo.connect(this.handStock, 'onChangeSelection', this, 'onHandSelectionChanged');
             dojo.connect(this.wordStock[1], 'onChangeSelection', this, 'onWord1SelectionChanged');
@@ -1869,6 +1874,7 @@ function (dojo, declare) {
             // console.log('player triggered last round');
             // console.log(notif);
             this.showMessage(dojo.string.substitute(_(notif.log), notif.args), 'info');
+            dojo.addClass('lettertycoon_round_info', 'show');
         },
 
         notif_communityReceivedCards: function (notif) {

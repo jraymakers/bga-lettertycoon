@@ -32,6 +32,9 @@
     <div class="lettertycoon_area" id="lettertycoon_game_cards_area">
         <div class="lettertycoon_area_header">
             <div class="lettertycoon_area_label">{GAME_CARDS}</div>
+            <div id="lettertycoon_round_info">
+                {LAST_ROUND}
+            </div>
         </div>
         <div id="lettertycoon_game_cards">
             <div class="lettertycoon_card lettertycoon_game_card" id="lettertycoon_scoring_card"></div>

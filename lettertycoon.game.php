@@ -281,6 +281,8 @@ class LetterTycoon extends Table
         $result['letter_types'] = $this->letter_types;
         $result['patent_costs'] = $this->patent_costs;
         $result['patent_text'] = $this->patent_text;
+
+        $result['last_round'] = self::getGameStateValue('last_round');
   
         return $result;
     }

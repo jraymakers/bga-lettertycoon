@@ -118,6 +118,18 @@
     padding: 5px 0;
 }
 
+#lettertycoon_round_info {
+    flex: 1;
+    text-align: right;
+    font-style: italic;
+    color: red;
+    padding: 5px 0;
+    display: none;
+}
+#lettertycoon_round_info.show {
+    display: block;
+}
+
 
 
 .spectatorMode #lettertycoon_current_player_hand_area {
