@@ -843,6 +843,24 @@ class LetterTycoon extends Table
         );
     }
 
+    function notifyPlayerReceivedMoneyAndStock($money, $stock, $word) {
+        if ($stock > 0) {
+            $message = clienttranslate('${player_name} received $${money} and ${stock} stock for ‘${word}’');
+        } else {
+            $message = clienttranslate('${player_name} received $${money} for ‘${word}’');
+        }
+        self::notifyAllPlayers('playerReceivedMoneyAndStock',
+            $message,
+            array(
+                'player_id' => self::getActivePlayerId(),
+                'player_name' => self::getActivePlayerName(),
+                'money' => $money,
+                'stock' => $stock,
+                'word' => $word
+            )
+        );
+    }
+
     function getScoringInfoForWord($word_objects)
     {
         $word_len = 0;
@@ -1519,6 +1537,8 @@ class LetterTycoon extends Table
         $main_word_objects = self::getWordObjects(1);
         self::recordWordStats($main_word_objects);
 
+        $main_word_string = self::stringFromWordObjects($main_word_objects);
+
         $main_word_scoring_info = self::getScoringInfoForWord($main_word_objects);
         $main_word_length = $main_word_scoring_info['length'];
         self::recordWordLengthStats($main_word_length);
@@ -1539,6 +1559,8 @@ class LetterTycoon extends Table
         if ($second_word_played) {
             self::incStat(1, 'v_patent_ability_used', $active_player_id);
             self::recordWordStats($second_word_objects);
+
+            $second_word_string = self::stringFromWordObjects($second_word_objects);
 
             $second_word_scoring_info = self::getScoringInfoForWord($second_word_objects);
             $second_word_length = $second_word_scoring_info['length'];
@@ -1624,22 +1646,11 @@ class LetterTycoon extends Table
         self::incStat($money, 'money_received_from_words', $active_player_id);
         self::incStat($stock, 'stock_received', $active_player_id);
 
-        if ($stock > 0) {
-            $message = clienttranslate('${player_name} received $${money} and ${stock} stock');
-        } else {
-            $message = clienttranslate('${player_name} received $${money}');
-        }
-
         // notify
-        self::notifyAllPlayers('playerReceivedMoneyAndStock',
-            $message,
-            array(
-                'player_id' => $active_player_id,
-                'player_name' => self::getActivePlayerName(),
-                'money' => $money,
-                'stock' => $stock
-            )
-        );
+        self::notifyPlayerReceivedMoneyAndStock($main_word_money, $main_word_stock, $main_word_string);
+        if ($second_word_played) {
+            self::notifyPlayerReceivedMoneyAndStock($second_word_money, $second_word_stock, $second_word_string);
+        }
 
         // pay royalties
         
