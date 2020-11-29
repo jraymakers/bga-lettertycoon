@@ -934,9 +934,17 @@ class LetterTycoon extends Table
                 if (isset($patent_owner)) {
                     if ($patent_owner != $active_player_id) {
                         if (array_key_exists($patent_owner, $royalties_by_player)) {
-                            $royalties_by_player[$patent_owner] += 1;
+                            $royalties_by_player[$patent_owner]['total'] += 1;
+                            if (array_key_exists($letter, $royalties_by_player[$patent_owner]['patents'])) {
+                                $royalties_by_player[$patent_owner]['patents'][$letter] += 1;
+                            } else {
+                                $royalties_by_player[$patent_owner]['patents'][$letter] = 1;
+                            }
                         } else {
-                            $royalties_by_player[$patent_owner] = 1;
+                            $royalties_by_player[$patent_owner] = array(
+                                'total' => 1,
+                                'patents' => array( $letter => 1 )
+                            );
                         }
                     }
                 } else {
@@ -1712,15 +1720,31 @@ class LetterTycoon extends Table
         $players = self::loadPlayersBasicInfos();
 
         foreach ($royalties_by_player as $player_id => $royalties) {
-            self::updatePlayerCounters($player_id, $royalties, 0, 0);
-            self::incStat($royalties, 'money_received_from_royalties', $player_id);
+            $royalties_total = $royalties['total'];
+            $royalties_patents = $royalties['patents'];
+            $royalties_patents_letters = array_keys($royalties_patents);
+            sort($royalties_patents_letters);
+            $royalties_detail_array = [];
+            foreach ($royalties_patents_letters as $letter) {
+                $count = $royalties_patents[$letter];
+                if ($count > 1) {
+                    $royalties_detail_array[] = $letter . '×' . $count;
+                } else {
+                    $royalties_detail_array[] = $letter;
+                }
+            }
+            $royalties_detail_string = implode(',', $royalties_detail_array);
+
+            self::updatePlayerCounters($player_id, $royalties_total, 0, 0);
+            self::incStat($royalties_total, 'money_received_from_royalties', $player_id);
 
             self::notifyAllPlayers('playerReceivedRoyalties',
-            clienttranslate('${player_name} received $${royalties} in royalties'),
+                clienttranslate('${player_name} received $${royalties} in royalties (${detail})'),
                 array(
                     'player_id' => $player_id,
                     'player_name' => $players[$player_id]['player_name'],
-                    'royalties' => $royalties
+                    'royalties' => $royalties_total,
+                    'detail' => $royalties_detail_string
                 )
             );
         }
