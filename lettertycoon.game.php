@@ -61,6 +61,7 @@ class LetterTycoon extends Table
                 'challenge_mode' => 100,
                 'automatic_challenge_retries' => 101,
                 'dictionary' => 102,
+                'doubling_ability_stacking' => 103,
             )
         );
 
@@ -889,6 +890,26 @@ class LetterTycoon extends Table
             )
         );
     }
+    
+    function applyDoublingAbility(&$scores, $base_scores)
+    {
+        $doubling_ability_stacking = self::getGameStateValue('doubling_ability_stacking');
+        switch ($doubling_ability_stacking) {
+            default:
+            case 1: // multiply
+                $scores['money'] *= 2;
+                $scores['stock'] *= 2;
+                break;
+            case 2: // add
+                $scores['money'] += $base_scores['money'];
+                $scores['stock'] += $base_scores['stock'];
+                break;
+            case 3: // max one
+                $scores['money'] = $base_scores['money'] * 2;
+                $scores['stock'] = $base_scores['stock'] * 2;
+                break;
+        }
+    }
 
     function getScoringInfoForWord($word_objects)
     {
@@ -1604,13 +1625,11 @@ class LetterTycoon extends Table
         $main_word_length = $main_word_scoring_info['length'];
         self::recordWordLengthStats($main_word_length);
 
-        $main_word_scores = $this->scores[$main_word_length];
-        $main_word_money = $main_word_scores['money'];
-        $main_word_stock = $main_word_scores['stock'];
+        $base_main_word_scores = $this->scores[$main_word_length];
+        $main_word_scores = $base_main_word_scores;
 
         if ($main_word_scoring_info['Q']) {
-            $main_word_money *= 2;
-            $main_word_stock *= 2;
+            self::applyDoublingAbility($main_word_scores, $base_main_word_scores);
             $main_word_q_uses++;
         }
 
@@ -1627,13 +1646,11 @@ class LetterTycoon extends Table
             $second_word_length = $second_word_scoring_info['length'];
             self::recordWordLengthStats($second_word_length);
 
-            $second_word_scores = $this->scores[$second_word_length];
-            $second_word_money = $second_word_scores['money'];
-            $second_word_stock = $second_word_scores['stock'];
+            $base_second_word_scores = $this->scores[$second_word_length];
+            $second_word_scores = $base_second_word_scores;
 
             if ($second_word_scoring_info['Q']) {
-                $second_word_money *= 2;
-                $second_word_stock *= 2;
+                self::applyDoublingAbility($second_word_scores, $base_second_word_scores);
                 $second_word_q_uses++;
             }
 
@@ -1644,48 +1661,43 @@ class LetterTycoon extends Table
                     if ($main_word_scoring_info[$letter] && $second_word_scoring_info[$letter]) {
                         $contested_doubler_letters[] = $letter;
                     } else if ($main_word_scoring_info[$letter]) {
-                        $main_word_money *= 2;
-                        $main_word_stock *= 2;
+                        self::applyDoublingAbility($main_word_scores, $base_main_word_scores);
                         $main_word_patents_used[$letter] = TRUE;
                     } else if ($second_word_scoring_info[$letter]) {
-                        $second_word_money *= 2;
-                        $second_word_stock *= 2;
+                        self::applyDoublingAbility($second_word_scores, $base_second_word_scores);
                         $second_word_patents_used[$letter] = TRUE;
                     }
                 }
             }
 
             if (count($contested_doubler_letters) > 0) {
-                if ($main_word_money >= $second_word_money && $main_word_stock >= $second_word_stock) {
+                if ($main_word_scores['money'] >= $second_word_scores['money'] && $main_word_scores['stock'] >= $second_word_scores['stock']) {
                     foreach ($contested_doubler_letters as $letter) {
-                        $main_word_money *= 2;
-                        $main_word_stock *= 2;
+                        self::applyDoublingAbility($main_word_scores, $base_main_word_scores);
                         $main_word_patents_used[$letter] = TRUE;
                     }
                 } else {
                     foreach ($contested_doubler_letters as $letter) {
-                        $second_word_money *= 2;
-                        $second_word_stock *= 2;
+                        self::applyDoublingAbility($second_word_scores, $base_second_word_scores);
                         $second_word_patents_used[$letter] = TRUE;
                     }
                 }
             }
 
-            $money = $main_word_money + $second_word_money;
-            $stock = $main_word_stock + $second_word_stock;
+            $money = $main_word_scores['money'] + $second_word_scores['money'];
+            $stock = $main_word_scores['stock'] + $second_word_scores['stock'];
 
         } else {
 
             foreach ($scoring_patents_owned as $letter => $owned) {
                 if ($owned && $main_word_scoring_info[$letter]) {
-                    $main_word_money *= 2;
-                    $main_word_stock *= 2;
+                    self::applyDoublingAbility($main_word_scores, $base_main_word_scores);
                     $main_word_patents_used[$letter] = TRUE;
                 }
             }
 
-            $money = $main_word_money;
-            $stock = $main_word_stock;
+            $money = $main_word_scores['money'];
+            $stock = $main_word_scores['stock'];
         }
 
         self::updatePlayerCounters($active_player_id, $money, $stock, 0);
@@ -1696,11 +1708,11 @@ class LetterTycoon extends Table
 
         self::recordDoublerStats($main_word_patents_used, $main_word_q_uses);
         self::notifyDoublerUses($main_word_patents_used, $main_word_q_uses, $main_word_string);
-        self::notifyPlayerReceivedMoneyAndStock($main_word_money, $main_word_stock, $main_word_string);
+        self::notifyPlayerReceivedMoneyAndStock($main_word_scores['money'], $main_word_scores['stock'], $main_word_string);
         if ($second_word_played) {
             self::recordDoublerStats($second_word_patents_used, $second_word_q_uses);
             self::notifyDoublerUses($second_word_patents_used, $second_word_q_uses, $second_word_string);
-            self::notifyPlayerReceivedMoneyAndStock($second_word_money, $second_word_stock, $second_word_string);
+            self::notifyPlayerReceivedMoneyAndStock($second_word_scores['money'], $second_word_scores['stock'], $second_word_string);
         }
 
         // pay royalties

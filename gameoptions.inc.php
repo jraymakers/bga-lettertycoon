@@ -98,7 +98,25 @@ $game_options = array(
         ),
     ),
 
-    // possible variant: stacked doubles only add, so 2x and 2x is 3x instead of 4x
-    // (proposed by designer on forums)
+    103 => array(
+        'name' => totranslate('Doubling ability behavior (B, J, and K patents, and Q letter)'),
+        'values' => array(
+            1 => array(
+                'name' => totranslate('Doubling abilities multiply'),
+                'description' => totranslate('Two doubling abilities applied to one word results in 4x earnings, three in 8x, etc. This follows the rules as written.'),
+                'tmdisplay' => totranslate('Doubling abilities multiply'),
+            ),
+            2 => array(
+                'name' => totranslate('Doubling abilities add'),
+                'description' => totranslate('Two doubling abilities applied to one word results in 3x earnings, three in 4x, etc. This is a variant designed for more experienced players.'),
+                'tmdisplay' => totranslate('Doubling abilities add'),
+            ),
+            3 => array(
+                'name' => totranslate('One doubling ability maximum'),
+                'description' => totranslate('At most one doubling ability is applied per word, for a maximum result of 2x earnings. This is a variant designed for two-player games between more experienced players.'),
+                'tmdisplay' => totranslate('One doubling ability maximum'),
+            )
+        ),
+    ),
 
 );
