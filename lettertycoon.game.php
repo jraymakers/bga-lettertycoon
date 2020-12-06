@@ -1090,7 +1090,7 @@ class LetterTycoon extends Table
         if ($card['location'] == 'community') {
             self::incStat(1, 'cards_discarded_from_community', $active_player_id);
             self::notifyAllPlayers('playerReplacedCardFromCommunity',
-                clienttranslate('${player_name} replaced a card from the community pool'),
+                clienttranslate('${player_name} replaced a card from the community pool using the ‘Q’ patent ability'),
                 array(
                     'player_name' => self::getActivePlayerName(),
                     'card_id' => $card_id
@@ -1103,7 +1103,7 @@ class LetterTycoon extends Table
             ));
 
             self::notifyAllPlayers('playerReplacedCardFromHand',
-                clienttranslate('${player_name} replaced a card from their hand'),
+                clienttranslate('${player_name} replaced a card from their hand using the ‘Q’ patent ability'),
                 array(
                     'player_name' => self::getActivePlayerName()
                 )
@@ -1202,8 +1202,30 @@ class LetterTycoon extends Table
 
         // HAND ORDER:: update player hand order
 
+        if ($duplicate_count > 0) {
+            self::notifyAllPlayers('playerDuplicatedLetter',
+                clienttranslate('${player_name} duplicated the letter ‘${letter}’ using the ‘X’ patent ability'),
+                array(
+                    'player_id' => self::getActivePlayerId(),
+                    'player_name' => self::getActivePlayerName(),
+                    'letter' => $duplicated_letter
+                )
+            );
+        }
+
+        if ($appended_s_count > 0) {
+            self::notifyAllPlayers('playerAppendedS',
+                clienttranslate('${player_name} added an ‘S’ using the ‘Z’ patent ability'),
+                array(
+                    'player_id' => self::getActivePlayerId(),
+                    'player_name' => self::getActivePlayerName(),
+                    'letter' => $duplicated_letter
+                )
+            );
+        }
+
         if (isset($second_word)) {
-            $message = clienttranslate('${player_name} played ‘${main_word.letters}’ and ‘${second_word.letters}’');
+            $message = clienttranslate('${player_name} played ‘${main_word.letters}’ and ‘${second_word.letters}’ using the ‘V’ patent ability');
         } else {
             $message = clienttranslate('${player_name} played ‘${main_word.letters}’');
         }
