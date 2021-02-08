@@ -751,12 +751,15 @@ class LetterTycoon extends Table
 
     function notifyPlayerMayTryAgainRetriesLeft($retries_left)
     {
+        $retries_total = intval(self::getGameStateValue('automatic_challenge_retries'));
+        $retry_num = $retries_total - $retries_left + 1;
         self::notifyAllPlayers('playerMayTryAgainRetriesLeft',
-            clienttranslate('${player_name} may try again (retries left: ${retries_left})'),
+            clienttranslate('${player_name} may try again (retry ${retry_num} of ${retries_total})'),
             array(
                 'player_id' => self::getActivePlayerId(),
                 'player_name' => self::getActivePlayerName(),
-                'retries_left' => $retries_left
+                'retry_num' => $retry_num,
+                'retries_total' => $retries_total
             )
         );
     }
