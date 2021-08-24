@@ -590,10 +590,14 @@ class LetterTycoon extends Table
 
     function getWordListFile($word_length)
     {
-        if (self::getGameStateValue('dictionary') == 2) {
-            return "csw_$word_length.txt";
-        } else {
-            return "nwl_$word_length.txt";
+        switch (self::getGameStateValue('dictionary')) {
+            default:
+            case 1:
+                return "nwl_$word_length.txt";
+            case 2:
+                return "csw_$word_length.txt";
+            case 3:
+                return "twd_$word_length.txt";
         }
     }
 

@@ -95,6 +95,11 @@ $game_options = array(
                 'description' => totranslate('CSW (Collins Scrabble Words) 2019'),
                 'tmdisplay' => totranslate('CSW 2019'),
             ),
+            3 => array(
+                'name' => totranslate('12dicts'),
+                'description' => totranslate('12dicts (2of12inf + 3of6game) (Contains fewer rare words; meant for casual or restrictive play.)'),
+                'tmdisplay' => totranslate('12dicts'),
+            ),
         ),
     ),
 
